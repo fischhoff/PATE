@@ -1,0 +1,213 @@
+---
+title: "PATE_20180817"
+author: "Ilya"
+date: "8/17/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#####install packages
+```{r packages, echo=FALSE}
+pkgTest <- function(x)
+{
+  if (x %in% rownames(installed.packages()) == FALSE) {
+    install.packages(x, dependencies= TRUE)    
+  }
+  library(x, character.only = TRUE)
+}
+neededPackages <- c("dplyr", "ggplot2")
+for (package in neededPackages){pkgTest(package)}
+
+```
+
+
+##read in studies spreadsheet and make graph of pathogen frequency for each kingdom of hosts
+```{r}
+S <- read.csv("meta_data_20180724 - studies.csv")
+save(S, file = "S.Rdata")
+
+plot<- ggplot(data = S, mapping = aes(x = Pathogen.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~Host.kingdom)+
+  ylab("number of studies")+
+    ggtitle("frequency of pathogen-host combinations")
+
+plot
+```
+
+
+###make plot of frequency of pathogen kingdom for each pathway from host/community to ecosystem process
+```{r}
+load("S.Rdata")
+names(S)[names(S)=="var1_abund.biomass.to.ecosystem.fxn"]="var_1"
+names(S)[names(S)=="var2_morbidity.to.ecosystem.fxn"]="var_2"
+
+names(S)[names(S)=="var3_unknown.to.ecosystem.fxn"]="var_3"
+
+tolong = names(S)[c(18:20)]
+dim(S)[1]
+S = subset(S, exclude != "1")
+dim(S)[1]
+
+#reshape wide to long to make figure in ggplot2
+S.long<-reshape(S, 
+                varying=tolong, 
+                direction="long", 
+                idvar="ID", 
+                sep="_")
+
+#make field that indicates pathway
+i1 = which(S.long$time == 1)
+pathway = rep("unassigned", dim(S.long)[1])
+pathway[i1]="abund/biomass --> ecosystem"
+i2 = which(S.long$time == 2)
+pathway[i2]="morbidity --> ecosystem"
+i3 = which(S.long$time == 3)
+pathway[i3]="unknown --> ecosystem"
+S.long$pathway = pathway
+S.long = subset(S.long, var == 1)
+plot<- ggplot(data = S.long, mapping = aes(x = Pathogen.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~pathway)+
+  ylab("number of studies")+
+    ggtitle("frequency of pathogen - pathway pairs")
+# 
+plot
+
+```
+
+###read in measures data (which indicates which ecosystem process involved, among other info), merge with studies, make plot of pathogen kingdom vs. ecosystem process
+```{r}
+load("S.Rdata")
+names(S)[names(S)=="ID"]="paper.ID"
+names(S)[names(S)=="note"]="study.note"
+M = read.csv("meta_data_20180724 - measures.csv")
+#get just the rows for the ecosystem processes (excluding PP --> abund or morbidity)
+Mep = subset(M, measure.general == "biogeochemical cycles" | 
+               measure.general == "primary production" |
+               measure.general == "secondary production")
+intersect(names(Mep), names(S))
+setdiff(Mep$paper.ID, S$paper.ID)
+setdiff(S$paper.ID, Mep$paper.ID)
+Mep = merge(Mep, S)
+
+plot<- ggplot(data = Mep, mapping = aes(x = Pathogen.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~measure.general)+
+  ylab("number of studies")+
+    ggtitle("frequency of pathogen kingdom in relation to ecosystem process")
+plot
+
+
+```
+
+
+#####SCRATCH work below here. 
+
+####read in data and summarize
+```{r}
+P = read.csv("meta_data_20180724 - measures.csv")
+P = subset(P, exclude.as.ecosystem.measure !=1)
+names(P)
+#check ones that are empty
+tmp = subset(P,measure.general == "")
+tmp
+pathway.number = rep(3, dim(P)[1])
+pathway.number[(P$pathway=="abund biomass to ecosystem fxn" | P$pathway == "morbidity to ecosystem fxn")]=2
+pathway.number[(P$pathway=="PP to ecosystem fxn" | P$pathway == "PP to abund biomass" 
+                | P$pathway == "PP to morbidity")]=1
+
+P$pathway.number = pathway.number
+P = subset(P, measure.general!="")
+P$measure.general = trimws(P$measure.general)
+P$measure.specific....outcome.variable = trimws(P$measure.specific....outcome.variable)
+
+#check out "community"
+Pcom = subset(P, measure.general == "community")
+sort(unique(P$measure.general))
+
+#community.list = c("community")
+
+P1 <- P %>%
+  group_by(paper.ID, pathway.number, pathway, measure.general) %>%
+  summarize(measure.general.count = n())
+
+P1$measure.general.presence = 1#if there is at least one measure like this
+
+P2 <- P1 %>%
+  group_by(pathway.number, pathway, measure.general) %>%
+  summarize(measure.general.count.across.papers = sum(measure.general.presence))
+
+P2 = data.frame(P2)
+P2 = P2[
+  with(P2, order(pathway.number, pathway, measure.general.count.across.papers)),
+]
+P2
+write.csv(P2, file = "summary.20180815.csv")
+```
+
+###manually summarize data as relating to host or community, then read back in and use to reclassify
+```{r}
+P$measure.general.previous = P$measure.general
+P$community = NA
+P$host = NA
+Pr = read.csv("summary.20180815_reclassified.csv")
+
+names(Pr)
+Pr = subset(Pr, reclassify !="")
+upathway = unique(Pr$pathway)
+a = 2
+for (a in 1:length(upathway)){
+  Pr.tmp = subset(Pr, pathway == upathway[a])
+  umeasure.general = unique(Pr.tmp$measure.general)#for each unique measure.general
+  for (b in 1:length(umeasure.general)){
+    Pr.tmp.measure.general = subset(Pr.tmp, measure.general == umeasure.general[b])
+    inds = which(as.character(P$pathway) == as.character(upathway[a]) & as.character(P$measure.general) == as.character(umeasure.general[b]))
+    P$measure.general[inds]=as.character(Pr.tmp.measure.general$reclassify)
+    P$community[inds]= Pr.tmp.measure.general$community
+    P$host[inds]=Pr.tmp.measure.general$host
+  }
+}
+save(P, file = "P.Rdata")
+```
+
+###summarize again P having reclassified
+```{r}
+load("P.Rdata")
+#order, select fields, and output
+Psum_simple <- P %>%
+  group_by(pathway.number, pathway, measure.general, measure.specific....outcome.variable, community, host) %>%
+  summarize(count = n())
+
+Psum_simple = Psum_simple[
+  with(Psum_simple, order(pathway, measure.general)),
+]
+write.csv(Psum_simple, file = "P_raw_summarized.csv")
+
+#now summarize more
+Pa <- P %>%
+  group_by(paper.ID, pathway.number, pathway, measure.general, community, host) %>%
+  summarize(measure.general.count = n())
+
+Pa$measure.general.presence = 1#if there is at least one measure like this
+
+Pb <- Pa %>%
+  group_by(pathway.number, pathway, measure.general, community, host) %>%
+  summarize(measure.general.count.across.papers = sum(measure.general.presence))
+
+Pb = data.frame(Pb)
+Pb = Pb[
+  with(Pb, order(pathway.number, pathway, measure.general.count.across.papers)),
+]
+
+write.csv(Pb, file = "P.summary.reclass.20180815.csv")
+
+#finally, summarize across papers by pathway and measure
+```
+

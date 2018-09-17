@@ -1,0 +1,1330 @@
+"","pathway.number","pathway","measure.general","measure.specific....outcome.variable","community","host","count"
+"1",3,"abiotic or biotic","abiotic","active C",NA,NA,1
+"2",3,"abiotic or biotic","abiotic","ambient temperature",NA,NA,1
+"3",3,"abiotic or biotic","abiotic","ambient temperature vs. elevated",NA,NA,1
+"4",3,"abiotic or biotic","abiotic","clay",NA,NA,1
+"5",3,"abiotic or biotic","abiotic","CO2-enriched air vs. ambient air",NA,NA,1
+"6",3,"abiotic or biotic","abiotic","depth",NA,NA,5
+"7",3,"abiotic or biotic","abiotic","DIN",NA,NA,1
+"8",3,"abiotic or biotic","abiotic","DIP",NA,NA,1
+"9",3,"abiotic or biotic","abiotic","euphotic or aphotic",NA,NA,1
+"10",3,"abiotic or biotic","abiotic","fertilizer",NA,NA,2
+"11",3,"abiotic or biotic","abiotic","horizon",NA,NA,1
+"12",3,"abiotic or biotic","abiotic","irradiance",NA,NA,1
+"13",3,"abiotic or biotic","abiotic","light levels",NA,NA,1
+"14",3,"abiotic or biotic","abiotic","mesotrophic vs. oligotrophic",NA,NA,1
+"15",3,"abiotic or biotic","abiotic","moist vs. dry conditions",NA,NA,1
+"16",3,"abiotic or biotic","abiotic","month",NA,NA,6
+"17",3,"abiotic or biotic","abiotic","mud volcano vs. control",NA,NA,1
+"18",3,"abiotic or biotic","abiotic","N fertilization",NA,NA,1
+"19",3,"abiotic or biotic","abiotic","NH4",NA,NA,1
+"20",3,"abiotic or biotic","abiotic","NO3",NA,NA,1
+"21",3,"abiotic or biotic","abiotic","NO3-N",NA,NA,1
+"22",3,"abiotic or biotic","abiotic","nutrient level",NA,NA,1
+"23",3,"abiotic or biotic","abiotic","nutrients",NA,NA,1
+"24",3,"abiotic or biotic","abiotic","organophosphate",NA,NA,1
+"25",3,"abiotic or biotic","abiotic","pH",NA,NA,2
+"26",3,"abiotic or biotic","abiotic","photosynthetic photon flux density",NA,NA,1
+"27",3,"abiotic or biotic","abiotic","PO4",NA,NA,1
+"28",3,"abiotic or biotic","abiotic","pre-dawn vs. midday",NA,NA,1
+"29",3,"abiotic or biotic","abiotic","precipitation",NA,NA,2
+"30",3,"abiotic or biotic","abiotic","provenance transfer distance (mean annual maximum temperature)",NA,NA,1
+"31",3,"abiotic or biotic","abiotic","rainfall",NA,NA,1
+"32",3,"abiotic or biotic","abiotic","river discharge",NA,NA,1
+"33",3,"abiotic or biotic","abiotic","salinity",NA,NA,1
+"34",3,"abiotic or biotic","abiotic","sampling occasion (time)",NA,NA,2
+"35",3,"abiotic or biotic","abiotic","season",NA,NA,5
+"36",3,"abiotic or biotic","abiotic","shallow vs. deep",NA,NA,1
+"37",3,"abiotic or biotic","abiotic","Si",NA,NA,2
+"38",3,"abiotic or biotic","abiotic","slope",NA,NA,1
+"39",3,"abiotic or biotic","abiotic","soil association",NA,NA,1
+"40",3,"abiotic or biotic","abiotic","soil depth",NA,NA,2
+"41",3,"abiotic or biotic","abiotic","soil moisture",NA,NA,1
+"42",3,"abiotic or biotic","abiotic","surface depth",NA,NA,1
+"43",3,"abiotic or biotic","abiotic","temp",NA,NA,1
+"44",3,"abiotic or biotic","abiotic","temperature",NA,NA,8
+"45",3,"abiotic or biotic","abiotic","time",NA,NA,1
+"46",3,"abiotic or biotic","abiotic","UV-B reduction",NA,NA,1
+"47",3,"abiotic or biotic","abiotic","water affected by ice melting vs. not",NA,NA,1
+"48",3,"abiotic or biotic","abiotic","water-holding capacity",NA,NA,1
+"49",3,"abiotic or biotic","abiotic","year",NA,NA,3
+"50",3,"abiotic or biotic","biotic","% bare soil",NA,NA,1
+"51",3,"abiotic or biotic","biotic","above ground vs. below ground",NA,NA,1
+"52",3,"abiotic or biotic","biotic","aboveground vs. belowground",NA,NA,2
+"53",3,"abiotic or biotic","biotic","algal P concentration",NA,NA,1
+"54",3,"abiotic or biotic","biotic","AMF",NA,NA,1
+"55",3,"abiotic or biotic","biotic","AMF presence and taxa",NA,NA,1
+"56",3,"abiotic or biotic","biotic","AMF taxa",NA,NA,1
+"57",3,"abiotic or biotic","biotic","AMF vs. not",NA,NA,1
+"58",3,"abiotic or biotic","biotic","bark beetle outbreak",NA,NA,1
+"59",3,"abiotic or biotic","biotic","bateria-feeding nematode abundance",NA,NA,1
+"60",3,"abiotic or biotic","biotic","bay laurel infection",NA,NA,1
+"61",3,"abiotic or biotic","biotic","blocked domatia",NA,NA,1
+"62",3,"abiotic or biotic","biotic","blocked lamina",NA,NA,1
+"63",3,"abiotic or biotic","biotic","carb herbivory damage",NA,NA,1
+"64",3,"abiotic or biotic","biotic","CCA cover",NA,NA,1
+"65",3,"abiotic or biotic","biotic","Chl a",NA,NA,1
+"66",3,"abiotic or biotic","biotic","chlorophyll a",NA,NA,2
+"67",3,"abiotic or biotic","biotic","colony height class",NA,NA,1
+"68",3,"abiotic or biotic","biotic","community composition",NA,NA,1
+"69",3,"abiotic or biotic","biotic","community functional feeding group",NA,NA,1
+"70",3,"abiotic or biotic","biotic","community functional group",NA,NA,2
+"71",3,"abiotic or biotic","biotic","community functional group (plants)",NA,NA,1
+"72",3,"abiotic or biotic","biotic","community phenotype",NA,NA,1
+"73",3,"abiotic or biotic","biotic","community species",NA,NA,1
+"74",3,"abiotic or biotic","biotic","community species composition",NA,NA,1
+"75",3,"abiotic or biotic","biotic","community taxa",NA,NA,13
+"76",3,"abiotic or biotic","biotic","Daphnia",NA,NA,1
+"77",3,"abiotic or biotic","biotic","DBH diameter class",NA,NA,1
+"78",3,"abiotic or biotic","biotic","diet C:P ratio",NA,NA,2
+"79",3,"abiotic or biotic","biotic","disease incidence on mature leaves",NA,NA,1
+"80",3,"abiotic or biotic","biotic","disease rating",NA,NA,1
+"81",3,"abiotic or biotic","biotic","distance to prey",NA,NA,1
+"82",3,"abiotic or biotic","biotic","earthworm addition",NA,NA,1
+"83",3,"abiotic or biotic","biotic","endophyte infection",NA,NA,1
+"84",3,"abiotic or biotic","biotic","fish [host] tissue",NA,NA,1
+"85",3,"abiotic or biotic","biotic","flower richness",NA,NA,1
+"86",3,"abiotic or biotic","biotic","food C:P ratio",NA,NA,1
+"87",3,"abiotic or biotic","biotic","forest type",NA,NA,1
+"88",3,"abiotic or biotic","biotic","forest type (open vs. closed)",NA,NA,1
+"89",3,"abiotic or biotic","biotic","forest type woodlands vs. closed",NA,NA,1
+"90",3,"abiotic or biotic","biotic","forest type: mixed evergreen vs. redwood",NA,NA,1
+"91",3,"abiotic or biotic","biotic","fraction of carbon consumed by microzooplankton",NA,NA,1
+"92",3,"abiotic or biotic","biotic","functional group",NA,NA,1
+"93",3,"abiotic or biotic","biotic","functional group (grass, non-legume forb, legume)",NA,NA,1
+"94",3,"abiotic or biotic","biotic","fungal-feeding nematode abundance",NA,NA,1
+"95",3,"abiotic or biotic","biotic","gall sex",NA,NA,1
+"96",3,"abiotic or biotic","biotic","grass addition",NA,NA,1
+"97",3,"abiotic or biotic","biotic","grasses vs. herbs",NA,NA,1
+"98",3,"abiotic or biotic","biotic","grazed vs. ungrazed",NA,NA,1
+"99",3,"abiotic or biotic","biotic","guild",NA,NA,1
+"100",3,"abiotic or biotic","biotic","habit (perennial, annual, annual/perennial)",NA,NA,1
+"101",3,"abiotic or biotic","biotic","harvest",NA,NA,1
+"102",3,"abiotic or biotic","biotic","herbivore damage",NA,NA,1
+"103",3,"abiotic or biotic","biotic","heritability in pathogen susceptibility",NA,NA,1
+"104",3,"abiotic or biotic","biotic","high nucleic acid contents prokaryotes",NA,NA,1
+"105",3,"abiotic or biotic","biotic","host [beech] vs. community [sugar maple]",NA,NA,1
+"106",3,"abiotic or biotic","biotic","host abundance",NA,NA,2
+"107",3,"abiotic or biotic","biotic","host age",NA,NA,1
+"108",3,"abiotic or biotic","biotic","host and community taxa",NA,NA,3
+"109",3,"abiotic or biotic","biotic","host and community taxa abundance",NA,NA,1
+"110",3,"abiotic or biotic","biotic","host and community taxa height",NA,NA,1
+"111",3,"abiotic or biotic","biotic","host biomass",NA,NA,3
+"112",3,"abiotic or biotic","biotic","host combination",NA,NA,1
+"113",3,"abiotic or biotic","biotic","host community diversity",NA,NA,1
+"114",3,"abiotic or biotic","biotic","host density",NA,NA,1
+"115",3,"abiotic or biotic","biotic","host fecundity",NA,NA,1
+"116",3,"abiotic or biotic","biotic","host functional group",NA,NA,2
+"117",3,"abiotic or biotic","biotic","host gender",NA,NA,1
+"118",3,"abiotic or biotic","biotic","host habit (annual, perennial, biennial)",NA,NA,1
+"119",3,"abiotic or biotic","biotic","host new growth vs. old growth",NA,NA,1
+"120",3,"abiotic or biotic","biotic","host part (root vs. shoot vs panicle)",NA,NA,1
+"121",3,"abiotic or biotic","biotic","host resistant vs. susceptible seeds",NA,NA,1
+"122",3,"abiotic or biotic","biotic","host sex",NA,NA,1
+"123",3,"abiotic or biotic","biotic","host shell length",NA,NA,1
+"124",3,"abiotic or biotic","biotic","host size",NA,NA,1
+"125",3,"abiotic or biotic","biotic","host species",NA,NA,2
+"126",3,"abiotic or biotic","biotic","host taxa",NA,NA,12
+"127",3,"abiotic or biotic","biotic","host taxa arrival order",NA,NA,1
+"128",3,"abiotic or biotic","biotic","host taxa composition (infection status of bay laurel and tanoak)",NA,NA,1
+"129",3,"abiotic or biotic","biotic","host taxa: evergreen vs. deciduous",NA,NA,1
+"130",3,"abiotic or biotic","biotic","host taxa: native vs. exotic",NA,NA,1
+"131",3,"abiotic or biotic","biotic","host tissue",NA,NA,1
+"132",3,"abiotic or biotic","biotic","host vs. community species",NA,NA,1
+"133",3,"abiotic or biotic","biotic","housing individual vs. microcosm",NA,NA,1
+"134",3,"abiotic or biotic","biotic","initial scaled healthy area x",NA,NA,1
+"135",3,"abiotic or biotic","biotic","initial wood volume",NA,NA,1
+"136",3,"abiotic or biotic","biotic","insecticide",NA,NA,1
+"137",3,"abiotic or biotic","biotic","insects",NA,NA,1
+"138",3,"abiotic or biotic","biotic","invertebrate taxa and functional groups",NA,NA,1
+"139",3,"abiotic or biotic","biotic","leaf class (old, mature, immature)",NA,NA,1
+"140",3,"abiotic or biotic","biotic","leaf phenology of the host",NA,NA,1
+"141",3,"abiotic or biotic","biotic","leaf surface: abaxial vs. adaxial",NA,NA,1
+"142",3,"abiotic or biotic","biotic","litter presence vs. absence",NA,NA,1
+"143",3,"abiotic or biotic","biotic","macroalgal species and functional groups",NA,NA,1
+"144",3,"abiotic or biotic","biotic","macroinvertebrate functional group",NA,NA,1
+"145",3,"abiotic or biotic","biotic","microarthropods",NA,NA,1
+"146",3,"abiotic or biotic","biotic","microorganisms",NA,NA,2
+"147",3,"abiotic or biotic","biotic","microzooplankton grazing",NA,NA,1
+"148",3,"abiotic or biotic","biotic","mites per leaf",NA,NA,1
+"149",3,"abiotic or biotic","biotic","miticide",NA,NA,1
+"150",3,"abiotic or biotic","biotic","mowing",NA,NA,1
+"151",3,"abiotic or biotic","biotic","native vs. exotic",NA,NA,1
+"152",3,"abiotic or biotic","biotic","nematode food web enrichment index",NA,NA,1
+"153",3,"abiotic or biotic","biotic","nematode food web structure index",NA,NA,1
+"154",3,"abiotic or biotic","biotic","nematodes",NA,NA,1
+"155",3,"abiotic or biotic","biotic","niche breadth",NA,NA,1
+"156",3,"abiotic or biotic","biotic","niche marginality",NA,NA,1
+"157",3,"abiotic or biotic","biotic","nitrate addition",NA,NA,1
+"158",3,"abiotic or biotic","biotic","number of tree stems",NA,NA,1
+"159",3,"abiotic or biotic","biotic","number of trees",NA,NA,1
+"160",3,"abiotic or biotic","biotic","P life stage",NA,NA,1
+"161",3,"abiotic or biotic","biotic","P taxa",NA,NA,1
+"162",3,"abiotic or biotic","biotic","P-plants vs. G-plants (produce different compounds)",NA,NA,1
+"163",3,"abiotic or biotic","biotic","parasite biomass vs. host functional group",NA,NA,1
+"164",3,"abiotic or biotic","biotic","parasite taxa",NA,NA,1
+"165",3,"abiotic or biotic","biotic","percent cover of conifer plantation habitat",NA,NA,1
+"166",3,"abiotic or biotic","biotic","phototrophic nanoflagellate abundance",NA,NA,1
+"167",3,"abiotic or biotic","biotic","Physa shell length",NA,NA,1
+"168",3,"abiotic or biotic","biotic","pollinated plant species",NA,NA,1
+"169",3,"abiotic or biotic","biotic","PP dose",NA,NA,1
+"170",3,"abiotic or biotic","biotic","PP life stage",NA,NA,1
+"171",3,"abiotic or biotic","biotic","PP part",NA,NA,1
+"172",3,"abiotic or biotic","biotic","PP taxa",NA,NA,6
+"173",3,"abiotic or biotic","biotic","previous crown transparency",NA,NA,1
+"174",3,"abiotic or biotic","biotic","prey density",NA,NA,1
+"175",3,"abiotic or biotic","biotic","prey functional group",NA,NA,1
+"176",3,"abiotic or biotic","biotic","primary infection",NA,NA,1
+"177",3,"abiotic or biotic","biotic","principal component of chemical leaf traits",NA,NA,1
+"178",3,"abiotic or biotic","biotic","principal component of morphology",NA,NA,1
+"179",3,"abiotic or biotic","biotic","prokaryotic abundance",NA,NA,1
+"180",3,"abiotic or biotic","biotic","rabbits",NA,NA,1
+"181",3,"abiotic or biotic","biotic","redwood density",NA,NA,1
+"182",3,"abiotic or biotic","biotic","redwood vs. mixed",NA,NA,1
+"183",3,"abiotic or biotic","biotic","remineralizing bacterial assemblage",NA,NA,1
+"184",3,"abiotic or biotic","biotic","sapling young vs. sapling old",NA,NA,1
+"185",3,"abiotic or biotic","biotic","sex",NA,NA,1
+"186",3,"abiotic or biotic","biotic","shade",NA,NA,1
+"187",3,"abiotic or biotic","biotic","snail host taxa",NA,NA,1
+"188",3,"abiotic or biotic","biotic","soil organic matter",NA,NA,1
+"189",3,"abiotic or biotic","biotic","sterile vs. field soil (with PP added)",NA,NA,1
+"190",3,"abiotic or biotic","biotic","sterilization",NA,NA,2
+"191",3,"abiotic or biotic","biotic","tanoak infection",NA,NA,1
+"192",3,"abiotic or biotic","biotic","taxa",NA,NA,1
+"193",3,"abiotic or biotic","biotic","taxa/functional group (infected orthopterans; terrestrial invertebrates; aquatic invertebrates)",NA,NA,1
+"194",3,"abiotic or biotic","biotic","tissue: PP leaf vs. reproductive",NA,NA,1
+"195",3,"abiotic or biotic","biotic","total nematode abundance",NA,NA,1
+"196",3,"abiotic or biotic","biotic","total organic carbon",NA,NA,1
+"197",3,"abiotic or biotic","biotic","tree [host] size",NA,NA,1
+"198",3,"abiotic or biotic","biotic","tree height (m)",NA,NA,1
+"199",3,"abiotic or biotic","biotic","tree size",NA,NA,1
+"200",3,"abiotic or biotic","biotic","tree species",NA,NA,1
+"201",3,"abiotic or biotic","biotic","tree species richness",NA,NA,1
+"202",3,"abiotic or biotic","biotic","tree turnover rate",NA,NA,1
+"203",3,"abiotic or biotic","biotic","tubificid species combination",NA,NA,1
+"204",3,"abiotic or biotic","biotic","understory vs. overstory",NA,NA,1
+"205",3,"abiotic or biotic","biotic","upper vs. lower canopy",NA,NA,1
+"206",3,"abiotic or biotic","biotic","upper vs. lower leaf surface",NA,NA,1
+"207",3,"abiotic or biotic","biotic","vegetation type",NA,NA,1
+"208",3,"abiotic or biotic","biotic","visitation rate",NA,NA,1
+"209",3,"abiotic or biotic","biotic","zooplankton",NA,NA,1
+"210",3,"abiotic or biotic","both","burned vs. unburned",NA,NA,1
+"211",3,"abiotic or biotic","both","conspecific soil addition",NA,NA,1
+"212",3,"abiotic or biotic","both","disturbance",NA,NA,1
+"213",3,"abiotic or biotic","both","field site",NA,NA,1
+"214",3,"abiotic or biotic","both","fire",NA,NA,1
+"215",3,"abiotic or biotic","both","forereef vs. backreef",NA,NA,1
+"216",3,"abiotic or biotic","both","heterospecific exotic soil addition",NA,NA,1
+"217",3,"abiotic or biotic","both","heterospecific native soil addition",NA,NA,1
+"218",3,"abiotic or biotic","both","lake",NA,NA,1
+"219",3,"abiotic or biotic","both","lake strata (epi, meta, hypolimnion)",NA,NA,1
+"220",3,"abiotic or biotic","both","land-use index",NA,NA,1
+"221",3,"abiotic or biotic","both","location",NA,NA,1
+"222",3,"abiotic or biotic","both","months from start of experiment",NA,NA,1
+"223",3,"abiotic or biotic","both","plot",NA,NA,1
+"224",3,"abiotic or biotic","both","pond",NA,NA,1
+"225",3,"abiotic or biotic","both","pools vs. riffles",NA,NA,1
+"226",3,"abiotic or biotic","both","region",NA,NA,1
+"227",3,"abiotic or biotic","both","river location",NA,NA,1
+"228",3,"abiotic or biotic","both","shading",NA,NA,1
+"229",3,"abiotic or biotic","both","site",NA,NA,10
+"230",3,"abiotic or biotic","both","stirring",NA,NA,1
+"231",3,"abiotic or biotic","both","stream",NA,NA,1
+"232",3,"abiotic or biotic","both","stream location (pool vs. riffle)",NA,NA,1
+"233",3,"abiotic or biotic","both","water + nutrient",NA,NA,1
+"234",3,"abiotic or biotic","both","years since treated",NA,NA,1
+"235",3,"abiotic or biotic","community consumption","flagellate grazing rate",NA,NA,1
+"236",3,"abiotic or biotic","community taxa","grass species",NA,NA,1
+"237",3,"abiotic or biotic","neither","observer",NA,NA,1
+"238",2,"abund biomass to ecosystem fxn","biogeochemical cycles","ammonium concentrations",NA,NA,1
+"239",2,"abund biomass to ecosystem fxn","biogeochemical cycles","ammonium NH4-N",NA,NA,1
+"240",2,"abund biomass to ecosystem fxn","biogeochemical cycles","ammonium uptake length",NA,NA,1
+"241",2,"abund biomass to ecosystem fxn","biogeochemical cycles","bacterial carbon channelled by viruses",NA,NA,1
+"242",2,"abund biomass to ecosystem fxn","biogeochemical cycles","biofilm %C",NA,NA,1
+"243",2,"abund biomass to ecosystem fxn","biogeochemical cycles","biofilm %N",NA,NA,1
+"244",2,"abund biomass to ecosystem fxn","biogeochemical cycles","biofilm %P",NA,NA,1
+"245",2,"abund biomass to ecosystem fxn","biogeochemical cycles","biofilm C:N",NA,NA,1
+"246",2,"abund biomass to ecosystem fxn","biogeochemical cycles","biofilm C:P",NA,NA,1
+"247",2,"abund biomass to ecosystem fxn","biogeochemical cycles","biofilm d13C",NA,NA,1
+"248",2,"abund biomass to ecosystem fxn","biogeochemical cycles","biofilm d15N",NA,NA,1
+"249",2,"abund biomass to ecosystem fxn","biogeochemical cycles","biofilm N:P",NA,NA,1
+"250",2,"abund biomass to ecosystem fxn","biogeochemical cycles","C",NA,NA,2
+"251",2,"abund biomass to ecosystem fxn","biogeochemical cycles","C released by viral lysis",NA,NA,1
+"252",2,"abund biomass to ecosystem fxn","biogeochemical cycles","carbon balance",NA,NA,1
+"253",2,"abund biomass to ecosystem fxn","biogeochemical cycles","carbon loss",NA,NA,1
+"254",2,"abund biomass to ecosystem fxn","biogeochemical cycles","carbon lost to infection",NA,NA,1
+"255",2,"abund biomass to ecosystem fxn","biogeochemical cycles","carbon production",NA,NA,1
+"256",2,"abund biomass to ecosystem fxn","biogeochemical cycles","carbon released per day",NA,NA,1
+"257",2,"abund biomass to ecosystem fxn","biogeochemical cycles","carbon remineralization due to viral-mediated shunt (dissolved inorganic 13C)",NA,NA,1
+"258",2,"abund biomass to ecosystem fxn","biogeochemical cycles","chytridivory / chytrid pathway (ratio ingested / total production)",NA,NA,1
+"259",2,"abund biomass to ecosystem fxn","biogeochemical cycles","CO2 assimilation",NA,NA,1
+"260",2,"abund biomass to ecosystem fxn","biogeochemical cycles","coarse particulate organic matter",NA,NA,2
+"261",2,"abund biomass to ecosystem fxn","biogeochemical cycles","coarse particulate organic matter concentration",NA,NA,1
+"262",2,"abund biomass to ecosystem fxn","biogeochemical cycles","coarse particulate organic matter turnover",NA,NA,1
+"263",2,"abund biomass to ecosystem fxn","biogeochemical cycles","decline in N fixation",NA,NA,1
+"264",2,"abund biomass to ecosystem fxn","biogeochemical cycles","decomposition rate",NA,NA,1
+"265",2,"abund biomass to ecosystem fxn","biogeochemical cycles","dissolved organic carbon",NA,NA,1
+"266",2,"abund biomass to ecosystem fxn","biogeochemical cycles","dung biomass removed",NA,NA,1
+"267",2,"abund biomass to ecosystem fxn","biogeochemical cycles","epilithon mass",NA,NA,1
+"268",2,"abund biomass to ecosystem fxn","biogeochemical cycles","epilithon turnover",NA,NA,1
+"269",2,"abund biomass to ecosystem fxn","biogeochemical cycles","fine particulate organic matter",NA,NA,2
+"270",2,"abund biomass to ecosystem fxn","biogeochemical cycles","fine particulate organic matter concentration",NA,NA,1
+"271",2,"abund biomass to ecosystem fxn","biogeochemical cycles","fine particulate organic matter turnover",NA,NA,1
+"272",2,"abund biomass to ecosystem fxn","biogeochemical cycles","inorganic N pools",NA,NA,1
+"273",2,"abund biomass to ecosystem fxn","biogeochemical cycles","leaf pack mass loss",NA,NA,1
+"274",2,"abund biomass to ecosystem fxn","biogeochemical cycles","litter",NA,NA,1
+"275",2,"abund biomass to ecosystem fxn","biogeochemical cycles","litter decomposition",NA,NA,1
+"276",2,"abund biomass to ecosystem fxn","biogeochemical cycles","live nodule biomass",NA,NA,2
+"277",2,"abund biomass to ecosystem fxn","biogeochemical cycles","mass loss from burning",NA,NA,1
+"278",2,"abund biomass to ecosystem fxn","biogeochemical cycles","mass remaining [decomposition]",NA,NA,1
+"279",2,"abund biomass to ecosystem fxn","biogeochemical cycles","mgC m-2 d-1 from bacteria to virus",NA,NA,1
+"280",2,"abund biomass to ecosystem fxn","biogeochemical cycles","N flux",NA,NA,1
+"281",2,"abund biomass to ecosystem fxn","biogeochemical cycles","N loss",NA,NA,1
+"282",2,"abund biomass to ecosystem fxn","biogeochemical cycles","N remaining",NA,NA,1
+"283",2,"abund biomass to ecosystem fxn","biogeochemical cycles","N:P ratio",NA,NA,1
+"284",2,"abund biomass to ecosystem fxn","biogeochemical cycles","NH4 update length",NA,NA,1
+"285",2,"abund biomass to ecosystem fxn","biogeochemical cycles","nitrate",NA,NA,1
+"286",2,"abund biomass to ecosystem fxn","biogeochemical cycles","nitrate NO3-N",NA,NA,1
+"287",2,"abund biomass to ecosystem fxn","biogeochemical cycles","nitrogen fluxes",NA,NA,1
+"288",2,"abund biomass to ecosystem fxn","biogeochemical cycles","Non-Castilleja C/N ratios",NA,NA,1
+"289",2,"abund biomass to ecosystem fxn","biogeochemical cycles","oxygen",NA,NA,1
+"290",2,"abund biomass to ecosystem fxn","biogeochemical cycles","particulate organic 15N",NA,NA,1
+"291",2,"abund biomass to ecosystem fxn","biogeochemical cycles","particulate organice 13C",NA,NA,1
+"292",2,"abund biomass to ecosystem fxn","biogeochemical cycles","percent of N from lysate taken up by Synechoccus cells",NA,NA,1
+"293",2,"abund biomass to ecosystem fxn","biogeochemical cycles","phosphate",NA,NA,1
+"294",2,"abund biomass to ecosystem fxn","biogeochemical cycles","phosphorous",NA,NA,1
+"295",2,"abund biomass to ecosystem fxn","biogeochemical cycles","respiration",NA,NA,1
+"296",2,"abund biomass to ecosystem fxn","biogeochemical cycles","smoldering loss",NA,NA,1
+"297",2,"abund biomass to ecosystem fxn","biogeochemical cycles","suspended particular organic matter",NA,NA,1
+"298",2,"abund biomass to ecosystem fxn","biogeochemical cycles","suspended particulate organic matter concentration",NA,NA,1
+"299",2,"abund biomass to ecosystem fxn","biogeochemical cycles","suspended particulate organic matter turnover",NA,NA,1
+"300",2,"abund biomass to ecosystem fxn","biogeochemical cycles","total benthic organic matter",NA,NA,1
+"301",2,"abund biomass to ecosystem fxn","biogeochemical cycles","total N release",NA,NA,1
+"302",2,"abund biomass to ecosystem fxn","biogeochemical cycles","uptake of 15N with lysate addition",NA,NA,1
+"303",2,"abund biomass to ecosystem fxn","biogeochemical cycles","very fine particulate organic matter",NA,NA,1
+"304",2,"abund biomass to ecosystem fxn","community biomass","basal cover",NA,NA,1
+"305",2,"abund biomass to ecosystem fxn","community biomass","biomass",NA,NA,1
+"306",2,"abund biomass to ecosystem fxn","community biomass","height",NA,NA,1
+"307",2,"abund biomass to ecosystem fxn","community biomass","microbial biomass",NA,NA,1
+"308",2,"abund biomass to ecosystem fxn","community biomass","total biomass yield",NA,NA,1
+"309",2,"abund biomass to ecosystem fxn","community respiration","community respiration",NA,NA,1
+"310",2,"abund biomass to ecosystem fxn","host and community biomass","biomass without Rhinanthus",NA,NA,1
+"311",2,"abund biomass to ecosystem fxn","primary production","",NA,NA,1
+"312",2,"abund biomass to ecosystem fxn","primary production","""recent mortality"" analysis: basal area growth ratio",NA,NA,1
+"313",2,"abund biomass to ecosystem fxn","primary production","above-ground biomass for each functional group",NA,NA,1
+"314",2,"abund biomass to ecosystem fxn","primary production","aboveground production",NA,NA,1
+"315",2,"abund biomass to ecosystem fxn","primary production","aboveground tree biomass",NA,NA,1
+"316",2,"abund biomass to ecosystem fxn","primary production","adult plant coverage",NA,NA,2
+"317",2,"abund biomass to ecosystem fxn","primary production","algal biofilm",NA,NA,1
+"318",2,"abund biomass to ecosystem fxn","primary production","average berry weight",NA,NA,1
+"319",2,"abund biomass to ecosystem fxn","primary production","average root diameter",NA,NA,1
+"320",2,"abund biomass to ecosystem fxn","primary production","basal area",NA,NA,5
+"321",2,"abund biomass to ecosystem fxn","primary production","basal area non-oaks",NA,NA,1
+"322",2,"abund biomass to ecosystem fxn","primary production","basal area red oaks (host)",NA,NA,1
+"323",2,"abund biomass to ecosystem fxn","primary production","basal area white oaks (host)",NA,NA,1
+"324",2,"abund biomass to ecosystem fxn","primary production","biomass",NA,NA,6
+"325",2,"abund biomass to ecosystem fxn","primary production","biomass feedback",NA,NA,1
+"326",2,"abund biomass to ecosystem fxn","primary production","biomass for each species",NA,NA,1
+"327",2,"abund biomass to ecosystem fxn","primary production","biomass per leaf",NA,NA,1
+"328",2,"abund biomass to ecosystem fxn","primary production","biomass per seed",NA,NA,1
+"329",2,"abund biomass to ecosystem fxn","primary production","Calamagrostis epigejos biomass",NA,NA,1
+"330",2,"abund biomass to ecosystem fxn","primary production","change in biomass",NA,NA,1
+"331",2,"abund biomass to ecosystem fxn","primary production","chlorophyll a",NA,NA,7
+"332",2,"abund biomass to ecosystem fxn","primary production","chlorophyll A",NA,NA,1
+"333",2,"abund biomass to ecosystem fxn","primary production","chlorophyll a concentration",NA,NA,2
+"334",2,"abund biomass to ecosystem fxn","primary production","chlorophyll a: AFDM",NA,NA,1
+"335",2,"abund biomass to ecosystem fxn","primary production","community respiration",NA,NA,1
+"336",2,"abund biomass to ecosystem fxn","primary production","cone production (cones/ha)",NA,NA,1
+"337",2,"abund biomass to ecosystem fxn","primary production","cover",NA,NA,1
+"338",2,"abund biomass to ecosystem fxn","primary production","daily net photosynthetic production",NA,NA,1
+"339",2,"abund biomass to ecosystem fxn","primary production","DBH (cm)",NA,NA,1
+"340",2,"abund biomass to ecosystem fxn","primary production","dead basal area (as percent of live+dead)",NA,NA,2
+"341",2,"abund biomass to ecosystem fxn","primary production","dry biomass of macroalgal species and functional groups",NA,NA,1
+"342",2,"abund biomass to ecosystem fxn","primary production","dry host biomass",NA,NA,1
+"343",2,"abund biomass to ecosystem fxn","primary production","dry mass",NA,NA,1
+"344",2,"abund biomass to ecosystem fxn","primary production","dry shoot and leaf biomass",NA,NA,1
+"345",2,"abund biomass to ecosystem fxn","primary production","dry weight per plant",NA,NA,1
+"346",2,"abund biomass to ecosystem fxn","primary production","epilithon",NA,NA,1
+"347",2,"abund biomass to ecosystem fxn","primary production","ericaceous",NA,NA,1
+"348",2,"abund biomass to ecosystem fxn","primary production","estimated sapling abundance [beech]",NA,NA,1
+"349",2,"abund biomass to ecosystem fxn","primary production","foliar biomass [of host and community]",NA,NA,1
+"350",2,"abund biomass to ecosystem fxn","primary production","foliar biomass [of host]",NA,NA,1
+"351",2,"abund biomass to ecosystem fxn","primary production","forb",NA,NA,1
+"352",2,"abund biomass to ecosystem fxn","primary production","forb biomass",NA,NA,1
+"353",2,"abund biomass to ecosystem fxn","primary production","graminoid (includes hosts) biomass",NA,NA,1
+"354",2,"abund biomass to ecosystem fxn","primary production","graminoid community (include host)",NA,NA,1
+"355",2,"abund biomass to ecosystem fxn","primary production","graminoids",NA,NA,1
+"356",2,"abund biomass to ecosystem fxn","primary production","gross primary production",NA,NA,1
+"357",2,"abund biomass to ecosystem fxn","primary production","growth",NA,NA,1
+"358",2,"abund biomass to ecosystem fxn","primary production","height (m)",NA,NA,1
+"359",2,"abund biomass to ecosystem fxn","primary production","host biomass",NA,NA,1
+"360",2,"abund biomass to ecosystem fxn","primary production","host production",NA,NA,1
+"361",2,"abund biomass to ecosystem fxn","primary production","leaf area",NA,NA,1
+"362",2,"abund biomass to ecosystem fxn","primary production","leaf area (mm2)",NA,NA,1
+"363",2,"abund biomass to ecosystem fxn","primary production","leaf weight",NA,NA,1
+"364",2,"abund biomass to ecosystem fxn","primary production","live basal area",NA,NA,1
+"365",2,"abund biomass to ecosystem fxn","primary production","live biomass",NA,NA,1
+"366",2,"abund biomass to ecosystem fxn","primary production","mean aboveground biomass",NA,NA,1
+"367",2,"abund biomass to ecosystem fxn","primary production","mean basal area increment",NA,NA,1
+"368",2,"abund biomass to ecosystem fxn","primary production","mean DBH",NA,NA,2
+"369",2,"abund biomass to ecosystem fxn","primary production","mean gross primary production",NA,NA,1
+"370",2,"abund biomass to ecosystem fxn","primary production","mean height",NA,NA,2
+"371",2,"abund biomass to ecosystem fxn","primary production","net ecosystem production",NA,NA,1
+"372",2,"abund biomass to ecosystem fxn","primary production","net photosynthesis",NA,NA,1
+"373",2,"abund biomass to ecosystem fxn","primary production","net photosynthesis (umol CO2 m-2 s-1)",NA,NA,1
+"374",2,"abund biomass to ecosystem fxn","primary production","net photosynthetic rates",NA,NA,1
+"375",2,"abund biomass to ecosystem fxn","primary production","net primary production",NA,NA,1
+"376",2,"abund biomass to ecosystem fxn","primary production","net primary production (ash free dry mass/yr)",NA,NA,1
+"377",2,"abund biomass to ecosystem fxn","primary production","organic mass (ash free dry mass)",NA,NA,1
+"378",2,"abund biomass to ecosystem fxn","primary production","oxygen production",NA,NA,1
+"379",2,"abund biomass to ecosystem fxn","primary production","percent cover",NA,NA,1
+"380",2,"abund biomass to ecosystem fxn","primary production","percent cover by species",NA,NA,1
+"381",2,"abund biomass to ecosystem fxn","primary production","percent cover for each host species",NA,NA,1
+"382",2,"abund biomass to ecosystem fxn","primary production","periphyton biomass",NA,NA,1
+"383",2,"abund biomass to ecosystem fxn","primary production","periphyton standing crop",NA,NA,1
+"384",2,"abund biomass to ecosystem fxn","primary production","photosynthetic rate",NA,NA,1
+"385",2,"abund biomass to ecosystem fxn","primary production","plant biomass",NA,NA,1
+"386",2,"abund biomass to ecosystem fxn","primary production","plant height",NA,NA,1
+"387",2,"abund biomass to ecosystem fxn","primary production","point counts (biomass estimate)",NA,NA,1
+"388",2,"abund biomass to ecosystem fxn","primary production","potential host biomass",NA,NA,1
+"389",2,"abund biomass to ecosystem fxn","primary production","primary production",NA,NA,1
+"390",2,"abund biomass to ecosystem fxn","primary production","productivity (annual net primary production)",NA,NA,1
+"391",2,"abund biomass to ecosystem fxn","primary production","prokaryotic growth efficiency",NA,NA,1
+"392",2,"abund biomass to ecosystem fxn","primary production","prokaryotic respiration",NA,NA,1
+"393",2,"abund biomass to ecosystem fxn","primary production","quantum yield",NA,NA,1
+"394",2,"abund biomass to ecosystem fxn","primary production","ratio of production to respiration",NA,NA,1
+"395",2,"abund biomass to ecosystem fxn","primary production","reduction in host biomass vs. parasite biomass",NA,NA,1
+"396",2,"abund biomass to ecosystem fxn","primary production","relative tree growth rate (wood volume)",NA,NA,1
+"397",2,"abund biomass to ecosystem fxn","primary production","resource decline (chlorophyll a over time)",NA,NA,1
+"398",2,"abund biomass to ecosystem fxn","primary production","root biomass",NA,NA,3
+"399",2,"abund biomass to ecosystem fxn","primary production","root biomass (g pot-1)",NA,NA,2
+"400",2,"abund biomass to ecosystem fxn","primary production","root dry weight",NA,NA,1
+"401",2,"abund biomass to ecosystem fxn","primary production","root length",NA,NA,1
+"402",2,"abund biomass to ecosystem fxn","primary production","seed mass",NA,NA,1
+"403",2,"abund biomass to ecosystem fxn","primary production","seed production",NA,NA,2
+"404",2,"abund biomass to ecosystem fxn","primary production","seed wt. per plant",NA,NA,1
+"405",2,"abund biomass to ecosystem fxn","primary production","shoot biomass",NA,NA,3
+"406",2,"abund biomass to ecosystem fxn","primary production","shoot biomass (g pot-1)",NA,NA,1
+"407",2,"abund biomass to ecosystem fxn","primary production","shoot dry biomass",NA,NA,1
+"408",2,"abund biomass to ecosystem fxn","primary production","shoot dry weight",NA,NA,1
+"409",2,"abund biomass to ecosystem fxn","primary production","shoot total biomass",NA,NA,1
+"410",2,"abund biomass to ecosystem fxn","primary production","size (d.b.h.) distribution of live trees",NA,NA,1
+"411",2,"abund biomass to ecosystem fxn","primary production","stand-level stem biomass lost to rot",NA,NA,1
+"412",2,"abund biomass to ecosystem fxn","primary production","total biomass",NA,NA,4
+"413",2,"abund biomass to ecosystem fxn","primary production","total biomass (host plus parasite)",NA,NA,1
+"414",2,"abund biomass to ecosystem fxn","primary production","total leaf length",NA,NA,1
+"415",2,"abund biomass to ecosystem fxn","primary production","total legume cover",NA,NA,1
+"416",2,"abund biomass to ecosystem fxn","primary production","total organic matter of benthic biofilms, measured as ash-free dry mass (AFDM)",NA,NA,1
+"417",2,"abund biomass to ecosystem fxn","primary production","total plant biomass",NA,NA,1
+"418",2,"abund biomass to ecosystem fxn","primary production","total plant dry weight",NA,NA,1
+"419",2,"abund biomass to ecosystem fxn","primary production","total seed set",NA,NA,1
+"420",2,"abund biomass to ecosystem fxn","primary production","tree height",NA,NA,1
+"421",2,"abund biomass to ecosystem fxn","secondary production","algae consumption by insects",NA,NA,1
+"422",2,"abund biomass to ecosystem fxn","secondary production","algae consumption by tadpoles",NA,NA,1
+"423",2,"abund biomass to ecosystem fxn","secondary production","average bee weight",NA,NA,1
+"424",2,"abund biomass to ecosystem fxn","secondary production","biomass",NA,NA,2
+"425",2,"abund biomass to ecosystem fxn","secondary production","biomass (mg DM m-2)",NA,NA,1
+"426",2,"abund biomass to ecosystem fxn","secondary production","biomass tadpoles",NA,NA,1
+"427",2,"abund biomass to ecosystem fxn","secondary production","colony height",NA,NA,2
+"428",2,"abund biomass to ecosystem fxn","secondary production","community biomass in cores under pats",NA,NA,1
+"429",2,"abund biomass to ecosystem fxn","secondary production","fish biomass (g/100 m2)",NA,NA,1
+"430",2,"abund biomass to ecosystem fxn","secondary production","heterotrophy (% carbon taken from plan)",NA,NA,1
+"431",2,"abund biomass to ecosystem fxn","secondary production","individual fish mass",NA,NA,1
+"432",2,"abund biomass to ecosystem fxn","secondary production","insect biomass emerging from dung",NA,NA,1
+"433",2,"abund biomass to ecosystem fxn","secondary production","invertebrates biomass",NA,NA,1
+"434",2,"abund biomass to ecosystem fxn","secondary production","macroinvertebrate biomass",NA,NA,1
+"435",2,"abund biomass to ecosystem fxn","secondary production","mass",NA,NA,1
+"436",2,"abund biomass to ecosystem fxn","secondary production","mass of alga tissue consumed",NA,NA,1
+"437",2,"abund biomass to ecosystem fxn","secondary production","mass of tadpoles at metamorphosis",NA,NA,1
+"438",2,"abund biomass to ecosystem fxn","secondary production","microbial biomass",NA,NA,1
+"439",2,"abund biomass to ecosystem fxn","secondary production","microbial biomass carbon",NA,NA,1
+"440",2,"abund biomass to ecosystem fxn","secondary production","production",NA,NA,1
+"441",2,"abund biomass to ecosystem fxn","secondary production","progeny biomass produced by an initial adult",NA,NA,1
+"442",2,"abund biomass to ecosystem fxn","secondary production","Scarabaeidae biomass emerging from dung",NA,NA,1
+"443",2,"abund biomass to ecosystem fxn","secondary production","seed predation",NA,NA,1
+"444",2,"abund biomass to ecosystem fxn","secondary production","shell growth",NA,NA,1
+"445",2,"abund biomass to ecosystem fxn","secondary production","shell length",NA,NA,1
+"446",2,"abund biomass to ecosystem fxn","secondary production","soft-tissue wet weight",NA,NA,1
+"447",2,"abund biomass to ecosystem fxn","secondary production","tadpole length",NA,NA,1
+"448",2,"abund biomass to ecosystem fxn","secondary production","total biomass of Rana aurora",NA,NA,1
+"449",2,"abund biomass to ecosystem fxn","secondary production","transfer of isotopically labeled biomass (13C) to Alteromonas and Roseobacter",NA,NA,1
+"450",2,"abund biomass to ecosystem fxn","secondary production","transfer of isotopically labeled biomass (15N) to Alteromonas and Roseobacter",NA,NA,1
+"451",3,"ecosystem fxn to PP","consumption of PP","Daphnia 10ml-1",NA,NA,1
+"452",2,"morbidity to ecosystem fxn","biogeochemical cycles","% C",NA,NA,1
+"453",2,"morbidity to ecosystem fxn","biogeochemical cycles","% lignin",NA,NA,2
+"454",2,"morbidity to ecosystem fxn","biogeochemical cycles","% N",NA,NA,1
+"455",2,"morbidity to ecosystem fxn","biogeochemical cycles","% nitrogen",NA,NA,1
+"456",2,"morbidity to ecosystem fxn","biogeochemical cycles","% P",NA,NA,1
+"457",2,"morbidity to ecosystem fxn","biogeochemical cycles","%C leaf litter",NA,NA,1
+"458",2,"morbidity to ecosystem fxn","biogeochemical cycles","%N",NA,NA,2
+"459",2,"morbidity to ecosystem fxn","biogeochemical cycles","%N foliar by species",NA,NA,1
+"460",2,"morbidity to ecosystem fxn","biogeochemical cycles","%N leaf litter",NA,NA,1
+"461",2,"morbidity to ecosystem fxn","biogeochemical cycles","%N litter by species",NA,NA,1
+"462",2,"morbidity to ecosystem fxn","biogeochemical cycles","%P leaf litter",NA,NA,1
+"463",2,"morbidity to ecosystem fxn","biogeochemical cycles","Al",NA,NA,2
+"464",2,"morbidity to ecosystem fxn","biogeochemical cycles","algal clearance rate",NA,NA,1
+"465",2,"morbidity to ecosystem fxn","biogeochemical cycles","atom %13C enrichment of host",NA,NA,1
+"466",2,"morbidity to ecosystem fxn","biogeochemical cycles","atom %15N enrichment of host",NA,NA,1
+"467",2,"morbidity to ecosystem fxn","biogeochemical cycles","B",NA,NA,2
+"468",2,"morbidity to ecosystem fxn","biogeochemical cycles","break-down rate",NA,NA,1
+"469",2,"morbidity to ecosystem fxn","biogeochemical cycles","C",NA,NA,8
+"470",2,"morbidity to ecosystem fxn","biogeochemical cycles","C (%) in new leaves",NA,NA,1
+"471",2,"morbidity to ecosystem fxn","biogeochemical cycles","C (host composition)",NA,NA,1
+"472",2,"morbidity to ecosystem fxn","biogeochemical cycles","C:N",NA,NA,6
+"473",2,"morbidity to ecosystem fxn","biogeochemical cycles","C:N excretion (TDOC:DIN)",NA,NA,1
+"474",2,"morbidity to ecosystem fxn","biogeochemical cycles","C:N fecal",NA,NA,1
+"475",2,"morbidity to ecosystem fxn","biogeochemical cycles","C:N leaf litter",NA,NA,1
+"476",2,"morbidity to ecosystem fxn","biogeochemical cycles","C:N of feces",NA,NA,1
+"477",2,"morbidity to ecosystem fxn","biogeochemical cycles","C:P",NA,NA,4
+"478",2,"morbidity to ecosystem fxn","biogeochemical cycles","C:P fecal",NA,NA,1
+"479",2,"morbidity to ecosystem fxn","biogeochemical cycles","C/N",NA,NA,2
+"480",2,"morbidity to ecosystem fxn","biogeochemical cycles","C/P",NA,NA,1
+"481",2,"morbidity to ecosystem fxn","biogeochemical cycles","Ca",NA,NA,3
+"482",2,"morbidity to ecosystem fxn","biogeochemical cycles","carbon excretion (mg L-1 TDOC)",NA,NA,1
+"483",2,"morbidity to ecosystem fxn","biogeochemical cycles","carbon in feces (% by mass)",NA,NA,1
+"484",2,"morbidity to ecosystem fxn","biogeochemical cycles","Carbon-nitrogen ratio",NA,NA,1
+"485",2,"morbidity to ecosystem fxn","biogeochemical cycles","change in fatty acid composition (%)",NA,NA,1
+"486",2,"morbidity to ecosystem fxn","biogeochemical cycles","Cu",NA,NA,2
+"487",2,"morbidity to ecosystem fxn","biogeochemical cycles","d13C",NA,NA,3
+"488",2,"morbidity to ecosystem fxn","biogeochemical cycles","d13C (%)",NA,NA,1
+"489",2,"morbidity to ecosystem fxn","biogeochemical cycles","d13C host",NA,NA,1
+"490",2,"morbidity to ecosystem fxn","biogeochemical cycles","d15N",NA,NA,1
+"491",2,"morbidity to ecosystem fxn","biogeochemical cycles","d15N host",NA,NA,1
+"492",2,"morbidity to ecosystem fxn","biogeochemical cycles","dark respiration rate (Rd)",NA,NA,2
+"493",2,"morbidity to ecosystem fxn","biogeochemical cycles","fatty acid concentration",NA,NA,1
+"494",2,"morbidity to ecosystem fxn","biogeochemical cycles","Fe",NA,NA,2
+"495",2,"morbidity to ecosystem fxn","biogeochemical cycles","host tissue %C",NA,NA,1
+"496",2,"morbidity to ecosystem fxn","biogeochemical cycles","K",NA,NA,4
+"497",2,"morbidity to ecosystem fxn","biogeochemical cycles","litter decomposition rate",NA,NA,1
+"498",2,"morbidity to ecosystem fxn","biogeochemical cycles","Manganese",NA,NA,1
+"499",2,"morbidity to ecosystem fxn","biogeochemical cycles","mass remaining",NA,NA,1
+"500",2,"morbidity to ecosystem fxn","biogeochemical cycles","mass remaining over time [decomposition]",NA,NA,1
+"501",2,"morbidity to ecosystem fxn","biogeochemical cycles","mean calcification rate",NA,NA,1
+"502",2,"morbidity to ecosystem fxn","biogeochemical cycles","metabolic rate",NA,NA,1
+"503",2,"morbidity to ecosystem fxn","biogeochemical cycles","Mg",NA,NA,3
+"504",2,"morbidity to ecosystem fxn","biogeochemical cycles","monounsaturated fatty acid (%)",NA,NA,1
+"505",2,"morbidity to ecosystem fxn","biogeochemical cycles","N",NA,NA,11
+"506",2,"morbidity to ecosystem fxn","biogeochemical cycles","N (%) in new leaves",NA,NA,1
+"507",2,"morbidity to ecosystem fxn","biogeochemical cycles","N excretion rate",NA,NA,2
+"508",2,"morbidity to ecosystem fxn","biogeochemical cycles","N:P",NA,NA,5
+"509",2,"morbidity to ecosystem fxn","biogeochemical cycles","N:P excreta",NA,NA,1
+"510",2,"morbidity to ecosystem fxn","biogeochemical cycles","N:P fecal",NA,NA,1
+"511",2,"morbidity to ecosystem fxn","biogeochemical cycles","N:P release",NA,NA,1
+"512",2,"morbidity to ecosystem fxn","biogeochemical cycles","Na",NA,NA,3
+"513",2,"morbidity to ecosystem fxn","biogeochemical cycles","NH4",NA,NA,1
+"514",2,"morbidity to ecosystem fxn","biogeochemical cycles","nitrogen excretion (mg L-1 DIN)",NA,NA,1
+"515",2,"morbidity to ecosystem fxn","biogeochemical cycles","nitrogen in feces (% by mass)",NA,NA,1
+"516",2,"morbidity to ecosystem fxn","biogeochemical cycles","nitrogen use efficiency (greatest net photosynthetic value / foliar N content)",NA,NA,1
+"517",2,"morbidity to ecosystem fxn","biogeochemical cycles","P",NA,NA,10
+"518",2,"morbidity to ecosystem fxn","biogeochemical cycles","P excretion rate",NA,NA,1
+"519",2,"morbidity to ecosystem fxn","biogeochemical cycles","per cent mass remaining",NA,NA,1
+"520",2,"morbidity to ecosystem fxn","biogeochemical cycles","Percentage carbon",NA,NA,1
+"521",2,"morbidity to ecosystem fxn","biogeochemical cycles","Percentage nitrogen",NA,NA,1
+"522",2,"morbidity to ecosystem fxn","biogeochemical cycles","polyunsaturated fatty acid (%)",NA,NA,1
+"523",2,"morbidity to ecosystem fxn","biogeochemical cycles","S",NA,NA,2
+"524",2,"morbidity to ecosystem fxn","biogeochemical cycles","saturated fatty acid (%)",NA,NA,1
+"525",2,"morbidity to ecosystem fxn","biogeochemical cycles","SRP",NA,NA,1
+"526",2,"morbidity to ecosystem fxn","biogeochemical cycles","tissue C:N",NA,NA,1
+"527",2,"morbidity to ecosystem fxn","biogeochemical cycles","tissue carbon (% by mass)",NA,NA,1
+"528",2,"morbidity to ecosystem fxn","biogeochemical cycles","tissue nitrogen (% by mass)",NA,NA,1
+"529",2,"morbidity to ecosystem fxn","biogeochemical cycles","transpiration rates",NA,NA,1
+"530",2,"morbidity to ecosystem fxn","biogeochemical cycles","water use efficiency (photosynthesis/transpiration)",NA,NA,1
+"531",2,"morbidity to ecosystem fxn","biogeochemical cycles","Zn",NA,NA,2
+"532",2,"morbidity to ecosystem fxn","primary production","chlorophyll a per host cell",NA,NA,1
+"533",2,"morbidity to ecosystem fxn","primary production","chloropyll a biomass",NA,NA,1
+"534",2,"morbidity to ecosystem fxn","primary production","internal CO2 concentrations",NA,NA,1
+"535",2,"morbidity to ecosystem fxn","secondary production","assimilation energy (kj m-2 y-1)",NA,NA,1
+"536",2,"morbidity to ecosystem fxn","secondary production","biomass of benthics",NA,NA,1
+"537",2,"morbidity to ecosystem fxn","secondary production","consumption (kj d-1)",NA,NA,1
+"538",2,"morbidity to ecosystem fxn","secondary production","consumption rate",NA,NA,1
+"539",2,"morbidity to ecosystem fxn","secondary production","energy allocation (kj m-2 y-1)",NA,NA,1
+"540",2,"morbidity to ecosystem fxn","secondary production","energy content (kj g-1)",NA,NA,1
+"541",2,"morbidity to ecosystem fxn","secondary production","energy unassimilated (feces)",NA,NA,1
+"542",2,"morbidity to ecosystem fxn","secondary production","feeding rate",NA,NA,1
+"543",2,"morbidity to ecosystem fxn","secondary production","ingestion rate",NA,NA,2
+"544",2,"morbidity to ecosystem fxn","secondary production","leaf consumption",NA,NA,1
+"545",2,"morbidity to ecosystem fxn","secondary production","mean daily energy intake (kJ/100 mg dry mass of fish)",NA,NA,1
+"546",2,"morbidity to ecosystem fxn","secondary production","N",NA,NA,1
+"547",2,"morbidity to ecosystem fxn","secondary production","P",NA,NA,1
+"548",2,"morbidity to ecosystem fxn","secondary production","production efficiency (kj m-2 y-1)",NA,NA,1
+"549",2,"morbidity to ecosystem fxn","secondary production","production energy (kj m-2 y-1)",NA,NA,1
+"550",2,"morbidity to ecosystem fxn","secondary production","respiration (kj d-1)",NA,NA,1
+"551",2,"morbidity to ecosystem fxn","secondary production","terrestrial invertebrates in trout diet",NA,NA,1
+"552",2,"morbidity to ecosystem fxn","secondary production","total number of killed prey",NA,NA,1
+"553",3,"PP abundance","abundance","",NA,NA,1
+"554",3,"PP abundance","abundance","abundance of total chytrid sporangia",NA,NA,1
+"555",3,"PP abundance","abundance","EhV abundance",NA,NA,1
+"556",3,"PP abundance","abundance","Exocarpus intercepts",NA,NA,1
+"557",3,"PP abundance","abundance","larve L-1",NA,NA,1
+"558",3,"PP abundance","abundance","liana abundance",NA,NA,1
+"559",3,"PP abundance","abundance","lytic viral production",NA,NA,1
+"560",3,"PP abundance","abundance","mistletoe number",NA,NA,1
+"561",3,"PP abundance","abundance","nematodes added per pot",NA,NA,1
+"562",3,"PP abundance","abundance","number of bacteria",NA,NA,1
+"563",3,"PP abundance","abundance","percent cover",NA,NA,1
+"564",3,"PP abundance","abundance","relative abundance of nematomorphs (n/discharge)",NA,NA,1
+"565",3,"PP abundance","abundance","seed density",NA,NA,1
+"566",3,"PP abundance","abundance","T. ventralis (N 100g-1 soil)",NA,NA,1
+"567",3,"PP abundance","abundance","total viral abundance",NA,NA,1
+"568",3,"PP abundance","abundance","total virus abundance",NA,NA,1
+"569",3,"PP abundance","abundance","viral abundance",NA,NA,2
+"570",3,"PP abundance","abundance","viral abundance (10^7 ml-1)",NA,NA,1
+"571",3,"PP abundance","abundance","viral production",NA,NA,1
+"572",3,"PP abundance","abundance","virus abundance",NA,NA,1
+"573",3,"PP abundance","abundance","virus particle counts",NA,NA,1
+"574",3,"PP abundance","abundance","viruses (10^9 l-1)",NA,NA,1
+"575",3,"PP abundance","demography","germination rate",NA,NA,1
+"576",3,"PP abundance","demography","mean hypocotyl attachments",NA,NA,1
+"577",3,"PP abundance","demography","spread per year",NA,NA,1
+"578",3,"PP abundance","mortality","viral decay",NA,NA,1
+"579",3,"PP abundance","PP demography","seed predation",NA,NA,1
+"580",3,"PP abundance","production","viral production",NA,NA,1
+"581",3,"PP morbidity","PP phenotype","maximum photosynthetic rate",NA,NA,1
+"582",3,"PP morbidity","PP phenotype","stomata length",NA,NA,1
+"583",3,"PP morbidity","PP phenotype","stomata width",NA,NA,1
+"584",3,"PP morbidity","PP phenotype","stomatal conductance",NA,NA,1
+"585",3,"PP morbidity","PP phenotype","stomatal density",NA,NA,1
+"586",3,"PP morbidity","PP phenotype","water potential",NA,NA,1
+"587",3,"PP morbidity","PP phenotype","water use efficiency",NA,NA,1
+"588",3,"PP morbidity","vigor","leaf water potential",NA,NA,1
+"589",1,"PP to abund biomass","biogeochemical cycles","ammonium uptake length",NA,NA,1
+"590",1,"PP to abund biomass","community","abundance of N-limited Synechoccous cells exposed to lysate",1,0,1
+"591",1,"PP to abund biomass","community","algae consumption by insects",1,0,1
+"592",1,"PP to abund biomass","community","algae consumption by tadpoles",1,0,1
+"593",1,"PP to abund biomass","community","arthropod abundance",1,0,1
+"594",1,"PP to abund biomass","community","bacterial abundance",1,0,1
+"595",1,"PP to abund biomass","community","bird guild incidence",1,0,1
+"596",1,"PP to abund biomass","community","bird species richness",1,0,1
+"597",1,"PP to abund biomass","community","chlorophyll a",1,0,1
+"598",1,"PP to abund biomass","community","community abundance in cores under pats",1,0,1
+"599",1,"PP to abund biomass","community","community biomass in cores under pats",1,0,1
+"600",1,"PP to abund biomass","community","community composition",1,0,1
+"601",1,"PP to abund biomass","community","community composition of insects attracted to dung",1,0,1
+"602",1,"PP to abund biomass","community","community composition of insects emerging from dung",1,0,1
+"603",1,"PP to abund biomass","community","community structure of insects attracted to dung",1,0,1
+"604",1,"PP to abund biomass","community","community structure of insects emerging from dung",1,0,1
+"605",1,"PP to abund biomass","community","cover of bare ground",1,0,1
+"606",1,"PP to abund biomass","community","dead basal area (as percent of live+dead)",1,0,1
+"607",1,"PP to abund biomass","community","diversity",1,0,1
+"608",1,"PP to abund biomass","community","diversity of insects attracted to dung",1,0,1
+"609",1,"PP to abund biomass","community","forbs",1,0,1
+"610",1,"PP to abund biomass","community","graminoids",1,0,1
+"611",1,"PP to abund biomass","community","herb layer cover",1,0,1
+"612",1,"PP to abund biomass","community","insect abundance emerging from dung",1,0,1
+"613",1,"PP to abund biomass","community","insect biomass emerging from dung",1,0,1
+"614",1,"PP to abund biomass","community","insect grazer mean annual biomass (ash free dry mass)",1,0,1
+"615",1,"PP to abund biomass","community","litter",1,0,1
+"616",1,"PP to abund biomass","community","mass loss from burning",1,0,1
+"617",1,"PP to abund biomass","community","mean plant canopy height",1,0,1
+"618",1,"PP to abund biomass","community","microbial respiration",1,0,1
+"619",1,"PP to abund biomass","community","mortality",1,0,2
+"620",1,"PP to abund biomass","community","nutcracker occurrence (disperser)",1,0,1
+"621",1,"PP to abund biomass","community","phytoplankton community",1,0,1
+"622",1,"PP to abund biomass","community","picophytoplankton abundance",1,0,1
+"623",1,"PP to abund biomass","community","proportion of cover of Brachypodio-molinietum spp.",1,0,1
+"624",1,"PP to abund biomass","community","relative frequency of threatened spp.",1,0,1
+"625",1,"PP to abund biomass","community","richness",1,0,1
+"626",1,"PP to abund biomass","community","seed richness",1,0,1
+"627",1,"PP to abund biomass","community","smoldering loss",1,0,1
+"628",1,"PP to abund biomass","community","species-specific plant biomass",1,0,1
+"629",1,"PP to abund biomass","community","standing dead",1,0,1
+"630",1,"PP to abund biomass","community abundance/biomass","abundance",1,0,1
+"631",1,"PP to abund biomass","community abundance/biomass","abundance of bacterial groups",1,0,1
+"632",1,"PP to abund biomass","community abundance/biomass","abundance of macroinvertebrate taxa colonising leaf packs",1,0,1
+"633",1,"PP to abund biomass","community abundance/biomass","actinomycetes",1,0,1
+"634",1,"PP to abund biomass","community abundance/biomass","amylolytics",1,0,1
+"635",1,"PP to abund biomass","community abundance/biomass","aphid number (herbivore of PP)",1,0,1
+"636",1,"PP to abund biomass","community abundance/biomass","bacterial abundance",1,0,1
+"637",1,"PP to abund biomass","community abundance/biomass","bacteriophage abundance",1,0,1
+"638",1,"PP to abund biomass","community abundance/biomass","basal area",1,0,1
+"639",1,"PP to abund biomass","community abundance/biomass","basal area non-oaks",1,0,1
+"640",1,"PP to abund biomass","community abundance/biomass","cellulolytics",1,0,1
+"641",1,"PP to abund biomass","community abundance/biomass","chlorophyll a",1,0,2
+"642",1,"PP to abund biomass","community abundance/biomass","chlorophyll a concentration",1,0,1
+"643",1,"PP to abund biomass","community abundance/biomass","Cladoceran abundance",1,0,1
+"644",1,"PP to abund biomass","community abundance/biomass","coarse particulate organic matter",1,0,1
+"645",1,"PP to abund biomass","community abundance/biomass","community respiration",1,0,1
+"646",1,"PP to abund biomass","community abundance/biomass","consumption rate (mussels per day)",1,0,1
+"647",1,"PP to abund biomass","community abundance/biomass","density",1,0,1
+"648",1,"PP to abund biomass","community abundance/biomass","density of benthic animals",1,0,1
+"649",1,"PP to abund biomass","community abundance/biomass","dry biomass of invertebrate taxa and functional groups",1,0,1
+"650",1,"PP to abund biomass","community abundance/biomass","dry biomass of macroalgal species and functional groups",1,0,1
+"651",1,"PP to abund biomass","community abundance/biomass","epilithon",1,0,1
+"652",1,"PP to abund biomass","community abundance/biomass","ericaceous",1,0,1
+"653",1,"PP to abund biomass","community abundance/biomass","fine particulate organic matter",1,0,1
+"654",1,"PP to abund biomass","community abundance/biomass","fish biomass (g/100 m2)",1,0,1
+"655",1,"PP to abund biomass","community abundance/biomass","forb",1,0,1
+"656",1,"PP to abund biomass","community abundance/biomass","forb biomass",1,0,1
+"657",1,"PP to abund biomass","community abundance/biomass","fungi",1,0,1
+"658",1,"PP to abund biomass","community abundance/biomass","gram-negative bacteria",1,0,1
+"659",1,"PP to abund biomass","community abundance/biomass","gram-positive bacteria",1,0,1
+"660",1,"PP to abund biomass","community abundance/biomass","graminoid (includes hosts) biomass",1,0,1
+"661",1,"PP to abund biomass","community abundance/biomass","gross primary production",1,0,1
+"662",1,"PP to abund biomass","community abundance/biomass","individual fish mass",1,0,1
+"663",1,"PP to abund biomass","community abundance/biomass","macroinvertebrate biomass",1,0,1
+"664",1,"PP to abund biomass","community abundance/biomass","mean bud length of zoochorous plants",1,0,1
+"665",1,"PP to abund biomass","community abundance/biomass","mean density",1,0,1
+"666",1,"PP to abund biomass","community abundance/biomass","microbial biomass",1,0,1
+"667",1,"PP to abund biomass","community abundance/biomass","net primary production",1,0,1
+"668",1,"PP to abund biomass","community abundance/biomass","number of herbivore individuals per g algae",1,0,1
+"669",1,"PP to abund biomass","community abundance/biomass","organic mass (ash free dry mass)",1,0,1
+"670",1,"PP to abund biomass","community abundance/biomass","oxygen production",1,0,1
+"671",1,"PP to abund biomass","community abundance/biomass","periphyton AFDM",1,0,1
+"672",1,"PP to abund biomass","community abundance/biomass","periphyton biomass",1,0,1
+"673",1,"PP to abund biomass","community abundance/biomass","periphyton standing crop",1,0,1
+"674",1,"PP to abund biomass","community abundance/biomass","phytoplankton concentration",1,0,1
+"675",1,"PP to abund biomass","community abundance/biomass","ratio of production to respiration",1,0,1
+"676",1,"PP to abund biomass","community abundance/biomass","root biomass",1,0,1
+"677",1,"PP to abund biomass","community abundance/biomass","seed mass",1,0,1
+"678",1,"PP to abund biomass","community abundance/biomass","seed set",1,0,1
+"679",1,"PP to abund biomass","community abundance/biomass","shoot biomass",1,0,1
+"680",1,"PP to abund biomass","community abundance/biomass","suspended particular organic matter",1,0,1
+"681",1,"PP to abund biomass","community abundance/biomass","total macroinvertebrate community habitat-weighted abundance",1,0,1
+"682",1,"PP to abund biomass","community abundance/biomass","total plant dry weight",1,0,1
+"683",1,"PP to abund biomass","community abundance/biomass","total seed set",1,0,1
+"684",1,"PP to abund biomass","community composition","% litter by species",1,0,1
+"685",1,"PP to abund biomass","community composition","abundance of invertebrate taxa",1,0,1
+"686",1,"PP to abund biomass","community composition","bacteria CFU",1,0,1
+"687",1,"PP to abund biomass","community composition","Bray-Curtis similarities",1,0,1
+"688",1,"PP to abund biomass","community composition","community shannon-weaver index",1,0,1
+"689",1,"PP to abund biomass","community composition","community species richness",1,0,1
+"690",1,"PP to abund biomass","community composition","diatom genera biovolume",1,0,1
+"691",1,"PP to abund biomass","community composition","diversity",1,0,1
+"692",1,"PP to abund biomass","community composition","equitability",1,0,1
+"693",1,"PP to abund biomass","community composition","evenness",1,0,1
+"694",1,"PP to abund biomass","community composition","fungi CFU",1,0,1
+"695",1,"PP to abund biomass","community composition","macroinvertebrate estimated taxa richness",1,0,1
+"696",1,"PP to abund biomass","community composition","mean species richness",1,0,1
+"697",1,"PP to abund biomass","community composition","mean stand trajectory",1,0,1
+"698",1,"PP to abund biomass","community composition","number of faunal species",1,0,1
+"699",1,"PP to abund biomass","community composition","Pearson index of similarity",1,0,1
+"700",1,"PP to abund biomass","community composition","percent cover of native plants",1,0,1
+"701",1,"PP to abund biomass","community composition","proportion of pennate epipelic diatoms",1,0,1
+"702",1,"PP to abund biomass","community composition","relative abundance by biovolume of periphytic taxa",1,0,1
+"703",1,"PP to abund biomass","community composition","relative frequency (%) of species of epipelic diatoms",1,0,1
+"704",1,"PP to abund biomass","community composition","relative frequency (%) of species of epipsammic diatoms",1,0,1
+"705",1,"PP to abund biomass","community composition","sapling richness",1,0,1
+"706",1,"PP to abund biomass","community composition","seed richness",1,0,1
+"707",1,"PP to abund biomass","community composition","Simpson's diversity index",1,0,2
+"708",1,"PP to abund biomass","community composition","Simpson's evenness index",1,0,1
+"709",1,"PP to abund biomass","community composition","species richness",1,0,3
+"710",1,"PP to abund biomass","community composition or diversity","number of aquatic hyphomycetes species found on disks",NA,NA,1
+"711",1,"PP to abund biomass","community composition or diversity","percent similarity",NA,NA,1
+"712",1,"PP to abund biomass","community consumption","herbivory",NA,NA,1
+"713",1,"PP to abund biomass","community reproduction","conspecific pollen",NA,NA,1
+"714",1,"PP to abund biomass","community reproduction","heterospecific pollen",NA,NA,1
+"715",1,"PP to abund biomass","community respiration","community respiration",NA,NA,1
+"716",1,"PP to abund biomass","community taxa","grass species collected beneath tree",NA,NA,1
+"717",1,"PP to abund biomass","host abund/biomass","% dieback",0,1,1
+"718",1,"PP to abund biomass","host abund/biomass","% of bacterial production removed by viruses",0,1,1
+"719",1,"PP to abund biomass","host abund/biomass","above-ground biomass for each functional group",0,1,1
+"720",1,"PP to abund biomass","host abund/biomass","abundance of Emiliana huxleyi",0,1,1
+"721",1,"PP to abund biomass","host abund/biomass","average bee weight",0,1,1
+"722",1,"PP to abund biomass","host abund/biomass","average ratio of viral-induced mortality to heterotrophic nanoflagellate grazing-induced mortality of prokaryotes",0,1,1
+"723",1,"PP to abund biomass","host abund/biomass","bacteria abundance",0,1,1
+"724",1,"PP to abund biomass","host abund/biomass","bacteria biomass",0,1,1
+"725",1,"PP to abund biomass","host abund/biomass","bacterial mortality due to virus",0,1,1
+"726",1,"PP to abund biomass","host abund/biomass","basal area",0,1,1
+"727",1,"PP to abund biomass","host abund/biomass","basal area dead with canker",0,1,1
+"728",1,"PP to abund biomass","host abund/biomass","basal area red oaks (host)",0,1,1
+"729",1,"PP to abund biomass","host abund/biomass","basal area white oaks (host)",0,1,1
+"730",1,"PP to abund biomass","host abund/biomass","biomass",0,1,4
+"731",1,"PP to abund biomass","host abund/biomass","biomass feedback",0,1,1
+"732",1,"PP to abund biomass","host abund/biomass","biomass flowering stalks",0,1,2
+"733",1,"PP to abund biomass","host abund/biomass","biomass for each species",0,1,1
+"734",1,"PP to abund biomass","host abund/biomass","biomass per leaf",0,1,1
+"735",1,"PP to abund biomass","host abund/biomass","biomass per seed",0,1,1
+"736",1,"PP to abund biomass","host abund/biomass","Calamagrostis epigejos biomass",0,1,1
+"737",1,"PP to abund biomass","host abund/biomass","carbon balance",0,1,1
+"738",1,"PP to abund biomass","host abund/biomass","carbon loss",0,1,1
+"739",1,"PP to abund biomass","host abund/biomass","carbon lost to infection",0,1,1
+"740",1,"PP to abund biomass","host abund/biomass","chlorophyll a",0,1,1
+"741",1,"PP to abund biomass","host abund/biomass","colonies attaining pre-plague size (%)",0,1,1
+"742",1,"PP to abund biomass","host abund/biomass","colonies recolonized (%)",0,1,1
+"743",1,"PP to abund biomass","host abund/biomass","colony height",0,1,2
+"744",1,"PP to abund biomass","host abund/biomass","cone production (cones/ha)",0,1,1
+"745",1,"PP to abund biomass","host abund/biomass","DBH (cm)",0,1,1
+"746",1,"PP to abund biomass","host abund/biomass","dead basal area (as percent of live+dead)",0,1,1
+"747",1,"PP to abund biomass","host abund/biomass","decline in N fixation",0,1,1
+"748",1,"PP to abund biomass","host abund/biomass","density",0,1,1
+"749",1,"PP to abund biomass","host abund/biomass","dry biomass of invertebrate taxa and functional groups",0,1,1
+"750",1,"PP to abund biomass","host abund/biomass","dry host biomass",0,1,1
+"751",1,"PP to abund biomass","host abund/biomass","dry mass",0,1,1
+"752",1,"PP to abund biomass","host abund/biomass","dry shoot and leaf biomass",0,1,1
+"753",1,"PP to abund biomass","host abund/biomass","dry weight per plant",0,1,1
+"754",1,"PP to abund biomass","host abund/biomass","E. huxleyi concentration",0,1,1
+"755",1,"PP to abund biomass","host abund/biomass","graminoid (host)",0,1,1
+"756",1,"PP to abund biomass","host abund/biomass","growth",0,1,1
+"757",1,"PP to abund biomass","host abund/biomass","growth rate",0,1,1
+"758",1,"PP to abund biomass","host abund/biomass","height (m)",0,1,1
+"759",1,"PP to abund biomass","host abund/biomass","heterotrophy (% carbon taken from plant)",0,1,1
+"760",1,"PP to abund biomass","host abund/biomass","host (Emiliana huxleyi) concentration over time",0,1,1
+"761",1,"PP to abund biomass","host abund/biomass","host abundance (P. globosa)",0,1,1
+"762",1,"PP to abund biomass","host abund/biomass","host biomass",0,1,1
+"763",1,"PP to abund biomass","host abund/biomass","host production",0,1,1
+"764",1,"PP to abund biomass","host abund/biomass","large perch",0,1,1
+"765",1,"PP to abund biomass","host abund/biomass","leaf area (mm2)",0,1,1
+"766",1,"PP to abund biomass","host abund/biomass","live basal area",0,1,1
+"767",1,"PP to abund biomass","host abund/biomass","live biomass",0,1,1
+"768",1,"PP to abund biomass","host abund/biomass","live nodule biomass",0,1,2
+"769",1,"PP to abund biomass","host abund/biomass","mass",0,1,1
+"770",1,"PP to abund biomass","host abund/biomass","mass of tadpoles at metamorphosis",0,1,1
+"771",1,"PP to abund biomass","host abund/biomass","mean aboveground biomass",0,1,1
+"772",1,"PP to abund biomass","host abund/biomass","mean annual biomass (ash free dry mass)",0,1,1
+"773",1,"PP to abund biomass","host abund/biomass","mean gross primary production",0,1,1
+"774",1,"PP to abund biomass","host abund/biomass","mortality",0,1,2
+"775",1,"PP to abund biomass","host abund/biomass","mortality (dead plants per total plants)",0,1,1
+"776",1,"PP to abund biomass","host abund/biomass","mortality of Paracalliope novizealandiae amphipod hosts",0,1,1
+"777",1,"PP to abund biomass","host abund/biomass","net photosynthesis (umol CO2 m-2 s-1)",0,1,1
+"778",1,"PP to abund biomass","host abund/biomass","net primary production (ash free dry mass/yr)",0,1,1
+"779",1,"PP to abund biomass","host abund/biomass","number",0,1,1
+"780",1,"PP to abund biomass","host abund/biomass","number of offspring produced by an initial adult",0,1,1
+"781",1,"PP to abund biomass","host abund/biomass","number of recruits",0,1,1
+"782",1,"PP to abund biomass","host abund/biomass","P. globosa (10^5 ml-1)",0,1,1
+"783",1,"PP to abund biomass","host abund/biomass","percentage of cells lysed per day",0,1,1
+"784",1,"PP to abund biomass","host abund/biomass","percentage of dead cells",0,1,1
+"785",1,"PP to abund biomass","host abund/biomass","percentage of hosts dead at each survey site",0,1,1
+"786",1,"PP to abund biomass","host abund/biomass","photosynthetic rate",0,1,1
+"787",1,"PP to abund biomass","host abund/biomass","point counts (biomass estimate)",0,1,1
+"788",1,"PP to abund biomass","host abund/biomass","population density",0,1,1
+"789",1,"PP to abund biomass","host abund/biomass","population growth rate",0,1,1
+"790",1,"PP to abund biomass","host abund/biomass","potential host biomass",0,1,1
+"791",1,"PP to abund biomass","host abund/biomass","productivity (annual net primary production)",0,1,1
+"792",1,"PP to abund biomass","host abund/biomass","prokaryote abundance",0,1,1
+"793",1,"PP to abund biomass","host abund/biomass","proportion of damaged (dead) cells",0,1,1
+"794",1,"PP to abund biomass","host abund/biomass","quantum yield",0,1,1
+"795",1,"PP to abund biomass","host abund/biomass","reduction in host biomass vs. parasite biomass",0,1,1
+"796",1,"PP to abund biomass","host abund/biomass","relative tree growth rate (wood volume)",0,1,1
+"797",1,"PP to abund biomass","host abund/biomass","root biomass",0,1,2
+"798",1,"PP to abund biomass","host abund/biomass","root biomass (g pot-1)",0,1,2
+"799",1,"PP to abund biomass","host abund/biomass","root dry weight",0,1,1
+"800",1,"PP to abund biomass","host abund/biomass","seed predation",0,1,1
+"801",1,"PP to abund biomass","host abund/biomass","seed production",0,1,2
+"802",1,"PP to abund biomass","host abund/biomass","shoot biomass",0,1,2
+"803",1,"PP to abund biomass","host abund/biomass","shoot biomass (g pot-1)",0,1,1
+"804",1,"PP to abund biomass","host abund/biomass","shoot dry biomass",0,1,1
+"805",1,"PP to abund biomass","host abund/biomass","shoot dry weight",0,1,1
+"806",1,"PP to abund biomass","host abund/biomass","shoot total biomass",0,1,1
+"807",1,"PP to abund biomass","host abund/biomass","soft tissue dry weight",0,1,1
+"808",1,"PP to abund biomass","host abund/biomass","soft-tissue wet weight",0,1,1
+"809",1,"PP to abund biomass","host abund/biomass","stem density",0,1,1
+"810",1,"PP to abund biomass","host abund/biomass","survival",0,1,1
+"811",1,"PP to abund biomass","host abund/biomass","survival (%)",0,1,1
+"812",1,"PP to abund biomass","host abund/biomass","survival time",0,1,1
+"813",1,"PP to abund biomass","host abund/biomass","survival to metamorphosis",0,1,1
+"814",1,"PP to abund biomass","host abund/biomass","tadpole density",0,1,3
+"815",1,"PP to abund biomass","host abund/biomass","tadpole length",0,1,1
+"816",1,"PP to abund biomass","host abund/biomass","tadpole survival",0,1,1
+"817",1,"PP to abund biomass","host abund/biomass","total aboveground biomass (host and parasite)",0,1,1
+"818",1,"PP to abund biomass","host abund/biomass","total biomass",0,1,3
+"819",1,"PP to abund biomass","host abund/biomass","total biomass (host plus parasite)",0,1,1
+"820",1,"PP to abund biomass","host abund/biomass","total biomass of Rana aurora",0,1,1
+"821",1,"PP to abund biomass","host abund/biomass","total picophytoplankton abundance",0,1,1
+"822",1,"PP to abund biomass","host abund/biomass","total plant biomass",0,1,1
+"823",1,"PP to abund biomass","host abund/biomass","tree mortality",0,1,1
+"824",1,"PP to abund biomass","host abund/biomass","tree mortality (%)",0,1,1
+"825",1,"PP to abund biomass","host abund/biomass","viral-induced prokaryotic mortality",0,1,1
+"826",1,"PP to abund biomass","host abund/biomass","virus-mediated mortality",0,1,1
+"827",1,"PP to abund biomass","host abund/biomass","virus-mediated prokaryotic mortality rate",0,1,1
+"828",1,"PP to abund biomass","host and community abund/biomass","adult plant coverage",NA,NA,1
+"829",1,"PP to abund biomass","host and community abund/biomass","density of old saplings",1,1,1
+"830",1,"PP to abund biomass","host and community abund/biomass","density of young saplings",1,1,1
+"831",1,"PP to abund biomass","host and community abund/biomass","proportion of seedling establishment",1,1,1
+"832",1,"PP to abund biomass","host and community abund/biomass","sapling richness",1,1,1
+"833",1,"PP to abund biomass","host and community abundance","density of saplings",NA,NA,1
+"834",1,"PP to abund biomass","host and community abundance","importance value of Masson pine compared to other woody plant species",NA,NA,1
+"835",1,"PP to abund biomass","host and community abundance","stems ha-1",NA,NA,1
+"836",1,"PP to abund biomass","host and community and PP biomass","total biomass",NA,NA,1
+"837",1,"PP to abund biomass","host and community biomass","""recent mortality"" analysis: basal area growth ratio",NA,NA,1
+"838",1,"PP to abund biomass","host and community biomass","aboveground tree biomass",NA,NA,1
+"839",1,"PP to abund biomass","host and community biomass","basal area",NA,NA,1
+"840",1,"PP to abund biomass","host and community biomass","biomass",NA,NA,1
+"841",1,"PP to abund biomass","host and community biomass","biomass (mg DM m-2)",NA,NA,1
+"842",1,"PP to abund biomass","host and community biomass","biomass without Rhinanthus",NA,NA,1
+"843",1,"PP to abund biomass","host and community biomass","mean basal area increment",NA,NA,1
+"844",1,"PP to abund biomass","host and community biomass","progeny biomass produced by an initial adult",NA,NA,1
+"845",1,"PP to abund biomass","host and community biomass","tree height",NA,NA,1
+"846",1,"PP to abund biomass","host and community composition","change in importance value",NA,NA,1
+"847",1,"PP to abund biomass","host and community composition","importance value (relative density + relative dominance )",NA,NA,1
+"848",1,"PP to abund biomass","host and community composition","richness",NA,NA,1
+"849",1,"PP to abund biomass","host and community composition","Simpson's diversity index",NA,NA,1
+"850",1,"PP to abund biomass","host and community demography","seedling establishment",NA,NA,1
+"851",1,"PP to abund biomass","host and community mortality","% dead stems",NA,NA,1
+"852",1,"PP to abund biomass","host and community mortality","adult survivorship",NA,NA,1
+"853",1,"PP to abund biomass","host and community mortality","disease impacts effect size",NA,NA,1
+"854",1,"PP to abund biomass","host and community survival","Relative mortality per 2.54-cm size class",NA,NA,1
+"855",1,"PP to abund biomass","host and PP production","seed rain under canopy",NA,NA,1
+"856",1,"PP to abund biomass","host community composition","evenness",NA,NA,1
+"857",1,"PP to abund biomass","host community composition","evenness index",0,1,1
+"858",1,"PP to abund biomass","host community composition","richness index",0,1,1
+"859",1,"PP to abund biomass","host community composition","shannon-wiener diversity index",0,1,1
+"860",1,"PP to abund biomass","host community composition","species richness",0,1,1
+"861",1,"PP to abund biomass","host demography","proportion dead",NA,NA,1
+"862",1,"PP to abund biomass","host morbidity","ramets dead or with canker",NA,NA,1
+"863",1,"PP to abund biomass","host phenotype","CO2 assimilation",0,1,1
+"864",1,"PP to abund biomass","host phenotype","daily net photosynthetic production",0,1,1
+"865",1,"PP to abund biomass","host production","net photosynthesis",NA,NA,1
+"866",1,"PP to abund biomass","host production","net photosynthetic rates",NA,NA,1
+"867",1,"PP to abund biomass","host production","prokaryotic growth efficiency",NA,NA,1
+"868",1,"PP to abund biomass","host production","prokaryotic respiration",NA,NA,1
+"869",1,"PP to abund biomass","host survival","mortality",NA,NA,1
+"870",1,"PP to abund biomass","host, community, and PP biomass","aboveground production",NA,NA,1
+"871",1,"PP to abund biomass","host, PP, and community demography","seed predation",NA,NA,1
+"872",1,"PP to abund biomass","host, PP, and community production","seed density",NA,NA,1
+"873",1,"PP to abund biomass","PP and host abundance","virus to bacteria ratio",NA,NA,1
+"874",1,"PP to ecosystem fxn","biogeochemical cycles","% carbon of parasite",NA,NA,1
+"875",1,"PP to ecosystem fxn","biogeochemical cycles","% mass",NA,NA,1
+"876",1,"PP to ecosystem fxn","biogeochemical cycles","% nitrogen of parasite",NA,NA,1
+"877",1,"PP to ecosystem fxn","biogeochemical cycles","% of carbon in the form of C. falcatiforme cells, which would otherwise be lost as dissolved organic material or cell debris upon cell death, instead transformed into parasitoid dinospores",NA,NA,1
+"878",1,"PP to ecosystem fxn","biogeochemical cycles","% phosphorous of parasite",NA,NA,1
+"879",1,"PP to ecosystem fxn","biogeochemical cycles","%C mistletoe",NA,NA,1
+"880",1,"PP to ecosystem fxn","biogeochemical cycles","%N mistletoe",NA,NA,1
+"881",1,"PP to ecosystem fxn","biogeochemical cycles","Al",NA,NA,3
+"882",1,"PP to ecosystem fxn","biogeochemical cycles","atom %13C enrichment of Symbiodinium",NA,NA,1
+"883",1,"PP to ecosystem fxn","biogeochemical cycles","atom %15N enrichment of Symbiodinium",NA,NA,1
+"884",1,"PP to ecosystem fxn","biogeochemical cycles","B",NA,NA,3
+"885",1,"PP to ecosystem fxn","biogeochemical cycles","C",NA,NA,3
+"886",1,"PP to ecosystem fxn","biogeochemical cycles","C remaining (%) vs. time",NA,NA,1
+"887",1,"PP to ecosystem fxn","biogeochemical cycles","C:N of parasite",NA,NA,1
+"888",1,"PP to ecosystem fxn","biogeochemical cycles","C:P of parasite",NA,NA,1
+"889",1,"PP to ecosystem fxn","biogeochemical cycles","C/N",NA,NA,1
+"890",1,"PP to ecosystem fxn","biogeochemical cycles","C/N mistletoe",NA,NA,1
+"891",1,"PP to ecosystem fxn","biogeochemical cycles","C/N ratio vs. time",NA,NA,1
+"892",1,"PP to ecosystem fxn","biogeochemical cycles","Ca",NA,NA,3
+"893",1,"PP to ecosystem fxn","biogeochemical cycles","Ca: element returns",NA,NA,1
+"894",1,"PP to ecosystem fxn","biogeochemical cycles","Ca: mean element concentration in leaf litter",NA,NA,1
+"895",1,"PP to ecosystem fxn","biogeochemical cycles","Ca: nutrients of soil surface (0-10 cm)",NA,NA,1
+"896",1,"PP to ecosystem fxn","biogeochemical cycles","Cu",NA,NA,3
+"897",1,"PP to ecosystem fxn","biogeochemical cycles","d13C bat hair",NA,NA,1
+"898",1,"PP to ecosystem fxn","biogeochemical cycles","d13C discrimination factor between host resource and ectoparasites",NA,NA,1
+"899",1,"PP to ecosystem fxn","biogeochemical cycles","d13C ectoparasite",NA,NA,1
+"900",1,"PP to ecosystem fxn","biogeochemical cycles","d13C host Symbiodinium",NA,NA,1
+"901",1,"PP to ecosystem fxn","biogeochemical cycles","d13C mistletoe",NA,NA,1
+"902",1,"PP to ecosystem fxn","biogeochemical cycles","d13C shrimp fed ectoparasite",NA,NA,1
+"903",1,"PP to ecosystem fxn","biogeochemical cycles","d15C bat hair",NA,NA,1
+"904",1,"PP to ecosystem fxn","biogeochemical cycles","d15C shrimp fed ectoparasite",NA,NA,1
+"905",1,"PP to ecosystem fxn","biogeochemical cycles","d15C Symbiodinium",NA,NA,1
+"906",1,"PP to ecosystem fxn","biogeochemical cycles","d15N discrimination factor between host resource and ectoparasites",NA,NA,1
+"907",1,"PP to ecosystem fxn","biogeochemical cycles","d15N ectoparasite",NA,NA,1
+"908",1,"PP to ecosystem fxn","biogeochemical cycles","d15N mistletoe",NA,NA,1
+"909",1,"PP to ecosystem fxn","biogeochemical cycles","difference between atom %13C enrichment of Symbiodinium and host",NA,NA,1
+"910",1,"PP to ecosystem fxn","biogeochemical cycles","difference between atom %15N enrichment of Symbiodinium and host",NA,NA,1
+"911",1,"PP to ecosystem fxn","biogeochemical cycles","element concentration: C",NA,NA,1
+"912",1,"PP to ecosystem fxn","biogeochemical cycles","element concentration: P",NA,NA,1
+"913",1,"PP to ecosystem fxn","biogeochemical cycles","Fe",NA,NA,3
+"914",1,"PP to ecosystem fxn","biogeochemical cycles","foliar N",NA,NA,1
+"915",1,"PP to ecosystem fxn","biogeochemical cycles","fraction of carbon consumed by virus",NA,NA,1
+"916",1,"PP to ecosystem fxn","biogeochemical cycles","K",NA,NA,4
+"917",1,"PP to ecosystem fxn","biogeochemical cycles","K: element returns",NA,NA,1
+"918",1,"PP to ecosystem fxn","biogeochemical cycles","K: mean element concentration in leaf litter",NA,NA,1
+"919",1,"PP to ecosystem fxn","biogeochemical cycles","K: nutrients of soil surface (0-10 cm)",NA,NA,1
+"920",1,"PP to ecosystem fxn","biogeochemical cycles","litter biomass",NA,NA,1
+"921",1,"PP to ecosystem fxn","biogeochemical cycles","litter element concentration: N",NA,NA,1
+"922",1,"PP to ecosystem fxn","biogeochemical cycles","litter N",NA,NA,1
+"923",1,"PP to ecosystem fxn","biogeochemical cycles","litterfall mass",NA,NA,1
+"924",1,"PP to ecosystem fxn","biogeochemical cycles","mass remaining (%) vs. time (months) due to decomposition",NA,NA,1
+"925",1,"PP to ecosystem fxn","biogeochemical cycles","Mg",NA,NA,4
+"926",1,"PP to ecosystem fxn","biogeochemical cycles","Mg: element returns",NA,NA,1
+"927",1,"PP to ecosystem fxn","biogeochemical cycles","Mg: mean element concentration in leaf litter",NA,NA,1
+"928",1,"PP to ecosystem fxn","biogeochemical cycles","Mg: nutrients of soil surface (0-10 cm)",NA,NA,1
+"929",1,"PP to ecosystem fxn","biogeochemical cycles","N",NA,NA,5
+"930",1,"PP to ecosystem fxn","biogeochemical cycles","N release",NA,NA,2
+"931",1,"PP to ecosystem fxn","biogeochemical cycles","N remaining (%)",NA,NA,1
+"932",1,"PP to ecosystem fxn","biogeochemical cycles","N: element returns",NA,NA,1
+"933",1,"PP to ecosystem fxn","biogeochemical cycles","N: mean element concentration in leaf litter",NA,NA,1
+"934",1,"PP to ecosystem fxn","biogeochemical cycles","N: nutrients of soil surface (0-10 cm)",NA,NA,1
+"935",1,"PP to ecosystem fxn","biogeochemical cycles","N:P of parasite",NA,NA,1
+"936",1,"PP to ecosystem fxn","biogeochemical cycles","N:P ratio",NA,NA,1
+"937",1,"PP to ecosystem fxn","biogeochemical cycles","Na",NA,NA,3
+"938",1,"PP to ecosystem fxn","biogeochemical cycles","NH4--N",NA,NA,2
+"939",1,"PP to ecosystem fxn","biogeochemical cycles","nitrification",NA,NA,1
+"940",1,"PP to ecosystem fxn","biogeochemical cycles","nitrification fraction",NA,NA,1
+"941",1,"PP to ecosystem fxn","biogeochemical cycles","nitrogen content",NA,NA,1
+"942",1,"PP to ecosystem fxn","biogeochemical cycles","NO3--N",NA,NA,1
+"943",1,"PP to ecosystem fxn","biogeochemical cycles","P",NA,NA,4
+"944",1,"PP to ecosystem fxn","biogeochemical cycles","P remaining(%) vs. time",NA,NA,1
+"945",1,"PP to ecosystem fxn","biogeochemical cycles","P: element returns",NA,NA,1
+"946",1,"PP to ecosystem fxn","biogeochemical cycles","P: mean element concentration in leaf litter",NA,NA,1
+"947",1,"PP to ecosystem fxn","biogeochemical cycles","P: nutrients of soil surface (0-10 cm)",NA,NA,1
+"948",1,"PP to ecosystem fxn","biogeochemical cycles","range d13C",NA,NA,1
+"949",1,"PP to ecosystem fxn","biogeochemical cycles","S",NA,NA,3
+"950",1,"PP to ecosystem fxn","biogeochemical cycles","soil Ca",NA,NA,1
+"951",1,"PP to ecosystem fxn","biogeochemical cycles","soil K",NA,NA,1
+"952",1,"PP to ecosystem fxn","biogeochemical cycles","soil N",NA,NA,1
+"953",1,"PP to ecosystem fxn","biogeochemical cycles","soil P",NA,NA,1
+"954",1,"PP to ecosystem fxn","biogeochemical cycles","Symbodinium %C",NA,NA,1
+"955",1,"PP to ecosystem fxn","biogeochemical cycles","Symbodinium C:N",NA,NA,1
+"956",1,"PP to ecosystem fxn","biogeochemical cycles","tissue C:N",NA,NA,1
+"957",1,"PP to ecosystem fxn","biogeochemical cycles","tissue carbon (% by mass)",NA,NA,1
+"958",1,"PP to ecosystem fxn","biogeochemical cycles","tissue nitrogen (% by mass)",NA,NA,1
+"959",1,"PP to ecosystem fxn","biogeochemical cycles","transpiration",NA,NA,1
+"960",1,"PP to ecosystem fxn","biogeochemical cycles","Zn",NA,NA,3
+"961",1,"PP to ecosystem fxn","biomass","biomass of lianas",NA,NA,1
+"962",1,"PP to ecosystem fxn","biomass","biomass of parasites",NA,NA,1
+"963",1,"PP to ecosystem fxn","biomass","virus biomass",NA,NA,1
+"964",1,"PP to ecosystem fxn","community","arthropod dry mass on foliage",NA,NA,1
+"965",1,"PP to ecosystem fxn","primary production","aboveground production",NA,NA,1
+"966",1,"PP to ecosystem fxn","primary production","biomass",NA,NA,5
+"967",1,"PP to ecosystem fxn","primary production","fruit per branch",NA,NA,1
+"968",1,"PP to ecosystem fxn","primary production","mistletoe leaf biomass in canopy of host trees",NA,NA,1
+"969",1,"PP to ecosystem fxn","primary production","mistletoe leaf litter",NA,NA,1
+"970",1,"PP to ecosystem fxn","primary production","mistletoe understorey plant biomass",NA,NA,1
+"971",1,"PP to ecosystem fxn","primary production","parasite root mass",NA,NA,1
+"972",1,"PP to ecosystem fxn","primary production","parasite seed mass",NA,NA,1
+"973",1,"PP to ecosystem fxn","primary production","parasite shoot mass",NA,NA,1
+"974",1,"PP to ecosystem fxn","primary production","pathogenic respiration",NA,NA,1
+"975",1,"PP to ecosystem fxn","primary production","R. minor biomass",NA,NA,1
+"976",1,"PP to ecosystem fxn","primary production","Symbodinium mitotic index",NA,NA,1
+"977",1,"PP to ecosystem fxn","secondary production","ascostromal growth rate",NA,NA,1
+"978",1,"PP to ecosystem fxn","secondary production","average output of cercariae (incubation-1)",NA,NA,1
+"979",1,"PP to ecosystem fxn","secondary production","biomass density of parasite",NA,NA,1
+"980",1,"PP to ecosystem fxn","secondary production","biomass density of parasites",NA,NA,1
+"981",1,"PP to ecosystem fxn","secondary production","carbon amount necessary for ascostromal growth",NA,NA,1
+"982",1,"PP to ecosystem fxn","secondary production","carbon flow from above ground biomass to soil carbon via pathogen on host leaves",NA,NA,1
+"983",1,"PP to ecosystem fxn","secondary production","cercaria released per snail over time",NA,NA,1
+"984",1,"PP to ecosystem fxn","secondary production","cercarial production",NA,NA,1
+"985",1,"PP to ecosystem fxn","secondary production","Cercarial production per year per snail host taxa",NA,NA,1
+"986",1,"PP to ecosystem fxn","secondary production","conidia mg-1 d-1",NA,NA,1
+"987",1,"PP to ecosystem fxn","secondary production","daily respiration of ascostroma",NA,NA,1
+"988",1,"PP to ecosystem fxn","secondary production","dry mass",NA,NA,1
+"989",1,"PP to ecosystem fxn","secondary production","energy content (kj g-1)",NA,NA,1
+"990",1,"PP to ecosystem fxn","secondary production","lytic viral production",NA,NA,1
+"991",1,"PP to ecosystem fxn","secondary production","parasite mass as percent of host mass",NA,NA,1
+"992",1,"PP to ecosystem fxn","secondary production","proportion of parasite dry mass within a snail host relative to the total dry mass",NA,NA,1
+"993",1,"PP to ecosystem fxn","secondary production","relative production (%) bacteria and virus",NA,NA,1
+"994",1,"PP to ecosystem fxn","secondary production","relative production (%) chytrids",NA,NA,1
+"995",1,"PP to ecosystem fxn","secondary production","seed predation",NA,NA,1
+"996",1,"PP to ecosystem fxn","secondary production","trematode dry biomass",NA,NA,1
+"997",3,"PP to host infection prevalence / intensity","abundance","abundance of total chytrid sporangia associated with particular diatom taxa",NA,NA,1
+"998",3,"PP to host infection prevalence / intensity","abundance","density of fungal hyphae",NA,NA,1
+"999",3,"PP to host infection prevalence / intensity","abundance","density of fungal spores",NA,NA,1
+"1000",3,"PP to host infection prevalence / intensity","biomass density","biomass of infected vs. uninfected hosts",NA,NA,1
+"1001",3,"PP to host infection prevalence / intensity","disease score","",NA,NA,1
+"1002",3,"PP to host infection prevalence / intensity","host infection intensity","ascostromal area vs. leaf age",NA,NA,1
+"1003",3,"PP to host infection prevalence / intensity","host infection intensity","metacercariae per mm-2 of tissue",NA,NA,1
+"1004",3,"PP to host infection prevalence / intensity","host infection intensity","metacercariae per tissue",NA,NA,1
+"1005",3,"PP to host infection prevalence / intensity","host infection intensity","number of mistletoe clumps per tree",NA,NA,1
+"1006",3,"PP to host infection prevalence / intensity","host infection prevalence","frequency of stem rot",NA,NA,1
+"1007",3,"PP to host infection prevalence / intensity","host mortality","virally induced prokaryotic mortality (% of prokaryotic production)",NA,NA,1
+"1008",3,"PP to host infection prevalence / intensity","host resistance","percentage of colonies resistant",NA,NA,1
+"1009",3,"PP to host infection prevalence / intensity","infection duration","proportion of time algae were bleached",NA,NA,1
+"1010",3,"PP to host infection prevalence / intensity","infection intensity","",NA,NA,1
+"1011",3,"PP to host infection prevalence / intensity","infection intensity","% of hosts in late stages of infection",NA,NA,1
+"1012",3,"PP to host infection prevalence / intensity","infection intensity","Bd genome equivalents",NA,NA,1
+"1013",3,"PP to host infection prevalence / intensity","infection intensity","burst size (virus prokaryote-1)",NA,NA,1
+"1014",3,"PP to host infection prevalence / intensity","infection intensity","disease index",NA,NA,1
+"1015",3,"PP to host infection prevalence / intensity","infection intensity","frequency of lysogenic cells",NA,NA,1
+"1016",3,"PP to host infection prevalence / intensity","infection intensity","fungal damage (0 to 5)",NA,NA,1
+"1017",3,"PP to host infection prevalence / intensity","infection intensity","gall mite density",NA,NA,1
+"1018",3,"PP to host infection prevalence / intensity","infection intensity","gall mite intensity",NA,NA,1
+"1019",3,"PP to host infection prevalence / intensity","infection intensity","log(lesion area)",NA,NA,1
+"1020",3,"PP to host infection prevalence / intensity","infection intensity","mean lesion expansion rate",NA,NA,1
+"1021",3,"PP to host infection prevalence / intensity","infection intensity","mean migration speed",NA,NA,1
+"1022",3,"PP to host infection prevalence / intensity","infection intensity","number of parasites per host tree",NA,NA,1
+"1023",3,"PP to host infection prevalence / intensity","infection intensity","numbers of parasite extracted from roots and soil",NA,NA,1
+"1024",3,"PP to host infection prevalence / intensity","infection intensity","P. sidii severity (%)",NA,NA,1
+"1025",3,"PP to host infection prevalence / intensity","infection intensity","pathogen DNA content",NA,NA,1
+"1026",3,"PP to host infection prevalence / intensity","infection intensity","percentage of host biomass composed of parasite",NA,NA,1
+"1027",3,"PP to host infection prevalence / intensity","infection intensity","stem rot severity  (mean % volume loss)",NA,NA,1
+"1028",3,"PP to host infection prevalence / intensity","infection intensity","surface area progression rate",NA,NA,1
+"1029",3,"PP to host infection prevalence / intensity","infection prevalence","",NA,NA,3
+"1030",3,"PP to host infection prevalence / intensity","infection prevalence","% occurrence of lysogeny",NA,NA,1
+"1031",3,"PP to host infection prevalence / intensity","infection prevalence","% of Mikania parasitized by Cuscuta",NA,NA,1
+"1032",3,"PP to host infection prevalence / intensity","infection prevalence","% of plots with Ustilago bullata",NA,NA,1
+"1033",3,"PP to host infection prevalence / intensity","infection prevalence","Aspergillosis prevalence (%)",NA,NA,1
+"1034",3,"PP to host infection prevalence / intensity","infection prevalence","bat bites per household per year",NA,NA,1
+"1035",3,"PP to host infection prevalence / intensity","infection prevalence","blister rust infection (%)",NA,NA,1
+"1036",3,"PP to host infection prevalence / intensity","infection prevalence","CFD occurrence",NA,NA,1
+"1037",3,"PP to host infection prevalence / intensity","infection prevalence","chytrid prevalence",NA,NA,1
+"1038",3,"PP to host infection prevalence / intensity","infection prevalence","colonies experiencing plague epizootic",NA,NA,1
+"1039",3,"PP to host infection prevalence / intensity","infection prevalence","cyanobacteria infected filament size over time",NA,NA,1
+"1040",3,"PP to host infection prevalence / intensity","infection prevalence","disease incidence",NA,NA,1
+"1041",3,"PP to host infection prevalence / intensity","infection prevalence","endopytism: percentage of plant tissues positive for endophytic M. brunneum",NA,NA,1
+"1042",3,"PP to host infection prevalence / intensity","infection prevalence","fraction trees with fungal wilt",NA,NA,1
+"1043",3,"PP to host infection prevalence / intensity","infection prevalence","frequency of infected bacterial cells",NA,NA,1
+"1044",3,"PP to host infection prevalence / intensity","infection prevalence","frequency of infected cells",NA,NA,1
+"1045",3,"PP to host infection prevalence / intensity","infection prevalence","frequency of infected cells (%)",NA,NA,1
+"1046",3,"PP to host infection prevalence / intensity","infection prevalence","frequency of infected cyanobacteria cells",NA,NA,1
+"1047",3,"PP to host infection prevalence / intensity","infection prevalence","gall mite prevalence",NA,NA,1
+"1048",3,"PP to host infection prevalence / intensity","infection prevalence","infected C. falcatiforme",NA,NA,1
+"1049",3,"PP to host infection prevalence / intensity","infection prevalence","infection
+by Amoebophrya spp. of Ceratium falcatiforme",NA,NA,1
+"1050",3,"PP to host infection prevalence / intensity","infection prevalence","infection prevalence (%)",NA,NA,2
+"1051",3,"PP to host infection prevalence / intensity","infection prevalence","infection rate",NA,NA,1
+"1052",3,"PP to host infection prevalence / intensity","infection prevalence","infection risk",NA,NA,1
+"1053",3,"PP to host infection prevalence / intensity","infection prevalence","live ramets colonized",NA,NA,1
+"1054",3,"PP to host infection prevalence / intensity","infection prevalence","mean prevalence (%)",NA,NA,1
+"1055",3,"PP to host infection prevalence / intensity","infection prevalence","non-mycorrhizal (pathogenic/parasitic/saprophytic) infection",NA,NA,1
+"1056",3,"PP to host infection prevalence / intensity","infection prevalence","number of plots infected out of number of plots",NA,NA,1
+"1057",3,"PP to host infection prevalence / intensity","infection prevalence","numbers of haustoria with each host family",NA,NA,1
+"1058",3,"PP to host infection prevalence / intensity","infection prevalence","numbers of haustoria with each host species",NA,NA,1
+"1059",3,"PP to host infection prevalence / intensity","infection prevalence","parasite prevalence over time",NA,NA,1
+"1060",3,"PP to host infection prevalence / intensity","infection prevalence","pathogen damage incidence",NA,NA,1
+"1061",3,"PP to host infection prevalence / intensity","infection prevalence","percent bleached",NA,NA,1
+"1062",3,"PP to host infection prevalence / intensity","infection prevalence","percent of Bd-exposed larvae infected",NA,NA,1
+"1063",3,"PP to host infection prevalence / intensity","infection prevalence","percent of leaves infected",NA,NA,1
+"1064",3,"PP to host infection prevalence / intensity","infection prevalence","percent of litterfall infected by R. puncatum",NA,NA,1
+"1065",3,"PP to host infection prevalence / intensity","infection prevalence","PgV (10^7 ml-1)",NA,NA,1
+"1066",3,"PP to host infection prevalence / intensity","infection prevalence","prevalence",NA,NA,2
+"1067",3,"PP to host infection prevalence / intensity","infection prevalence","proportion of bumble bees parasitized",NA,NA,1
+"1068",3,"PP to host infection prevalence / intensity","infection prevalence","proportion of community biomass infected",NA,NA,1
+"1069",3,"PP to host infection prevalence / intensity","infection prevalence","proportion of individuals affected by pathogens",NA,NA,1
+"1070",3,"PP to host infection prevalence / intensity","infection prevalence","proportion of individuals that bleached",NA,NA,1
+"1071",3,"PP to host infection prevalence / intensity","infection prevalence","proportion of Tubifex tubifex releasing triactinomyxons",NA,NA,1
+"1072",3,"PP to host infection prevalence / intensity","infection prevalence","snails containing trematodes",NA,NA,1
+"1073",3,"PP to host infection prevalence / intensity","infection prevalence","total infection prevalence of large diatoms",NA,NA,1
+"1074",3,"PP to host infection prevalence / intensity","infection prevalence / intensity","beech bark disease score",NA,NA,1
+"1075",3,"PP to host infection prevalence / intensity","infection prevalence and intensity","plot-level root disease severity",NA,NA,1
+"1076",3,"PP to host infection prevalence / intensity","percent parasite","% of consumer dry mass made up of parasites",NA,NA,1
+"1077",3,"PP to host infection prevalence / intensity","PP transmission vector","mean % of groups of parasites transmitted by zooplankton vs. benthic invertebrates",NA,NA,1
+"1078",3,"PP to host infection prevalence / intensity","time to infection","",NA,NA,1
+"1079",1,"PP to morbidity","community behavior","consumption rate",NA,NA,1
+"1080",1,"PP to morbidity","community behavior","mean daily energy intake (kJ/100 mg dry mass of fish)",NA,NA,1
+"1081",1,"PP to morbidity","community phenotype","mycorrhizal colonization",NA,NA,1
+"1082",1,"PP to morbidity","community phenotype","root mass fraction",NA,NA,1
+"1083",1,"PP to morbidity","community phenotype","root tissue mass density",NA,NA,1
+"1084",1,"PP to morbidity","community phenotype","specific leaf area",NA,NA,1
+"1085",1,"PP to morbidity","community phenotype","specific root length",NA,NA,1
+"1086",1,"PP to morbidity","community phenotype","stem height",NA,NA,1
+"1087",1,"PP to morbidity","community reproduction","% fruit-set",NA,NA,1
+"1088",1,"PP to morbidity","community reproduction","% pod-set",NA,NA,1
+"1089",1,"PP to morbidity","community reproduction","no. of pollen tetrads per stigma",NA,NA,1
+"1090",1,"PP to morbidity","community reproduction","no. of seeds per berry",NA,NA,1
+"1091",1,"PP to morbidity","community reproduction","no. of seeds per pod",NA,NA,1
+"1092",1,"PP to morbidity","community vigor","proportion seed set",NA,NA,1
+"1093",1,"PP to morbidity","decomposition","mass remaining",NA,NA,1
+"1094",1,"PP to morbidity","host and community behavior","orthopterans ingested by trout",NA,NA,1
+"1095",1,"PP to morbidity","host and community behavior","prey ingested by trout",NA,NA,1
+"1096",1,"PP to morbidity","host and community phenotype","%N foliar by species",NA,NA,1
+"1097",1,"PP to morbidity","host and community phenotype","%N litter by species",NA,NA,1
+"1098",1,"PP to morbidity","host biomass","biomass",NA,NA,1
+"1099",1,"PP to morbidity","host fitness","domatia per leaf",NA,NA,1
+"1100",1,"PP to morbidity","host fitness","fruit fascicles per shoot",NA,NA,1
+"1101",1,"PP to morbidity","host fitness","proportion leaves remaining",NA,NA,1
+"1102",1,"PP to morbidity","host morbidity","adult flea beetle damage",0,1,1
+"1103",1,"PP to morbidity","host morbidity","condition",0,1,1
+"1104",1,"PP to morbidity","host morbidity","condition index",0,1,1
+"1105",1,"PP to morbidity","host morbidity","crown transparency",0,1,1
+"1106",1,"PP to morbidity","host morbidity","flea beetle larvae damage",0,1,1
+"1107",1,"PP to morbidity","host morbidity","leaf chlorosis",0,1,1
+"1108",1,"PP to morbidity","host morbidity","leaf greenness",0,1,1
+"1109",1,"PP to morbidity","host morbidity","leaf necrosis",0,1,1
+"1110",1,"PP to morbidity","host morbidity","proportion of necrosis",0,1,1
+"1111",1,"PP to morbidity","host morbidity","proportion of withered leaves",0,1,1
+"1112",1,"PP to morbidity","host morbidity","ramets dead with canker",0,1,1
+"1113",1,"PP to morbidity","host morbidity","recovery",0,1,1
+"1114",1,"PP to morbidity","host morbidity","total number of leaves/plant",0,1,1
+"1115",1,"PP to morbidity","host phenotype","% C",0,1,1
+"1116",1,"PP to morbidity","host phenotype","% lignin",0,1,2
+"1117",1,"PP to morbidity","host phenotype","% mussels eaten by mussel shell length",0,1,1
+"1118",1,"PP to morbidity","host phenotype","% N",0,1,1
+"1119",1,"PP to morbidity","host phenotype","% P",0,1,1
+"1120",1,"PP to morbidity","host phenotype","%C leaf litter",0,1,1
+"1121",1,"PP to morbidity","host phenotype","%N",0,1,2
+"1122",1,"PP to morbidity","host phenotype","%N leaf litter",0,1,1
+"1123",1,"PP to morbidity","host phenotype","%P leaf litter",0,1,1
+"1124",1,"PP to morbidity","host phenotype","age",0,1,1
+"1125",1,"PP to morbidity","host phenotype","algal clearance rate",0,1,1
+"1126",1,"PP to morbidity","host phenotype","alpha (photosynthetic efficiency)",0,1,1
+"1127",1,"PP to morbidity","host phenotype","assimilation energy (kj m-2 y-1)",0,1,1
+"1128",1,"PP to morbidity","host phenotype","atom %13C enrichment of host",0,1,1
+"1129",1,"PP to morbidity","host phenotype","atom %15N enrichment of host",0,1,1
+"1130",1,"PP to morbidity","host phenotype","biovolume of infected vs. uninfected hosts",0,1,1
+"1131",1,"PP to morbidity","host phenotype","C (%) in new leaves",0,1,1
+"1132",1,"PP to morbidity","host phenotype","C (host composition)",0,1,1
+"1133",1,"PP to morbidity","host phenotype","C mass (%)",0,1,1
+"1134",1,"PP to morbidity","host phenotype","C:N",0,1,4
+"1135",1,"PP to morbidity","host phenotype","C:N excretion (TDOC:DIN)",0,1,1
+"1136",1,"PP to morbidity","host phenotype","C:N leaf litter",0,1,1
+"1137",1,"PP to morbidity","host phenotype","C:N of feces",0,1,1
+"1138",1,"PP to morbidity","host phenotype","C:P",0,1,1
+"1139",1,"PP to morbidity","host phenotype","carbon content of infected vs. uninfected hosts",0,1,1
+"1140",1,"PP to morbidity","host phenotype","carbon excretion (mg L-1 TDOC)",0,1,1
+"1141",1,"PP to morbidity","host phenotype","carbon in feces (% by mass)",0,1,1
+"1142",1,"PP to morbidity","host phenotype","Carbon-nitrogen ratio",0,1,1
+"1143",1,"PP to morbidity","host phenotype","change in fatty acid composition (%)",0,1,1
+"1144",1,"PP to morbidity","host phenotype","chlorophyll a flourescence: photochemical efficiency of photosystem
+II",0,1,1
+"1145",1,"PP to morbidity","host phenotype","chlorophyll a fluorescence: total performance index",0,1,1
+"1146",1,"PP to morbidity","host phenotype","chlorophyll a per host cell",0,1,1
+"1147",1,"PP to morbidity","host phenotype","chlorophyll content (mg/dm2)",0,1,1
+"1148",1,"PP to morbidity","host phenotype","condition index",0,1,1
+"1149",1,"PP to morbidity","host phenotype","consumption (kj d-1)",0,1,1
+"1150",1,"PP to morbidity","host phenotype","consumption of algae",0,1,1
+"1151",1,"PP to morbidity","host phenotype","d13C (%)",0,1,1
+"1152",1,"PP to morbidity","host phenotype","d13C host",0,1,1
+"1153",1,"PP to morbidity","host phenotype","d15N host",0,1,1
+"1154",1,"PP to morbidity","host phenotype","dark respiration rate (Rd)",0,1,2
+"1155",1,"PP to morbidity","host phenotype","dead camel crickets added to stream vs. cricket removal vs. control",0,1,1
+"1156",1,"PP to morbidity","host phenotype","development (Gosner stage)",0,1,1
+"1157",1,"PP to morbidity","host phenotype","development (larval period)",0,1,1
+"1158",1,"PP to morbidity","host phenotype","egesta production rate (proxy for grazing)",0,1,1
+"1159",1,"PP to morbidity","host phenotype","energy allocation (kj m-2 y-1)",0,1,1
+"1160",1,"PP to morbidity","host phenotype","energy content (kj g-1)",0,1,1
+"1161",1,"PP to morbidity","host phenotype","energy unassimilated (feces)",0,1,1
+"1162",1,"PP to morbidity","host phenotype","energy value of infected orthopterans captured by stream trap",0,1,1
+"1163",1,"PP to morbidity","host phenotype","fatty acid concentration",0,1,1
+"1164",1,"PP to morbidity","host phenotype","feeding rate",0,1,1
+"1165",1,"PP to morbidity","host phenotype","foot length",0,1,1
+"1166",1,"PP to morbidity","host phenotype","Glucosinolates",0,1,1
+"1167",1,"PP to morbidity","host phenotype","growth",0,1,1
+"1168",1,"PP to morbidity","host phenotype","host biomass",0,1,1
+"1169",1,"PP to morbidity","host phenotype","host root mass fraction with vs. without parasite",0,1,1
+"1170",1,"PP to morbidity","host phenotype","host tissue %C",0,1,1
+"1171",1,"PP to morbidity","host phenotype","instantaneous carboxylation efficiency",0,1,1
+"1172",1,"PP to morbidity","host phenotype","intercellular CO2 concentration",0,1,1
+"1173",1,"PP to morbidity","host phenotype","internal CO2 concentrations",0,1,1
+"1174",1,"PP to morbidity","host phenotype","isopod weight",0,1,1
+"1175",1,"PP to morbidity","host phenotype","leaf surface area",0,1,1
+"1176",1,"PP to morbidity","host phenotype","leaf turnover",0,1,1
+"1177",1,"PP to morbidity","host phenotype","leaf water content",0,1,1
+"1178",1,"PP to morbidity","host phenotype","light compensation point",0,1,1
+"1179",1,"PP to morbidity","host phenotype","light saturation point",0,1,2
+"1180",1,"PP to morbidity","host phenotype","light use efficiency",0,1,1
+"1181",1,"PP to morbidity","host phenotype","litter decomposition rate",0,1,1
+"1182",1,"PP to morbidity","host phenotype","mass remaining over time [decomposition]",0,1,1
+"1183",1,"PP to morbidity","host phenotype","maximum claw height (mm)",0,1,1
+"1184",1,"PP to morbidity","host phenotype","maximum fluorescence",0,1,1
+"1185",1,"PP to morbidity","host phenotype","maximum photochemical efficiency of PSII",0,1,1
+"1186",1,"PP to morbidity","host phenotype","mean girdle diameter of infected vs. uninfected hosts",0,1,1
+"1187",1,"PP to morbidity","host phenotype","monounsaturated fatty acid (%)",0,1,1
+"1188",1,"PP to morbidity","host phenotype","mycorrhizal colonization",0,1,1
+"1189",1,"PP to morbidity","host phenotype","N",0,1,1
+"1190",1,"PP to morbidity","host phenotype","N (%) in new leaves",0,1,1
+"1191",1,"PP to morbidity","host phenotype","N mass (%)",0,1,1
+"1192",1,"PP to morbidity","host phenotype","N:P",0,1,1
+"1193",1,"PP to morbidity","host phenotype","nitrogen excretion (mg L-1 DIN)",0,1,1
+"1194",1,"PP to morbidity","host phenotype","nitrogen in feces (% by mass)",0,1,1
+"1195",1,"PP to morbidity","host phenotype","nitrogen use efficiency (greatest net photosynthetic value / foliar N content)",0,1,1
+"1196",1,"PP to morbidity","host phenotype","no. of pollen tetrads per bee",0,1,1
+"1197",1,"PP to morbidity","host phenotype","number of germinating seeds",0,1,1
+"1198",1,"PP to morbidity","host phenotype","number of leaves",0,1,2
+"1199",1,"PP to morbidity","host phenotype","P",0,1,1
+"1200",1,"PP to morbidity","host phenotype","per cent mass remaining",0,1,1
+"1201",1,"PP to morbidity","host phenotype","Percentage carbon",0,1,1
+"1202",1,"PP to morbidity","host phenotype","Percentage nitrogen",0,1,1
+"1203",1,"PP to morbidity","host phenotype","photoinhibitory characteristic",0,1,1
+"1204",1,"PP to morbidity","host phenotype","plant height",0,1,1
+"1205",1,"PP to morbidity","host phenotype","polyunsaturated fatty acid (%)",0,1,1
+"1206",1,"PP to morbidity","host phenotype","probability of flowering",0,1,1
+"1207",1,"PP to morbidity","host phenotype","production efficiency (kj m-2 y-1)",0,1,1
+"1208",1,"PP to morbidity","host phenotype","production energy (kj m-2 y-1)",0,1,1
+"1209",1,"PP to morbidity","host phenotype","relative electron transport rate (photosynthesis)",0,1,1
+"1210",1,"PP to morbidity","host phenotype","relative functional absorption cross-section of PSII",0,1,1
+"1211",1,"PP to morbidity","host phenotype","root mass fraction",0,1,1
+"1212",1,"PP to morbidity","host phenotype","root tissue mass density",0,1,1
+"1213",1,"PP to morbidity","host phenotype","root-shoot ratio",0,1,1
+"1214",1,"PP to morbidity","host phenotype","Saponin 1 | Hederagenin",0,1,1
+"1215",1,"PP to morbidity","host phenotype","Saponin 2 | Cochalic acid",0,1,1
+"1216",1,"PP to morbidity","host phenotype","Saponin 3 | Oleanolic acid",0,1,1
+"1217",1,"PP to morbidity","host phenotype","saturated fatty acid (%)",0,1,1
+"1218",1,"PP to morbidity","host phenotype","seed germination",0,1,1
+"1219",1,"PP to morbidity","host phenotype","seed mass / total mass (reproductive allocation)",0,1,1
+"1220",1,"PP to morbidity","host phenotype","shell breaking force",0,1,1
+"1221",1,"PP to morbidity","host phenotype","specific leaf area",0,1,1
+"1222",1,"PP to morbidity","host phenotype","specific root length",0,1,1
+"1223",1,"PP to morbidity","host phenotype","stem height",0,1,2
+"1224",1,"PP to morbidity","host phenotype","stomatal conductance",0,1,3
+"1225",1,"PP to morbidity","host phenotype","tiller number",0,1,1
+"1226",1,"PP to morbidity","host phenotype","tissue C:N",0,1,1
+"1227",1,"PP to morbidity","host phenotype","tissue carbon (% by mass)",0,1,1
+"1228",1,"PP to morbidity","host phenotype","tissue nitrogen (% by mass)",0,1,1
+"1229",1,"PP to morbidity","host phenotype","total number of flowers",0,1,1
+"1230",1,"PP to morbidity","host phenotype","total number of seed pods",0,1,1
+"1231",1,"PP to morbidity","host phenotype","transpiration rate (mmol H2O m-2 s-1)",0,1,1
+"1232",1,"PP to morbidity","host phenotype","transpiration rates",0,1,1
+"1233",1,"PP to morbidity","host phenotype","water use efficiency",0,1,1
+"1234",1,"PP to morbidity","host phenotype","water use efficiency (photosynthesis/transpiration)",0,1,1
+"1235",1,"PP to morbidity","host physiology","respiration (kj d-1)",NA,NA,1
+"1236",1,"PP to morbidity","host reproduction","fecundity",NA,NA,1
+"1237",1,"PP to morbidity","host reproduction","number of tetrasporangial sori",NA,NA,1
+"1238",1,"PP to morbidity","host reproduction","total fecundity",NA,NA,1
+"1239",1,"PP to morbidity","host vigor","leaf water potential",NA,NA,1
+"1240",1,"PP to morbidity","host vigor","number of tips per branch on each thalli",NA,NA,1
+"1241",1,"PP to morbidity","primary production","days to ripen",NA,NA,1
+"1242",3,"PP to unknown","biogeochemical cycles","soil water content",NA,NA,1
+"1243",3,"PP to unknown","host abundance or behavior","visitation",NA,NA,1
+"1244",3,"PP to unknown","host and community biomass","relative growth of an individual adult: [(final biomass of adults ⁄final number of
+adults) ) (initial biomass of adults ⁄initial number of
+adults)]⁄(initial biomass of adults ⁄initial number
+of adults))",NA,NA,1
+"1245",3,"PP to unknown","host behavior or abundance","no. of bee visits/2 min to blueberry",NA,NA,1
+"1246",3,"PP to unknown","host behavior or abundance","no. of bee visits/2 min to canola",NA,NA,1
+"1247",3,"PP to unknown","host or community phenotype or biomass/abund","",NA,NA,1
+"1248",3,"PP to unknown","host phenotype","DIN",NA,NA,1
+"1249",3,"PP to unknown","host phenotype","DIN : periphyton %N",NA,NA,1
+"1250",3,"PP to unknown","host phenotype","eucalypt leaf litter",NA,NA,1
+"1251",3,"PP to unknown","host phenotype or biomass","N per plant",NA,NA,1
+"1252",3,"PP to unknown","host phenotype or biomass","P per plant",NA,NA,1
+"1253",3,"PP to unknown","PP or host or community abundance/biomass or phenotype","H2S",NA,NA,1
+"1254",3,"PP to unknown","PP or host or community abundance/biomass or phenotype","O2",NA,NA,1
+"1255",3,"PP to unknown","PP or host or community abundance/biomass or phenotype","total sulfide",NA,NA,1
+"1256",3,"PP to unknown ","host abundance, community composition, or phenotype","high nucleic acid cells abundance",NA,NA,1
+"1257",3,"PP to unknown ","host abundance, community composition, or phenotype","low nucleic acid cells abundance",NA,NA,1
+"1258",3,"unknown to ecosystem fxn","biogeochemical cycles","available P",NA,NA,1
+"1259",3,"unknown to ecosystem fxn","biogeochemical cycles","C",NA,NA,3
+"1260",3,"unknown to ecosystem fxn","biogeochemical cycles","Ca",NA,NA,2
+"1261",3,"unknown to ecosystem fxn","biogeochemical cycles","Ca2+ (mg/kg)",NA,NA,1
+"1262",3,"unknown to ecosystem fxn","biogeochemical cycles","DIN",NA,NA,1
+"1263",3,"unknown to ecosystem fxn","biogeochemical cycles","DIN : periphyton %N",NA,NA,1
+"1264",3,"unknown to ecosystem fxn","biogeochemical cycles","eucalypt leaf litter",NA,NA,1
+"1265",3,"unknown to ecosystem fxn","biogeochemical cycles","foliar calcium",NA,NA,2
+"1266",3,"unknown to ecosystem fxn","biogeochemical cycles","H2S",NA,NA,1
+"1267",3,"unknown to ecosystem fxn","biogeochemical cycles","hypoxia: redox potential",NA,NA,1
+"1268",3,"unknown to ecosystem fxn","biogeochemical cycles","K",NA,NA,3
+"1269",3,"unknown to ecosystem fxn","biogeochemical cycles","K+ (mg/kg)",NA,NA,1
+"1270",3,"unknown to ecosystem fxn","biogeochemical cycles","Litter C flux",NA,NA,1
+"1271",3,"unknown to ecosystem fxn","biogeochemical cycles","Litter decomp. % mass loss 1 year",NA,NA,1
+"1272",3,"unknown to ecosystem fxn","biogeochemical cycles","Litter decomp. % mass loss 3 years",NA,NA,1
+"1273",3,"unknown to ecosystem fxn","biogeochemical cycles","Litter N flux",NA,NA,1
+"1274",3,"unknown to ecosystem fxn","biogeochemical cycles","Litter total mass flux",NA,NA,1
+"1275",3,"unknown to ecosystem fxn","biogeochemical cycles","Mg",NA,NA,1
+"1276",3,"unknown to ecosystem fxn","biogeochemical cycles","Mg2+ (mg/kg)",NA,NA,1
+"1277",3,"unknown to ecosystem fxn","biogeochemical cycles","N",NA,NA,6
+"1278",3,"unknown to ecosystem fxn","biogeochemical cycles","N excretion by host",NA,NA,1
+"1279",3,"unknown to ecosystem fxn","biogeochemical cycles","N per plant",NA,NA,1
+"1280",3,"unknown to ecosystem fxn","biogeochemical cycles","Na+ (mg/kg)",NA,NA,1
+"1281",3,"unknown to ecosystem fxn","biogeochemical cycles","NH+4-N",NA,NA,1
+"1282",3,"unknown to ecosystem fxn","biogeochemical cycles","NH4+ availability",NA,NA,1
+"1283",3,"unknown to ecosystem fxn","biogeochemical cycles","Nitrification fraction (mineral)",NA,NA,1
+"1284",3,"unknown to ecosystem fxn","biogeochemical cycles","Nitrification fraction (organic)",NA,NA,1
+"1285",3,"unknown to ecosystem fxn","biogeochemical cycles","NO3- availability",NA,NA,1
+"1286",3,"unknown to ecosystem fxn","biogeochemical cycles","NO3-N",NA,NA,1
+"1287",3,"unknown to ecosystem fxn","biogeochemical cycles","O2",NA,NA,1
+"1288",3,"unknown to ecosystem fxn","biogeochemical cycles","Olsen-PO4-P",NA,NA,1
+"1289",3,"unknown to ecosystem fxn","biogeochemical cycles","Org. horizon C pool",NA,NA,1
+"1290",3,"unknown to ecosystem fxn","biogeochemical cycles","Org. horizon N pool",NA,NA,1
+"1291",3,"unknown to ecosystem fxn","biogeochemical cycles","organic matter",NA,NA,1
+"1292",3,"unknown to ecosystem fxn","biogeochemical cycles","organic matter (%)",NA,NA,1
+"1293",3,"unknown to ecosystem fxn","biogeochemical cycles","oxygen",NA,NA,2
+"1294",3,"unknown to ecosystem fxn","biogeochemical cycles","P",NA,NA,3
+"1295",3,"unknown to ecosystem fxn","biogeochemical cycles","P excretion",NA,NA,1
+"1296",3,"unknown to ecosystem fxn","biogeochemical cycles","P per plant",NA,NA,1
+"1297",3,"unknown to ecosystem fxn","biogeochemical cycles","PO4 3- availability",NA,NA,1
+"1298",3,"unknown to ecosystem fxn","biogeochemical cycles","Potential N mineralization (mineral)",NA,NA,1
+"1299",3,"unknown to ecosystem fxn","biogeochemical cycles","Potential N mineralization (organic)",NA,NA,1
+"1300",3,"unknown to ecosystem fxn","biogeochemical cycles","Potential nitrification (mineral)",NA,NA,1
+"1301",3,"unknown to ecosystem fxn","biogeochemical cycles","Potential nitrification (organic)",NA,NA,1
+"1302",3,"unknown to ecosystem fxn","biogeochemical cycles","respiration (CO2)",NA,NA,1
+"1303",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil C/N (mineral)",NA,NA,1
+"1304",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil C/N (organic)",NA,NA,1
+"1305",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil extractable NO3/NH4(mineral)",NA,NA,1
+"1306",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil extractable NO3/NH4(Organic)",NA,NA,1
+"1307",3,"unknown to ecosystem fxn","biogeochemical cycles","soil pore water salinity",NA,NA,1
+"1308",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil solution DOC",NA,NA,1
+"1309",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil solution DON",NA,NA,1
+"1310",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil solution NH4",NA,NA,1
+"1311",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil solution NO3",NA,NA,1
+"1312",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil solution SO4",NA,NA,1
+"1313",3,"unknown to ecosystem fxn","biogeochemical cycles","Soil solution SO4+ NO3",NA,NA,1
+"1314",3,"unknown to ecosystem fxn","biogeochemical cycles","soil water content",NA,NA,1
+"1315",3,"unknown to ecosystem fxn","biogeochemical cycles","total N (%)",NA,NA,1
+"1316",3,"unknown to ecosystem fxn","biogeochemical cycles","Total soil C pool to 12 cm (mineral + organic)",NA,NA,1
+"1317",3,"unknown to ecosystem fxn","biogeochemical cycles","Total soil N pool to 12 cm (mineral + organic)",NA,NA,1
+"1318",3,"unknown to ecosystem fxn","biogeochemical cycles","total sulfide",NA,NA,1
+"1319",3,"unknown to ecosystem fxn","primary production","acacia leaf litter",NA,NA,1
+"1320",3,"unknown to ecosystem fxn","primary production","chlorophyll A",NA,NA,2
+"1321",3,"unknown to ecosystem fxn","secondary production","relative growth of an individual adult: [(final biomass of adults ⁄final number of
+adults) ) (initial biomass of adults ⁄initial number of
+adults)]⁄(initial biomass of adults ⁄initial number
+of adults))",NA,NA,1

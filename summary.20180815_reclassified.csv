@@ -1,0 +1,58 @@
+,pathway.number,pathway,measure.general,measure.general.count.across.papers,host,community,misclassified,reclassify
+1,1,PP to abund biomass,abundance,1,1,0,0,host abund/biomass
+7,1,PP to abund biomass,diversity,1,1,0,0,host community composition
+9,1,PP to abund biomass,host and community,1,1,1,0,host and community abund/biomass
+13,1,PP to abund biomass,host phenotype,1,1,0,1,host phenotype
+14,1,PP to abund biomass,host productivity,1,1,0,0,host abund/biomass
+15,1,PP to abund biomass,host reproduction,1,1,0,0,host abund/biomass
+16,1,PP to abund biomass,host+PP biomass,1,1,0,0,host abund/biomass
+17,1,PP to abund biomass,infection prevalence,1,1,0,1,
+19,1,PP to abund biomass,non-host community,1,0,1,0,community
+20,1,PP to abund biomass,non-host community biomass,1,0,1,0,community abundance/biomass
+23,1,PP to abund biomass,productivity,1,1,0,0,host abund/biomass
+24,1,PP to abund biomass,reproduction,1,1,0,0,host abund/biomass
+25,1,PP to abund biomass,survival,1,1,0,0,host abund/biomass
+4,1,PP to abund biomass,community abundance,2,0,1,0,community abundance/biomass
+6,1,PP to abund biomass,community composition,2,0,1,0,community composition
+11,1,PP to abund biomass,host community,2,1,0,0,host community composition
+21,1,PP to abund biomass,population growth,2,1,0,0,host abund/biomass
+5,1,PP to abund biomass,community biomass,3,0,1,0,community abundance/biomass
+18,1,PP to abund biomass,mortality,3,1,0,0,host abund/biomass
+22,1,PP to abund biomass,primary production,3,1,0,0,host abund/biomass
+12,1,PP to abund biomass,host mortality,6,1,0,0,host abund/biomass
+2,1,PP to abund biomass,biomass,9,1,0,0,host abund/biomass
+3,1,PP to abund biomass,community,11,0,1,0,community
+8,1,PP to abund biomass,host abundance,12,1,0,0,host abund/biomass
+10,1,PP to abund biomass,host biomass,18,1,0,0,host abund/biomass
+27,1,PP to ecosystem fxn,biomass,2,,,1,
+28,1,PP to ecosystem fxn,primary production,6,,,0,
+29,1,PP to ecosystem fxn,secondary production,8,,,0,
+26,1,PP to ecosystem fxn,biogeochemical cycles,11,,,0,
+30,1,PP to morbidity,biogeochemical cycles,1,1,0,1,
+31,1,PP to morbidity,community,1,0,1,1,misclassified
+32,1,PP to morbidity,condition of host,1,1,0,0,host morbidity
+33,1,PP to morbidity,decomposition rate,1,1,0,0,misclassified
+35,1,PP to morbidity,host morbidity,1,1,0,0,host morbidity
+34,1,PP to morbidity,host behavior,2,1,0,0,host phenotype
+36,1,PP to morbidity,host phenotype,17,1,0,0,host phenotype
+38,2,abund biomass to ecosystem fxn,biomass,1,,,1,
+39,2,abund biomass to ecosystem fxn,host biomass,2,,,1,
+41,2,abund biomass to ecosystem fxn,secondary production,9,,,0,
+37,2,abund biomass to ecosystem fxn,biogeochemical cycles,13,,,0,
+40,2,abund biomass to ecosystem fxn,primary production,30,,,0,
+43,2,morbidity to ecosystem fxn,host phenotype,1,,,1,
+45,2,morbidity to ecosystem fxn,secondary production,2,,,0,
+44,2,morbidity to ecosystem fxn,primary production,3,,,0,
+42,2,morbidity to ecosystem fxn,biogeochemical cycles,12,,,0,
+48,3,abiotic or biotic,both,6,,,0,
+46,3,abiotic or biotic,abiotic,22,,,0,
+47,3,abiotic or biotic,biotic,33,,,0,
+49,3,ecosystem fxn to PP,biogeochemical cycles,1,,,0,
+50,3,PP abundance,abundance,8,,,0,
+51,3,PP to host infection prevalence / intensity,biomass density,1,,,1,
+52,3,PP to host infection prevalence / intensity,disease score,1,,,0,
+54,3,PP to host infection prevalence / intensity,host infection prevalence,1,,,0,
+57,3,PP to host infection prevalence / intensity,percent parasite,1,,,0,
+53,3,PP to host infection prevalence / intensity,host infection intensity,3,,,0,
+55,3,PP to host infection prevalence / intensity,infection intensity,8,,,0,
+56,3,PP to host infection prevalence / intensity,infection prevalence,17,,,0,
