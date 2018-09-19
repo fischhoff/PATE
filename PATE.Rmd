@@ -165,6 +165,30 @@ save(P, file = "P.Rdata")
 
 ##combine study and measures data 
 ###includes error check that identifies couple of papers inadvertantly reviewed twice.  
+#fields in PATE_data.csv:
+#paper.ID: unique identifier for each paper (matches numbers in each screener's file)
+#author: study lead author
+#Pathogen.kingdom; Host.kingdom: note that there are some entries here for entities that are higher or lower than kingdom or (e.g. dinoflagellates) paraphyletic. We may want to limit analysis to categories that appear relatively frequently. 
+#System: aquatic, terrestrial
+#System.2: if we decide to use this we may want to bin these into fewer categories of biomes
+#PP.to.ecosystem.fxn: 1 (pathway present), 0 (absent); this describes direct effect of PP on ecosystem function, e.g. biomass of trematodes, primary production of hemiparasitic plants
+#"PP.abundance": this seems lower priority for analysis, refers to whether study included info on abundance of PP in the environment
+#"PP.morbidity": did the study contain info on the phenotype of pathogens (e.g. vigor of hemiparasitic plants). this seems lower priority for inclusion in analysis. 
+#"PP.to.host.infection.prevalence...intensity": does the paper report on PP infection prevalence or intensity? lower priority for analysis
+#"PP.to.abund.biomass", "PP.to.morbidity", "PP.to.unknown": does paper report on each of these pathways from PP to host/community. Unknown includes cases where it is not possible to determine whether effects are on abund/biomass or on morbidity
+#"abund.biomass.to.ecosystem.fxn", "morbidity.to.ecosystem.fxn", "unknown.to.ecosystem.fxn": does paper report on each of these pathways
+#abiotic.or.biotic: does paper report on abiotic or biotic factors that mediate influence of PP on other components in model? 
+#"experimental..PP.manipulation.or.mimic...1..observational..2..both..3.": is paper experimental, observational, or both; note entries in this field currently include some notes and would need to be cleaned up to be used in analysis. 
+#"process.vs..standing.stock.vs..both": does paper report on ecosystem effects as process (e.g. rate), standing stock, or report on both? 
+#"highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact": what is the highest observational scale at which ecosystem function effects have been measured: species, assemblage (multiple species), or ecosystem (includes papers in which effects at level of a functional group have been measured e.g. biomass of all trees) 
+#spatial scale: area or volume of sampling unit; description would require some recoding to be used in analysis 
+#"coordinates.in.paper": are lat/long reported in paper (note: have not extracted this info)
+#measureID: if a study reported on an ecosystem process measure (e.g. morbidity --> ecosystem fxn), we assumed that there was also a measure at an earlier stage in the conceptual diagram (PP --> morbidity). We created an additional record for this earlier stage, and linked the two stages with a measureID unique to that study. The two measures are also linked by having the same value for "measure.specific....outcome.variable", which is also unique within the study.  
+#pathway: what pathway has been measued
+#measure.general: in the case of (X --> ecosystem fxn), this is either biogeochemical cycles, primary production, or secondary production. For (PP --> X), there is more variation in how measures have been described, and some recoding would be needed to make these data comparable. 
+#"measure.specific....outcome.variable": the measure as described in the paper
+#effects.on.hoste; effects.on.community: was the PP --> X effect on the host or not, on the community or not; note this has not been filled in for all rows but could be based (have checked this for part) on the measure.general and measure.specific
+#ecosystem_process_mediate: did an ecosystem process mediate the relationship between PP and other components of the conceptual diagram. Note this has not been filled in throughout, but could be based on other data (have checked this for part) 
 ```{r}
 load("S.Rdata")
 load("P.Rdata")
