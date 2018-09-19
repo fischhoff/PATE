@@ -17,6 +17,7 @@
 "27",1,"PP to abund biomass","host community composition",1
 "28",1,"PP to abund biomass","host demography",1
 "29",1,"PP to abund biomass","host morbidity",1
+"31",1,"PP to abund biomass","host phenotype",1
 "33",1,"PP to abund biomass","host productivity",1
 "35",1,"PP to abund biomass","host survival",1
 "36",1,"PP to abund biomass","host, community, and PP biomass",1
@@ -30,91 +31,96 @@
 "47",1,"PP to abund biomass","reproduction",1
 "20",1,"PP to abund biomass","host and community composition",2
 "22",1,"PP to abund biomass","host and community mortality",2
-"31",1,"PP to abund biomass","host phenotype",2
 "43",1,"PP to abund biomass","population growth",2
 "17",1,"PP to abund biomass","host and community abundance",3
-"32",1,"PP to abund biomass","host production",3
 "34",1,"PP to abund biomass","host reproduction",3
 "40",1,"PP to abund biomass","mortality",3
-"45",1,"PP to abund biomass","primary production",5
+"32",1,"PP to abund biomass","host production",4
+"45",1,"PP to abund biomass","primary production",6
 "3",1,"PP to abund biomass","biomass",7
 "19",1,"PP to abund biomass","host and community biomass",7
+"5",1,"PP to abund biomass","community abundance",11
 "4",1,"PP to abund biomass","community",12
-"5",1,"PP to abund biomass","community abundance",12
 "7",1,"PP to abund biomass","community composition",14
-"6",1,"PP to abund biomass","community biomass",16
+"6",1,"PP to abund biomass","community biomass",15
 "30",1,"PP to abund biomass","host mortality",16
 "14",1,"PP to abund biomass","host abundance",18
-"25",1,"PP to abund biomass","host biomass",36
+"25",1,"PP to abund biomass","host biomass",32
 "50",1,"PP to ecosystem fxn","community",1
 "49",1,"PP to ecosystem fxn","biomass",3
 "51",1,"PP to ecosystem fxn","primary production",13
 "52",1,"PP to ecosystem fxn","secondary production",13
 "48",1,"PP to ecosystem fxn","biogeochemical cycles",18
-"53",1,"PP to morbidity","community behavior",1
-"54",1,"PP to morbidity","community phenotype",1
-"55",1,"PP to morbidity","community reproduction",1
-"56",1,"PP to morbidity","community vigor",1
-"57",1,"PP to morbidity","condition of host",1
-"58",1,"PP to morbidity","decomposition",1
-"59",1,"PP to morbidity","host and community behavior",1
-"60",1,"PP to morbidity","host and community phenotype",1
-"62",1,"PP to morbidity","host biomass",1
+"53",1,"PP to morbidity","community abundance / host consumption",1
+"54",1,"PP to morbidity","community behavior",1
+"55",1,"PP to morbidity","community phenotype",1
+"56",1,"PP to morbidity","community reproduction",1
+"57",1,"PP to morbidity","community vigor",1
+"58",1,"PP to morbidity","condition of host",1
+"59",1,"PP to morbidity","decomposition",1
+"60",1,"PP to morbidity","host and community behavior",1
+"61",1,"PP to morbidity","host and community phenotype",1
 "63",1,"PP to morbidity","host fitness",1
 "66",1,"PP to morbidity","host physiology",1
 "69",1,"PP to morbidity","primary production",1
 "67",1,"PP to morbidity","host reproduction",2
 "68",1,"PP to morbidity","host vigor",2
-"61",1,"PP to morbidity","host behavior",5
-"64",1,"PP to morbidity","host morbidity",7
-"65",1,"PP to morbidity","host phenotype",32
-"72",2,"abund biomass to ecosystem fxn","community respiration",1
-"73",2,"abund biomass to ecosystem fxn","host and community biomass",1
-"71",2,"abund biomass to ecosystem fxn","community biomass",2
-"75",2,"abund biomass to ecosystem fxn","secondary production",20
-"70",2,"abund biomass to ecosystem fxn","biogeochemical cycles",26
-"74",2,"abund biomass to ecosystem fxn","primary production",67
-"77",2,"morbidity to ecosystem fxn","primary production",3
-"78",2,"morbidity to ecosystem fxn","secondary production",8
-"76",2,"morbidity to ecosystem fxn","biogeochemical cycles",26
-"82",3,"abiotic or biotic","community consumption",1
-"83",3,"abiotic or biotic","community taxa",1
-"84",3,"abiotic or biotic","neither",1
-"81",3,"abiotic or biotic","both",30
-"79",3,"abiotic or biotic","abiotic",50
-"80",3,"abiotic or biotic","biotic",98
-"85",3,"ecosystem fxn to PP","consumption of PP",1
-"88",3,"PP abundance","mortality",1
-"89",3,"PP abundance","PP demography",1
-"90",3,"PP abundance","production",1
-"87",3,"PP abundance","demography",2
-"86",3,"PP abundance","abundance",22
-"91",3,"PP morbidity","PP phenotype",1
-"92",3,"PP morbidity","vigor",1
-"94",3,"PP to host infection prevalence / intensity","biomass density",1
-"95",3,"PP to host infection prevalence / intensity","disease score",1
-"97",3,"PP to host infection prevalence / intensity","host infection prevalence",1
-"98",3,"PP to host infection prevalence / intensity","host mortality",1
-"99",3,"PP to host infection prevalence / intensity","host resistance",1
-"100",3,"PP to host infection prevalence / intensity","infection duration",1
-"103",3,"PP to host infection prevalence / intensity","infection prevalence / intensity",1
-"104",3,"PP to host infection prevalence / intensity","infection prevalence and intensity",1
-"105",3,"PP to host infection prevalence / intensity","percent parasite",1
-"106",3,"PP to host infection prevalence / intensity","PP transmission vector",1
-"107",3,"PP to host infection prevalence / intensity","time to infection",1
-"93",3,"PP to host infection prevalence / intensity","abundance",2
-"96",3,"PP to host infection prevalence / intensity","host infection intensity",3
-"101",3,"PP to host infection prevalence / intensity","infection intensity",16
-"102",3,"PP to host infection prevalence / intensity","infection prevalence",42
-"108",3,"PP to unknown","biogeochemical cycles",1
-"109",3,"PP to unknown","host abundance or behavior",1
-"110",3,"PP to unknown","host and community biomass",1
-"111",3,"PP to unknown","host behavior or abundance",1
-"112",3,"PP to unknown","host or community phenotype or biomass/abund",1
-"114",3,"PP to unknown","host phenotype or biomass",1
-"115",3,"PP to unknown","PP or host or community abundance/biomass or phenotype",1
-"113",3,"PP to unknown","host phenotype",2
-"116",3,"PP to unknown ","host abundance, community composition, or phenotype",1
-"119",3,"unknown to ecosystem fxn","secondary production",1
-"118",3,"unknown to ecosystem fxn","primary production",2
-"117",3,"unknown to ecosystem fxn","biogeochemical cycles",15
+"62",1,"PP to morbidity","host behavior",5
+"64",1,"PP to morbidity","host morbidity",6
+"65",1,"PP to morbidity","host phenotype",30
+"73",2,"abund biomass to ecosystem fxn","community respiration",1
+"74",2,"abund biomass to ecosystem fxn","host and community biomass",1
+"76",2,"abund biomass to ecosystem fxn","host phenotype",1
+"71",2,"abund biomass to ecosystem fxn","community",2
+"72",2,"abund biomass to ecosystem fxn","community biomass",2
+"75",2,"abund biomass to ecosystem fxn","host biomass",7
+"78",2,"abund biomass to ecosystem fxn","secondary production",22
+"70",2,"abund biomass to ecosystem fxn","biogeochemical cycles",23
+"77",2,"abund biomass to ecosystem fxn","primary production",69
+"80",2,"morbidity to ecosystem fxn","host phenotype",2
+"81",2,"morbidity to ecosystem fxn","primary production",3
+"82",2,"morbidity to ecosystem fxn","secondary production",9
+"79",2,"morbidity to ecosystem fxn","biogeochemical cycles",27
+"86",3,"abiotic or biotic","community consumption",1
+"87",3,"abiotic or biotic","community taxa",1
+"88",3,"abiotic or biotic","neither",1
+"85",3,"abiotic or biotic","both",30
+"83",3,"abiotic or biotic","abiotic",50
+"84",3,"abiotic or biotic","biotic",98
+"89",3,"ecosystem fxn to PP","consumption of PP",1
+"92",3,"PP abundance","mortality",1
+"93",3,"PP abundance","PP demography",1
+"94",3,"PP abundance","production",1
+"91",3,"PP abundance","demography",2
+"90",3,"PP abundance","abundance",22
+"95",3,"PP morbidity","PP phenotype",1
+"96",3,"PP morbidity","vigor",1
+"98",3,"PP to host infection prevalence / intensity","biomass density",1
+"99",3,"PP to host infection prevalence / intensity","disease score",1
+"101",3,"PP to host infection prevalence / intensity","host infection prevalence",1
+"102",3,"PP to host infection prevalence / intensity","host mortality",1
+"103",3,"PP to host infection prevalence / intensity","host resistance",1
+"104",3,"PP to host infection prevalence / intensity","infection duration",1
+"107",3,"PP to host infection prevalence / intensity","infection prevalence / intensity",1
+"108",3,"PP to host infection prevalence / intensity","infection prevalence and intensity",1
+"109",3,"PP to host infection prevalence / intensity","percent parasite",1
+"110",3,"PP to host infection prevalence / intensity","PP transmission vector",1
+"111",3,"PP to host infection prevalence / intensity","time to infection",1
+"97",3,"PP to host infection prevalence / intensity","abundance",2
+"100",3,"PP to host infection prevalence / intensity","host infection intensity",3
+"105",3,"PP to host infection prevalence / intensity","infection intensity",17
+"106",3,"PP to host infection prevalence / intensity","infection prevalence",42
+"112",3,"PP to unknown","biogeochemical cycles",1
+"113",3,"PP to unknown","host abundance or behavior",1
+"114",3,"PP to unknown","host abundance, community composition, or phenotype",1
+"115",3,"PP to unknown","host and community biomass",1
+"116",3,"PP to unknown","host behavior or abundance",1
+"117",3,"PP to unknown","host or community phenotype or biomass/abund",1
+"119",3,"PP to unknown","host phenotype or biomass",1
+"120",3,"PP to unknown","PP or host or community abundance/biomass or phenotype",1
+"118",3,"PP to unknown","host phenotype",2
+"121",3,"PP to unknown ","host abundance, community composition, or phenotype",1
+"123",3,"unknown to ecosystem fxn","primary production",1
+"124",3,"unknown to ecosystem fxn","secondary production",1
+"122",3,"unknown to ecosystem fxn","biogeochemical cycles",15
+"125",3,"var1_abund biomass to ecosystem fxn","host phenotype",1

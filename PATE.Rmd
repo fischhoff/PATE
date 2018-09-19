@@ -24,6 +24,224 @@ for (package in neededPackages){pkgTest(package)}
 ```
 
 
+###summarize results of screening, based on each screener's results
+```{r}
+path = "screened_20180918"
+files = list.files(path)
+out = NULL
+a =1
+tmp = read.csv(paste0(path, "/", files[a]))
+names(tmp)= tolower(names(tmp))
+names.tmp = names(tmp)
+out = rbind(out, tmp)
+for (a in 2:length(files)){
+  tmp = read.csv(paste0(path, "/", files[a]))
+  names(tmp)= tolower(names(tmp))
+  fields = intersect(names(tmp), names(out))
+  out = out[,fields]
+  #add 
+  tmp = tmp[,fields]
+  out = rbind(out, tmp)
+}
+print("number of articles")
+dim(out)[1]
+#check there is only one row for each paper id number, should be TRUE
+dim(out)[1] == length(unique(out$id))
+
+out$include = tolower(out$include)
+out$include[out$include == "n"] = "no"
+out$include[out$include == "y"] = "yes"
+out$include[out$include == "m"] = "maybe"
+print("excluded after title and abstract screen")
+tab = data.frame(table(out$include))
+tab
+
+print("full-text articles 			assessed for eligibility")
+tab$Freq[tab$Var1=="yes"]+tab$Freq[tab$Var1=="maybe"]
+
+#compute whether study was included or not 
+# include_abstract = rep(NA, dim(out)[1])
+# inds.no.abstract = which(out$include == "no")
+# include_abstract[inds.no.abstract]
+#check those that are blank
+blank = subset(out, include == "")
+table(blank$screened_by)#these should all be 0
+
+#articles excluded on full text review
+df = data.frame(table(out$exclude_reason))
+df = subset(df, Var1 != "")
+print("articles excluded after full-text screen")
+sum(df$Freq)
+#reasons for exclusion
+table(out$exclude_reason)
+
+#check ones that are no for include and non-blank for include_article_review
+#this should be empty
+check = subset(out, include == "no" & exclude_reason !="")
+check
+
+# subset(out, exclude_reason == "no information on ecosystem effects (host abundance, mortality, not basal area); small stem density")
+out$include_article_review = tolower(out$include_article_review)
+
+#records that are no at include should be blank at include_article_review
+inds.include1_no = which(out$include=="no")
+out$include_article_review[inds.include1_no]=""
+table(out$include, out$include_article_review)
+#this should be empty -- should have always indicated whether to include an article on full screen of article, for abstracts that were not marked as no at abstract/title stage
+df_blank_odd = subset(out, include_article_review == "" & include != "no")
+dim(df_blank_odd)
+
+df.include = data.frame(table(out$include_article_review))
+df.include = subset(df.include, Var1 !="")
+df.include
+#check that maybe ("effects...not separable") and no add up to exclude 
+print("exclude check")
+df.include$Freq[df.include$Var1=="maybe"]+df.include$Freq[df.include$Var1=="no"]
+
+print("include check")#this plus nos (at include_article_review) should add up to number checked full article 
+df.include$Freq[df.include$Var1=="yes"]+
+  df.include$Freq[df.include$Var1=="maybe -- requested ill"]+
+  df.include$Freq[df.include$Var1=="yes -- requested ill"]
+
+#check ones that are yes at include_article_review and something other than yes or maybe at include. this should be empty
+inds.include_review_yes = which(out$include_article_review!="maybe" & out$include_article_review !="no" & out$include_article_review !="" )
+inds.include_no = which(out$include=="no")
+intersect(inds.include_review_yes, inds.include_no)
+
+#check that all the ones that have exclude reason are also no for include_article_review
+table(out$include_article_review, out$exclude_reason)
+
+#check rows that are yes on include_article_review and have entry for exclude_reason -- these need to be corrected for consistency in original data so that this is empty  
+test = subset(out, include_article_review=="yes" & exclude_reason !="")
+test
+
+table(out$include_article_review)
+```
+
+#read in studies spreadsheet and remove ones that were later excluded
+```{r}
+S <- read.csv("meta_data_20180724 - studies.csv")
+#unique(S$exclude)
+S <- subset(S, is.na(exclude))#record is okay if it is empty, exclude those that are 1
+save(S, file = "S.Rdata")
+```
+
+###read in measures data and generate a PP --> abund/morbidity row for each abund/morbidity --> ecosystem process record that does not have an accompanying PP --> abund/morbidity
+```{r}
+P = read.csv("meta_data_20180724 - measures.csv")
+P = subset(P, exclude.as.ecosystem.measure !=1)
+subset(P, is.na(paper.ID))#should be empty
+P$have.not.added.double.counting=trimws(P$have.not.added.double.counting)
+##find rows for which "have.not.added.double.counting" is non-empty
+# D = subset(P, have.not.added.double.counting !="" &
+#              (P$pathway == "morbidity to ecosystem fxn" | P$pathway == "abund biomass to ecosystem fxn"))
+
+D = subset(P, have.not.added.double.counting !="")
+list1 = sort(unique(D$pathway))
+list0 = c("PP to abund biomass",
+          "PP to morbidity", 
+          "PP to unknown")
+# D.not = subset(P, have.not.added.double.counting =="" |
+#                               (P$have.not.added.double.counting !="" & P$pathway != "morbidity to ecosystem fxn" & P$pathway != "abund biomass to ecosystem fxn"))
+
+D.not = subset(P, is.na(have.not.added.double.counting))
+
+dim(D)[1]+dim(D.not)[1]                 
+out = NULL
+a = 1
+for (a in 1:dim(D)[1]){
+  tmp = D[a,]
+  tmp$have.not.added.double.counting = ""
+  tmp.1 = tmp
+  index = which(list1 == tmp$pathway)
+  tmp.1$measure.general = tmp.1$morbid_or_abund_biomass_measure
+  tmp.1$pathway = list0[index]
+  tmp.both = rbind(tmp, tmp.1)#both rows
+  out = rbind(out, tmp.both)
+}
+P = rbind(D.not, out)
+save(P, file = "P.Rdata")
+```
+
+##combine study and measures data 
+###includes error check that identifies couple of papers inadvertantly reviewed twice.  
+```{r}
+load("S.Rdata")
+load("P.Rdata")
+
+names(S)[names(S)=="ID"]="paper.ID"
+setdiff(S$paper.ID, P$paper.ID)
+ids = setdiff(P$paper.ID, S$paper.ID)#this has two that determined later needed to be excluded
+ids.common = intersect(P$paper.ID, S$paper.ID)#
+dim(P)
+P = subset(P, paper.ID %in% ids.common)
+dim(P)
+out = NULL 
+uid = unique(P$paper.ID)
+a = 37
+out = NULL 
+for (a in 1:length(uid)){
+  tmpS = subset(S, paper.ID == uid[a])
+  tmpP = subset(P, paper.ID == uid[a])
+  #compute PP.to.abund.biomass
+  tmpS$PP.to.abund.biomass=0
+  PP_abund = subset(tmpP, pathway == "PP to abund biomass")
+  if (dim(PP_abund)[1]>0){
+    tmpS$PP.to.abund.biomass=1
+  }
+  #compute PP.to.morbidity
+  tmpS$PP.to.morbidity=0
+  PP_morb = subset(tmpP, pathway == "PP to morbidity")
+  if (dim(PP_morb)[1]>0){
+    tmpS$PP.to.morbidity=1
+  }
+  
+  #compute PP.to.unknown
+  tmpS$PP.to.unknown=0
+  PP_unk = subset(tmpP, pathway == "PP to unknown")
+  if (dim(PP_unk)[1]>0){
+    tmpS$PP.to.unknown=1
+  }
+
+  #compute abund biomass to ecosystem fxn
+  tmpS$abund.biomass.to.ecosystem.fxn=0
+  PP_ab_ef = subset(tmpP, pathway == "abund biomass to ecosystem fxn")
+  if (dim(PP_ab_ef)[1]>0){
+    tmpS$abund.biomass.to.ecosystem.fxn=1
+  }
+
+  #compute morbidity to ecosystem fxn
+  tmpS$morbidity.to.ecosystem.fxn=0
+  PP_m_ef = subset(tmpP, pathway == "morbidity to ecosystem fxn")
+  if (dim(PP_m_ef)[1]>0){
+    tmpS$morbidity.to.ecosystem.fxn=1
+  }
+
+  #compute unknown to ecosystem fxn
+  tmpS$unknown.to.ecosystem.fxn=0
+  PP_u_ef = subset(tmpP, pathway == "unknown to ecosystem fxn")
+  if (dim(PP_u_ef)[1]>0){
+    tmpS$unknown.to.ecosystem.fxn=1
+  }
+  tmpM = merge(tmpS, tmpP, by = "paper.ID")
+  out = rbind(out, tmpM)
+  
+  if (dim(tmpM)[1] > dim(tmpP)[1]){
+    #this will print if there are papers that have been entered twice in spreadsheet "studies"
+    print("a")
+    print(uid[a])
+    print(a)
+  }
+}
+M = merge(S, P, by = "paper.ID")
+dim(M)[1]==dim(out)[1]
+dim(M)
+
+M <- out
+save(M, file = "M.Rdata")
+write.csv(M, file ="PATE_data.csv")
+```
+
 ##read in studies spreadsheet and make graph of pathogen frequency for each kingdom of hosts
 ```{r}
 S <- read.csv("meta_data_20180724 - studies.csv")
@@ -41,43 +259,47 @@ plot
 
 
 ###make plot of frequency of pathogen kingdom for each pathway from host/community to ecosystem process
+###commenting this part out for now, will do using M
 ```{r}
-load("S.Rdata")
-names(S)[names(S)=="var1_abund.biomass.to.ecosystem.fxn"]="var_1"
-names(S)[names(S)=="var2_morbidity.to.ecosystem.fxn"]="var_2"
 
-names(S)[names(S)=="var3_unknown.to.ecosystem.fxn"]="var_3"
-
-tolong = names(S)[c(18:20)]
-dim(S)[1]
-S = subset(S, exclude != "1")
-dim(S)[1]
-
-#reshape wide to long to make figure in ggplot2
-S.long<-reshape(S, 
-                varying=tolong, 
-                direction="long", 
-                idvar="ID", 
-                sep="_")
-
-#make field that indicates pathway
-i1 = which(S.long$time == 1)
-pathway = rep("unassigned", dim(S.long)[1])
-pathway[i1]="abund/biomass --> ecosystem"
-i2 = which(S.long$time == 2)
-pathway[i2]="morbidity --> ecosystem"
-i3 = which(S.long$time == 3)
-pathway[i3]="unknown --> ecosystem"
-S.long$pathway = pathway
-S.long = subset(S.long, var == 1)
-plot<- ggplot(data = S.long, mapping = aes(x = Pathogen.kingdom))+
-  geom_bar()+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  facet_wrap(.~pathway)+
-  ylab("number of studies")+
-    ggtitle("frequency of pathogen - pathway pairs")
+# load("S.Rdata")
+# names(S)[names(S)=="abund.biomass.to.ecosystem.fxn"]="var_1"
+# names(S)[names(S)=="morbidity.to.ecosystem.fxn"]="var_2"
+# names(S)[names(S)=="unknown.to.ecosystem.fxn"]="var_3"
 # 
-plot
+# tolong = names(S)[c(18:20)]
+# dim(S)[1]
+# S = subset(S, exclude != "1")
+# dim(S)[1]
+# 
+# #S = subset(S, ID == "315")
+# 
+# S = S[1,]
+# 
+# S.long<-reshape(S, 
+#                 varying=tolong, 
+#                 direction="long", 
+#                 idvar="ID",
+#                 times = tolong,
+#                 sep="_")
+# 
+# i1 = which(S.long$time == 1)
+# pathway = rep("unassigned", dim(S.long)[1])
+# pathway[i1]="abund/biomass --> ecosystem"
+# i2 = which(S.long$time == 2)
+# pathway[i2]="morbidity --> ecosystem"
+# i3 = which(S.long$time == 3)
+# pathway[i3]="unknown --> ecosystem"
+# S.long$pathway = pathway
+# S.long = subset(S.long, var == 1)
+# plot<- ggplot(data = S.long, mapping = aes(x = Pathogen.kingdom))+
+#   geom_bar()+
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+#   facet_wrap(.~pathway)+
+#   ylab("number of studies")+
+#     ggtitle("frequency of pathogen - pathway pairs")
+# # 
+# plot
 
 ```
 
@@ -106,7 +328,6 @@ plot
 
 
 ```
-
 
 #####SCRATCH work below here. 
 
