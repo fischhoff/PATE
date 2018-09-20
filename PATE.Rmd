@@ -18,7 +18,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2")
+neededPackages <- c("dplyr", "ggplot2", "MASS")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -266,21 +266,328 @@ save(M, file = "M.Rdata")
 write.csv(M, file ="PATE_data.csv")
 ```
 
-##read in studies spreadsheet and make graph of pathogen frequency for each kingdom of hosts
+###pathogen vs. host test for significant associations using chi-square
 ```{r}
-S <- read.csv("meta_data_20180724 - studies.csv")
-save(S, file = "S.Rdata")
+load("M.Rdata")
+#get one row per study
+PH = M[,c("paper.ID", "Pathogen.kingdom", "Host.kingdom", "System")]
+PH = PH[!duplicated(PH), ]
+dim(PH)
+PH = subset(PH, Pathogen.kingdom !="multiple")
+dim(PH)[1]
+PH = subset(PH, Host.kingdom !="multiple")
+dim(PH)
 
-plot<- ggplot(data = S, mapping = aes(x = Pathogen.kingdom))+
+PH = subset(PH, Pathogen.kingdom !="not reported")
+dim(PH)[1]
+
+#make table of counts of each combination of two variables
+tbl =table(as.character(PH$Pathogen.kingdom), as.character(PH$Host.kingdom))
+#chisq.test(tbl) 
+chisq.test(tbl, simulate.p.value = TRUE) 
+#
+save(PH, file = "PH.Rdata")
+tbl.host = table(PH$Host.kingdom)
+tbl.host = data.frame(tbl.host)
+tbl.host$frac = round(tbl.host$Freq/sum(tbl.host$Freq), digits = 3)
+print("percent of hosts")
+100*tbl.host$frac
+tbl.p = table(PH$Pathogen.kingdom)
+tbl.p = data.frame(tbl.p)
+tbl.p$frac = round(tbl.p$Freq/sum(tbl.p$Freq), digits = 3)
+print("percent of pathogens")
+tbl.p
+
+```
+
+##read in studies data and make graph of pathogen frequency for each kingdom of hosts
+```{r}
+load("PH.Rdata")
+
+plot<- ggplot(data = PH, mapping = aes(x = Pathogen.kingdom))+
   geom_bar()+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   facet_wrap(.~Host.kingdom)+
-  ylab("number of studies")+
-    ggtitle("frequency of pathogen-host combinations")
+  ylab("Number of studies")+
+  xlab("Pathogen taxa")
+#    ggtitle("count of pathogen-host combinations")
 
 plot
+ggsave(plot = plot, filename = paste0("Figure.A.1", 
+                                      "pathogen-host", ".jpg"))
 ```
 
+###make contingency table of pathogen vs. ecosystem, and host vs. ecosystem
+```{r}
+load("PH.Rdata")
+require(cowplot)
+#make table of counts of each combination of two variables
+#pathogen vs. system
+tbl =table(as.character(PH$Pathogen.kingdom), as.character(PH$System))
+chisq.test(tbl, simulate.p.value = TRUE)
+
+#host vs. system
+tbl =table(as.character(PH$Host.kingdom), as.character(PH$System))
+chisq.test(tbl, simulate.p.value = TRUE)
+
+PH_t = subset(PH, System == "terrestrial")
+tbl.h = table(as.character(PH_t$Host.kingdom))
+tbl.h = data.frame(tbl.h)
+tbl.h$frac = round(tbl.h$Freq/sum(tbl.h$Freq), digits = 3)
+
+tbl.p = table(as.character(PH_t$Pathogen.kingdom))
+tbl.p = data.frame(tbl.p)
+tbl.p$frac = round(tbl.p$Freq/sum(tbl.p$Freq), digits = 3)
+tbl.p
+
+#aquatic
+PH_a = subset(PH, System == "aquatic")
+tbl.h = table(as.character(PH_a$Host.kingdom))
+tbl.h = data.frame(tbl.h)
+tbl.h$frac = round(tbl.h$Freq/sum(tbl.h$Freq), digits = 3)
+
+tbl.p = table(as.character(PH_a$Pathogen.kingdom))
+tbl.p = data.frame(tbl.p)
+tbl.p$frac = round(tbl.p$Freq/sum(tbl.p$Freq), digits = 3)
+tbl.p
+
+plot1<- ggplot(data = PH, mapping = aes(x = Pathogen.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~System, nrow = 2)+
+  ylab("Number of studies")+
+  xlab("Pathogen taxa")
+
+#plot
+#ggsave(plot = plot, filename = paste0("Figure.A.2", 
+ #                                     "pathogen-ecosystem-type", ".jpg"))
+
+plot2<- ggplot(data = PH, mapping = aes(x = Host.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~System, nrow = 2)+
+  ylab("Number of studies")+
+  xlab("Host taxa")
+
+p = plot_grid(plot1, plot2, labels = c("A", "B"), nrow = 2, align = "v")
+save_plot( "Figure.A.2.jpg", p, nrow = 2, dpi = 600)
+
+
+# plot
+# ggsave(plot = plot, filename = paste0("Figure.A.3", 
+#                                       "host-ecosystem-type", ".jpg"))
+
+
+# PHsum <- PH %>%
+#   group_by(System, Pathogen.kingdom) %>%
+#   summarize(count = n(),
+#             count_pathogen = n(Pathogen.kingdom),
+#             frac_pathogen = count_pathogen/count_system)
+
+```
+
+
+#chi squared test and plots for pathogen and host taxa vs. pathway to ecosystem function
+```{r}
+load("M.Rdata")
+require(cowplot)
+#get one row per study
+PHP = M[,c("paper.ID", "Pathogen.kingdom", "Host.kingdom", "System", "pathway")]
+PHP = PHP[!duplicated(PHP), ]
+PHP = subset(PHP, Pathogen.kingdom !="multiple")
+PHP = subset(PHP, Host.kingdom !="multiple")
+PHP = subset(PHP, Pathogen.kingdom !="not reported")
+
+PHP = subset(PHP, pathway %in% c("unknown to ecosystem fxn",
+                                 "abund biomass to ecosystem fxn", 
+             "morbidity to ecosystem fxn", 
+             "PP to ecosystem fxn"))
+df = PHP
+df$pathway = as.character(df$pathway)
+df$pathway[df$pathway == "unknown to ecosystem fxn"]="unknown --> ecosystem"
+df$pathway[df$pathway == "abund biomass to ecosystem fxn"]="abundance --> ecosystem"
+df$pathway[df$pathway == "morbidity to ecosystem fxn"]="phenotype --> ecosystem"
+df$pathway[df$pathway == "PP to ecosystem fxn"]="pathogen --> ecosystem"
+print("chi sq pathogen vs. pathway")
+tbl = table(as.character(df$Pathogen.kingdom), as.character(df$pathway))
+tbl
+chisq.test(tbl, simulate.p.value = TRUE)
+
+print("chi sq host vs. pathway")
+tbl = table(as.character(df$Host.kingdom), as.character(df$pathway))
+tbl
+chisq.test(tbl, simulate.p.value = TRUE)
+
+df$pathway <- factor(df$pathway, levels = c("abundance --> ecosystem", 
+             "phenotype --> ecosystem", 
+             "unknown --> ecosystem",
+             "pathogen --> ecosystem"))
+#levels(dfr$cyl_f)
+
+#abundance -- pathogen
+df_a = subset(df, pathway == "abundance --> ecosystem")
+tbl = table(as.character(df_a$Pathogen.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#abundance -- host
+df_a = subset(df, pathway == "abundance --> ecosystem")
+tbl = table(as.character(df_a$Host.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#morbid -- pathogen
+df_a = subset(df, pathway == "phenotype --> ecosystem")
+tbl = table(as.character(df_a$Pathogen.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#morbid -- host 
+df_a = subset(df, pathway == "phenotype --> ecosystem")
+tbl = table(as.character(df_a$Host.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#PP -- pathogen 
+df_a = subset(df, pathway == "pathogen --> ecosystem")
+tbl = table(as.character(df_a$Pathogen.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#PP -- host
+df_a = subset(df, pathway == "pathogen --> ecosystem")
+tbl = table(as.character(df_a$Host.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+plot<- ggplot(data = df, mapping = aes(x = Pathogen.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~pathway, ncol = 1)+
+  ylab("Number of studies")+
+  xlab("Pathogen taxa")
+ 
+plot
+save_plot( "Figure.A.3.pathogen.pathway.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
+
+#plot for host and pathway
+plot<- ggplot(data = df, mapping = aes(x = Host.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~pathway, ncol = 1)+
+  ylab("Number of studies")+
+  xlab("Host taxa")
+ 
+plot
+save_plot( "Figure.A.4.host.pathway.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
+
+```
+
+###run chi squared test and make plots for pathogen and host kingdom vs. ecosystem process
+```{r}
+#get one row per study
+PHP = M[,c("paper.ID", "Pathogen.kingdom", "Host.kingdom", "System", "measure.general")]
+PHP = PHP[!duplicated(PHP), ]
+PHP = subset(PHP, Pathogen.kingdom !="multiple")
+PHP = subset(PHP, Host.kingdom !="multiple")
+PHP = subset(PHP, Pathogen.kingdom !="not reported")
+
+PHP = subset(PHP, measure.general %in% c("primary production",
+                                 "secondary production", 
+             "biogeochemical cycles"))
+df = PHP
+df$measure.general = as.character(df$measure.general)
+
+print("chi sq pathogen vs. measure")
+tbl = table(as.character(df$Pathogen.kingdom), as.character(df$measure.general))
+tbl
+chisq.test(tbl, simulate.p.value = TRUE)
+
+print("chi sq host vs. measure")
+tbl = table(as.character(df$Host.kingdom), as.character(df$measure.general))
+tbl
+chisq.test(tbl, simulate.p.value = TRUE)
+
+df$measure.general <- factor(df$measure.general, levels = c("primary production",
+  "secondary production", 
+  "biogeochemical cycles"))
+
+#primary -- pathogen 
+df_a = subset(df, measure.general == "primary production")
+tbl = table(as.character(df_a$Pathogen.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#secondary -- pathogen 
+df_a = subset(df, measure.general == "secondary production")
+tbl = table(as.character(df_a$Pathogen.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#biogeo -- pathogen 
+df_a = subset(df, measure.general == "biogeochemical cycles")
+tbl = table(as.character(df_a$Pathogen.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#primary -- host 
+df_a = subset(df, measure.general == "primary production")
+tbl = table(as.character(df_a$Host.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+#secondary -- host 
+df_a = subset(df, measure.general == "secondary production")
+tbl = table(as.character(df_a$Host.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+df_check = subset(M, Host.kingdom == "plant" & measure.general == "secondary production")
+df_check$measure.specific....outcome.variable
+
+#biogeoche -- host 
+df_a = subset(df, measure.general == "biogeochemical cycles")
+tbl = table(as.character(df_a$Host.kingdom))
+tbl = data.frame(tbl)
+tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
+tbl
+
+plot<- ggplot(data = df, mapping = aes(x = Pathogen.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~measure.general, ncol = 1)+
+  ylab("Number of studies")+
+  xlab("Pathogen taxa")
+plot
+
+save_plot( "Figure.A.5.pathogen.measure.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
+
+#host -- ecosystem measure
+plot<- ggplot(data = df, mapping = aes(x = Host.kingdom))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_wrap(.~measure.general, ncol = 1)+
+  ylab("Number of studies")+
+  xlab("Host taxa")
+plot
+
+save_plot( "Figure.A.6.pathogen.measure.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
+
+
+```
+
+#####SCRATCH work below here. 
 
 ###make plot of frequency of pathogen kingdom for each pathway from host/community to ecosystem process
 ###commenting this part out for now, will do using M
@@ -326,34 +633,6 @@ plot
 # plot
 
 ```
-
-###read in measures data (which indicates which ecosystem process involved, among other info), merge with studies, make plot of pathogen kingdom vs. ecosystem process
-```{r}
-load("S.Rdata")
-names(S)[names(S)=="ID"]="paper.ID"
-names(S)[names(S)=="note"]="study.note"
-M = read.csv("meta_data_20180724 - measures.csv")
-#get just the rows for the ecosystem processes (excluding PP --> abund or morbidity)
-Mep = subset(M, measure.general == "biogeochemical cycles" | 
-               measure.general == "primary production" |
-               measure.general == "secondary production")
-intersect(names(Mep), names(S))
-setdiff(Mep$paper.ID, S$paper.ID)
-setdiff(S$paper.ID, Mep$paper.ID)
-Mep = merge(Mep, S)
-
-plot<- ggplot(data = Mep, mapping = aes(x = Pathogen.kingdom))+
-  geom_bar()+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  facet_wrap(.~measure.general)+
-  ylab("number of studies")+
-    ggtitle("frequency of pathogen kingdom in relation to ecosystem process")
-plot
-
-
-```
-
-#####SCRATCH work below here. 
 
 ####read in data and summarize
 ```{r}
