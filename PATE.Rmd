@@ -18,7 +18,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2", "MASS")
+neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -298,6 +298,7 @@ tbl.p$frac = round(tbl.p$Freq/sum(tbl.p$Freq), digits = 3)
 print("percent of pathogens")
 tbl.p
 
+balloonplot(t(tbl))
 ```
 
 ##read in studies data and make graph of pathogen frequency for each kingdom of hosts
