@@ -18,7 +18,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd")
+neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -165,30 +165,30 @@ save(P, file = "P.Rdata")
 
 ##combine study and measures data 
 ###includes error check that identifies couple of papers inadvertantly reviewed twice.  
-##fields in PATE_data.csv:
-##paper.ID: unique identifier for each paper (matches numbers in each screener's file)
-##author: study lead author
-##Pathogen.kingdom; Host.kingdom: note that there are some entries here for entities that are higher or lower than kingdom or (e.g. dinoflagellates) paraphyletic. We may want to limit analysis to categories that appear relatively frequently. 
-##System: aquatic, terrestrial
-##System.2: if we decide to use this we may want to bin these into fewer categories of biomes
-##PP.to.ecosystem.fxn: 1 (pathway present), 0 (absent); this describes direct effect of PP on ecosystem function, e.g. biomass of trematodes, primary production of hemiparasitic plants
-##"PP.abundance": this seems lower priority for analysis, refers to whether study included info on abundance of PP in the environment
-##"PP.morbidity": did the study contain info on the phenotype of pathogens (e.g. vigor of hemiparasitic plants). this seems lower priority for inclusion in analysis. 
-##"PP.to.host.infection.prevalence...intensity": does the paper report on PP infection prevalence or intensity? lower priority for analysis
-##"PP.to.abund.biomass", "PP.to.morbidity", "PP.to.unknown": does paper report on each of these pathways from PP to host/community. Unknown includes cases where it is not possible to determine whether effects are on abund/biomass or on morbidity
-##"abund.biomass.to.ecosystem.fxn", "morbidity.to.ecosystem.fxn", "unknown.to.ecosystem.fxn": does paper report on each of these pathways
-##abiotic.or.biotic: does paper report on abiotic or biotic factors that mediate influence of PP on other components in model? 
-##"experimental..PP.manipulation.or.mimic...1..observational..2..both..3.": is paper experimental, observational, or both; note entries in this field currently include some notes and would need to be cleaned up to be used in analysis. 
-##"process.vs..standing.stock.vs..both": does paper report on ecosystem effects as process (e.g. rate), standing stock, or report on both? 
-##"highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact": what is the highest observational scale at which ecosystem function effects have been measured: species, assemblage (multiple species), or ecosystem (includes papers in which effects at level of a functional group have been measured e.g. biomass of all trees) 
-##spatial scale: area or volume of sampling unit; description would require some recoding to be used in analysis 
-##"coordinates.in.paper": are lat/long reported in paper (note: have not extracted this info)
-##measureID: if a study reported on an ecosystem process measure (e.g. morbidity --> ecosystem fxn), we assumed that there was also a measure at an earlier stage in the conceptual diagram (PP --> morbidity). We created an additional record for this earlier stage, and linked the two stages with a measureID unique to that study. The two measures are also linked by having the same value for "measure.specific....outcome.variable", which is also unique within the study.  
-##pathway: what pathway has been measued
-##measure.general: in the case of (X --> ecosystem fxn), this is either biogeochemical cycles, primary production, or secondary production. For (PP --> X), there is more variation in how measures have been described, and some recoding would be needed to make these data comparable. 
-##"measure.specific....outcome.variable": the measure as described in the paper
-##effects.on.hoste; effects.on.community: was the PP --> X effect on the host or not, on the community or not; note this has not been filled in for all rows but could be based (have checked this for part) on the measure.general and measure.specific
-##ecosystem_process_mediate: did an ecosystem process mediate the relationship between PP and other components of the conceptual diagram. Note this has not been filled in throughout, but could be based on other data (have checked this for part) 
+#fields in PATE_data.csv:
+#paper.ID: unique identifier for each paper (matches numbers in each screener's file)
+#author: study lead author
+#Pathogen.kingdom; Host.kingdom: note that there are some entries here for entities that are higher or lower than kingdom or (e.g. dinoflagellates) paraphyletic. We may want to limit analysis to categories that appear relatively frequently. 
+#System: aquatic, terrestrial
+#System.2: if we decide to use this we may want to bin these into fewer categories of biomes
+#PP.to.ecosystem.fxn: 1 (pathway present), 0 (absent); this describes direct effect of PP on ecosystem function, e.g. biomass of trematodes, primary production of hemiparasitic plants
+#"PP.abundance": this seems lower priority for analysis, refers to whether study included info on abundance of PP in the environment
+#"PP.morbidity": did the study contain info on the phenotype of pathogens (e.g. vigor of hemiparasitic plants). this seems lower priority for inclusion in analysis. 
+#"PP.to.host.infection.prevalence...intensity": does the paper report on PP infection prevalence or intensity? lower priority for analysis
+#"PP.to.abund.biomass", "PP.to.morbidity", "PP.to.unknown": does paper report on each of these pathways from PP to host/community. Unknown includes cases where it is not possible to determine whether effects are on abund/biomass or on morbidity
+#"abund.biomass.to.ecosystem.fxn", "morbidity.to.ecosystem.fxn", "unknown.to.ecosystem.fxn": does paper report on each of these pathways
+#abiotic.or.biotic: does paper report on abiotic or biotic factors that mediate influence of PP on other components in model? 
+#"experimental..PP.manipulation.or.mimic...1..observational..2..both..3.": is paper experimental, observational, or both; note entries in this field currently include some notes and would need to be cleaned up to be used in analysis. 
+#"process.vs..standing.stock.vs..both": does paper report on ecosystem effects as process (e.g. rate), standing stock, or report on both? 
+#"highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact": what is the highest observational scale at which ecosystem function effects have been measured: species, assemblage (multiple species), or ecosystem (includes papers in which effects at level of a functional group have been measured e.g. biomass of all trees) 
+#spatial scale: area or volume of sampling unit; description would require some recoding to be used in analysis 
+#"coordinates.in.paper": are lat/long reported in paper (note: have not extracted this info)
+#measureID: if a study reported on an ecosystem process measure (e.g. morbidity --> ecosystem fxn), we assumed that there was also a measure at an earlier stage in the conceptual diagram (PP --> morbidity). We created an additional record for this earlier stage, and linked the two stages with a measureID unique to that study. The two measures are also linked by having the same value for "measure.specific....outcome.variable", which is also unique within the study.  
+#pathway: what pathway has been measued
+#measure.general: in the case of (X --> ecosystem fxn), this is either biogeochemical cycles, primary production, or secondary production. For (PP --> X), there is more variation in how measures have been described, and some recoding would be needed to make these data comparable. 
+#"measure.specific....outcome.variable": the measure as described in the paper
+#effects.on.hoste; effects.on.community: was the PP --> X effect on the host or not, on the community or not; note this has not been filled in for all rows but could be based (have checked this for part) on the measure.general and measure.specific
+#ecosystem_process_mediate: did an ecosystem process mediate the relationship between PP and other components of the conceptual diagram. Note this has not been filled in throughout, but could be based on other data (have checked this for part) 
 ```{r}
 load("S.Rdata")
 load("P.Rdata")
@@ -289,24 +289,22 @@ dim(PH)[1]
 #https://4va.github.io/biodatasci/r-stats.html
 PH$Pathogen.kingdom=as.character(PH$Pathogen.kingdom)
 PH$Host.kingdom = as.character(PH$Host.kingdom)
-tbl <- xtabs(~Host.kingdom+ Pathogen.kingdom, data=PH)
+tbl <- xtabs(~Pathogen.kingdom+Host.kingdom, data=PH)
 tbl
-jpeg("Figure.A.2.host.pathogen.jpeg", width = 9, height = 10, units = 'in', res = 300)
+jpeg("Figure.A.2.pathogen.host.jpeg", width = 9, height = 10, units = 'in', res = 300)
 #this piece required some minor adjustments
 # par(mar=c(5, 24, 5, 5.7) + 0.1, ps = 8)# 
 
-#par(mar=c(5,24,5,5.7))
-par(mar=rep(5,4))
+par(mar=c(1,1,1,1))
 assocplot(tbl,
-          ylab = "Pathogen or parasite",
-          xlab = "Host")
+          xlab = "")
 dev.off()#need to do this to finish the plot
 
 
 #chisq.test(tbl) 
 (X <- chisq.test(tbl, simulate.p.value = TRUE))
 #(X <- chisq.test(tbl))
-#barplot(X$observed, X$expected, beside = TRUE)
+barplot(X$observed, X$expected, beside = TRUE)
 #
 save(PH, file = "PH.Rdata")
 tbl.host = table(PH$Host.kingdom)
@@ -337,42 +335,21 @@ plot<- ggplot(data = PH, mapping = aes(x = Pathogen.kingdom))+
 
 plot
 ggsave(plot = plot, filename = paste0("Figure.A.1", 
-                                      "pathogen-host-facet", ".jpg"))
+                                      "pathogen-host", ".jpg"))
 ```
 
 ###make contingency table of pathogen vs. ecosystem, and host vs. ecosystem
 ```{r}
 load("PH.Rdata")
+require(cowplot)
 #make table of counts of each combination of two variables
 #pathogen vs. system
-PH$Pathogen.kingdom = as.character(PH$Pathogen.kingdom)
-PH$System = as.character(PH$System)
-PH$Pathogen.kingdom[PH$Pathogen.kingdom=="eukaryote"]="euk."
-tbl <- xtabs(~Pathogen.kingdom+ System, data=PH)
-
-jpeg("Figure.A.pathogen.system.jpeg", width = 9, height = 10, units = 'in', res = 300)
-#this piece required some minor adjustments
-par(mar=rep(5,4))
-assocplot(tbl,
-          xlab = "Pathogen or parasite",
-          ylab = "Ecosystem type")
-dev.off()#need to do this to finish the plot
-
-# tbl =table(as.character(PH$Pathogen.kingdom), as.character(PH$System))
-X = chisq.test(tbl, simulate.p.value = TRUE)
+tbl =table(as.character(PH$Pathogen.kingdom), as.character(PH$System))
+chisq.test(tbl, simulate.p.value = TRUE)
 
 #host vs. system
-tbl <- xtabs(~Host.kingdom+ System, data=PH)
-jpeg("Figure.A.host.system.jpeg", width = 9, height = 10, units = 'in', res = 300)
-#this piece required some minor adjustments
-par(mar=rep(5,4))
-assocplot(tbl,
-          xlab = "Host",
-          ylab = "Ecosystem type")
-dev.off()#need to do this to finish the plot
-
-# tbl =table(as.character(PH$Host.kingdom), as.character(PH$System))
-X = chisq.test(tbl, simulate.p.value = TRUE)
+tbl =table(as.character(PH$Host.kingdom), as.character(PH$System))
+chisq.test(tbl, simulate.p.value = TRUE)
 
 PH_t = subset(PH, System == "terrestrial")
 tbl.h = table(as.character(PH_t$Host.kingdom))
@@ -394,8 +371,6 @@ tbl.p = table(as.character(PH_a$Pathogen.kingdom))
 tbl.p = data.frame(tbl.p)
 tbl.p$frac = round(tbl.p$Freq/sum(tbl.p$Freq), digits = 3)
 tbl.p
-
-require(cowplot)
 
 plot1<- ggplot(data = PH, mapping = aes(x = Pathogen.kingdom))+
   geom_bar()+
@@ -450,92 +425,63 @@ PHP = subset(PHP, pathway %in% c("unknown to ecosystem fxn",
              "PP to ecosystem fxn"))
 df = PHP
 df$pathway = as.character(df$pathway)
-df$Pathogen.kingdom = as.character(df$Pathogen.kingdom)
-df$pathway[df$pathway == "unknown to ecosystem fxn"]="ukn.->eco."
-df$pathway[df$pathway == "abund biomass to ecosystem fxn"]="abundance->eco."
-df$pathway[df$pathway == "morbidity to ecosystem fxn"]="phenotype->eco."
-df$pathway[df$pathway == "PP to ecosystem fxn"]="PP->eco."
-
-df$Pathogen.kingdom[df$Pathogen.kingdom=="bacteria"] ="bact."
-df$Pathogen.kingdom[df$Pathogen.kingdom=="eukaryote"] ="euk."
-
-df$Pathogen.kingdom[df$Pathogen.kingdom=="fungus"] ="fung."
-#check that records are correct
-test = subset(df, Pathogen.kingdom=="eukaryote" & pathway == "PP->eco.")
+df$pathway[df$pathway == "unknown to ecosystem fxn"]="unknown --> ecosystem"
+df$pathway[df$pathway == "abund biomass to ecosystem fxn"]="abundance --> ecosystem"
+df$pathway[df$pathway == "morbidity to ecosystem fxn"]="phenotype --> ecosystem"
+df$pathway[df$pathway == "PP to ecosystem fxn"]="pathogen --> ecosystem"
 print("chi sq pathogen vs. pathway")
-
-df$Pathogen.kingdom=as.character(df$Pathogen.kingdom)
-df$pathway=as.character(df$pathway)
-
-df$pathway <- factor(df$pathway, levels = c("abundance->eco.", 
-             "phenotype->eco.", 
-             "ukn.->eco.",
-             "PP->eco."))
-
-tbl_pathway <- xtabs(~pathway, data = df)
-tbl <- xtabs(~Pathogen.kingdom+ pathway, data=df)
-jpeg("Figure.A.pathogen.pathway.jpeg", width = 9, height = 10, units = 'in', res = 300)
-par(mar=rep(5,4))
-assocplot(tbl,
-          xlab = "Pathogen",
-          ylab = "Pathway")
-dev.off()#need to do this to finish the plot
-
-Xp = chisq.test(tbl, simulate.p.value = TRUE)
-
-##Host and pathway
-df$Host.kingdom = as.character(df$Host.kingdom)
+tbl = table(as.character(df$Pathogen.kingdom), as.character(df$pathway))
+tbl
+chisq.test(tbl, simulate.p.value = TRUE)
 
 print("chi sq host vs. pathway")
-tbl <- xtabs(~Host.kingdom+ pathway, data=df)
-jpeg("Figure.A.host.pathway.jpeg", width = 9, height = 10, units = 'in', res = 300)
-par(mar=rep(5,4))
-assocplot(tbl,
-          xlab = "Host",
-          ylab = "Pathway")
-dev.off()#need to do this to finish the plot
+tbl = table(as.character(df$Host.kingdom), as.character(df$pathway))
+tbl
+chisq.test(tbl, simulate.p.value = TRUE)
 
-Xh = chisq.test(tbl, simulate.p.value = TRUE)
-
+df$pathway <- factor(df$pathway, levels = c("abundance --> ecosystem", 
+             "phenotype --> ecosystem", 
+             "unknown --> ecosystem",
+             "pathogen --> ecosystem"))
 #levels(dfr$cyl_f)
 
 #abundance -- pathogen
-df_a = subset(df, pathway == "abund.->eco.")
+df_a = subset(df, pathway == "abundance --> ecosystem")
 tbl = table(as.character(df_a$Pathogen.kingdom))
 tbl = data.frame(tbl)
 tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
 tbl
 
 #abundance -- host
-df_a = subset(df, pathway == "abund.->eco.")
+df_a = subset(df, pathway == "abundance --> ecosystem")
 tbl = table(as.character(df_a$Host.kingdom))
 tbl = data.frame(tbl)
 tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
 tbl
 
 #morbid -- pathogen
-df_a = subset(df, pathway == "phenotype->eco.")
+df_a = subset(df, pathway == "phenotype --> ecosystem")
 tbl = table(as.character(df_a$Pathogen.kingdom))
 tbl = data.frame(tbl)
 tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
 tbl
 
 #morbid -- host 
-df_a = subset(df, pathway == "phenotype->eco.")
+df_a = subset(df, pathway == "phenotype --> ecosystem")
 tbl = table(as.character(df_a$Host.kingdom))
 tbl = data.frame(tbl)
 tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
 tbl
 
 #PP -- pathogen 
-df_a = subset(df, pathway == "PP->eco.")
+df_a = subset(df, pathway == "pathogen --> ecosystem")
 tbl = table(as.character(df_a$Pathogen.kingdom))
 tbl = data.frame(tbl)
 tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
 tbl
 
 #PP -- host
-df_a = subset(df, pathway == "PP->eco.")
+df_a = subset(df, pathway == "pathogen --> ecosystem")
 tbl = table(as.character(df_a$Host.kingdom))
 tbl = data.frame(tbl)
 tbl$frac = round(tbl$Freq/sum(tbl$Freq), digits = 3)
@@ -577,42 +523,21 @@ PHP = subset(PHP, measure.general %in% c("primary production",
                                  "secondary production", 
              "biogeochemical cycles"))
 df = PHP
-
-df$measure.general <- factor(df$measure.general, levels = c("primary production", 
-             "secondary production", 
-             "biogeochemical cycles"))
-
 df$measure.general = as.character(df$measure.general)
-df$Pathogen.kingdom=as.character(df$Pathogen.kingdom)
-df$Host.kingdom=as.character(df$Host.kingdom)
-df$Pathogen.kingdom[df$Pathogen.kingdom=="bacteria"] ="bact."
-df$Pathogen.kingdom[df$Pathogen.kingdom=="eukaryote"] ="euk."
+
+print("chi sq pathogen vs. measure")
+tbl = table(as.character(df$Pathogen.kingdom), as.character(df$measure.general))
+tbl
+chisq.test(tbl, simulate.p.value = TRUE)
+
+print("chi sq host vs. measure")
+tbl = table(as.character(df$Host.kingdom), as.character(df$measure.general))
+tbl
+chisq.test(tbl, simulate.p.value = TRUE)
 
 df$measure.general <- factor(df$measure.general, levels = c("primary production",
   "secondary production", 
   "biogeochemical cycles"))
-
-tbl <- xtabs(~Pathogen.kingdom+ measure.general, data=df)
-jpeg("Figure.A.pathogen.ecosystem.function.jpeg", width = 9, height = 10, units = 'in', res = 300)
-par(mar=rep(5,4))
-assocplot(tbl,
-          xlab = "Pathogen",
-          ylab = "Ecosystem function")
-dev.off()#need to do this to finish the plot
-
-print("chi sq pathogen vs. measure")
-Xp = chisq.test(tbl, simulate.p.value = TRUE)
-
-print("chi sq host vs. measure")
-tbl <- xtabs(~Host.kingdom+ measure.general, data=df)
-Xh = chisq.test(tbl, simulate.p.value = TRUE)
-
-jpeg("Figure.A.host.ecosystem.function.jpeg", width = 9, height = 10, units = 'in', res = 300)
-par(mar=rep(5,4))
-assocplot(tbl,
-          xlab = "Host",
-          ylab = "Ecosystem function")
-dev.off()#need to do this to finish the plot
 
 #primary -- pathogen 
 df_a = subset(df, measure.general == "primary production")
