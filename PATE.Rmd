@@ -4,6 +4,8 @@ author: "Ilya"
 date: "8/17/2018"
 output: github_document
 ---
+#use 
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -18,7 +20,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd")
+neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -128,8 +130,12 @@ save(S, file = "S.Rdata")
 
 ###read in measures data and generate a PP --> abund/morbidity row for each abund/morbidity --> ecosystem process record that does not have an accompanying PP --> abund/morbidity
 ```{r}
-P = read.csv("meta_data_20180724 - measures.csv")
-P = subset(P, exclude.as.ecosystem.measure !=1)
+P = read.csv("meta_data_20180724 - quant_data.csv")
+dim(P)
+P = subset(P, is.na(exclude.as.ecosystem.measure))
+dim(P)[1]
+P = subset(P, !is.na(pathway))
+dim(P)[1]
 subset(P, is.na(paper.ID))#should be empty
 P$have.not.added.double.counting=trimws(P$have.not.added.double.counting)
 ##find rows for which "have.not.added.double.counting" is non-empty
@@ -266,6 +272,207 @@ save(M, file = "M.Rdata")
 write.csv(M, file ="PATE_data.csv")
 ```
 
+###meta-analysis
+
+#mean_variance
+#exclude data points with standard deviation equal to zero
+```{r mean_variance}
+load("M.Rdata")
+# sd_adjust = 0.0001
+M = subset(M, pathway %in% c("morbidity to ecosystem fxn",
+                             "unknown to ecosystem fxn",
+                             "abund biomass to ecosystem fxn",
+                             "PP to ecosystem fxn"))
+#M = subset(M, exclude.as.ecosystem.measure !=1)
+M$d = NA
+M$control_sd=NA
+M$infected_sd = NA
+M$d = NA
+M$d.sampling.variance = NA
+M$control.mean=as.numeric(as.character(M$control.mean))
+M$infected.mean=as.numeric(as.character(M$infected.mean))
+M.y = subset(M, data.to.use == "mean_variance" & !is.na(control.mean))
+M.n  = subset(M, data.to.use != "mean_variance" | (data.to.use == "mean_variance" & is.na(control.mean)))
+dim(M.y)[1]+dim(M.n)[1]==dim(M)[1]
+#for each record, get effect size and SE
+a = 31
+for (a in 1:dim(M.y)[1]){
+  #find out what type of variance measure is there
+  var_measure = M.y$variance.measure[a]
+  if (var_measure == "SE"){
+    M.y$control_sd[a]=M.y$control.variance[a]*sqrt(M.y$sample.size.control[a])
+    M.y$infected_sd[a]=M.y$infected.variance[a]*sqrt(M.y$sample.size.infected[a])
+  }
+  if (var_measure == "CV"){
+    #comment out these lines relevant for SE
+    # C.tmp$log.ci.ub = C.tmp$log.odds.ratio+1.96*C.tmp$log.se
+    # SE = (CI.upper - mean)/1.96
+    M.y$control_sd[a] = M.y$control.variance[a]*M.y$control.mean[a]/100
+    M.y$infected_sd[a] = M.y$infected.variance[a]*M.y$infected.mean[a]/100
+  }
+  m1i = M.y$control.mean[a]
+  m2i = M.y$infected.mean[a]
+  sd1i = M.y$control_sd[a]
+  sd2i = M.y$infected_sd[a]
+  # if (sd1i == 0 | sd2i == 0){
+  #   sd1i = sd1i+sd_adjust
+  #   sd2i = sd2i+sd_adjust
+  # }
+  n1i = M.y$sample.size.control[a]
+  n2i = M.y$sample.size.infected[a]
+  m = escalc(measure = "SMD",
+         m1i = m1i,
+         m2i = m2i,
+         sd1i = sd1i,
+         sd2i = sd2i,
+         n1i = n1i,
+         n2i = n2i)
+  M.y$d[a] =m$yi[1]
+  print("a")
+  print(a)
+  print(M.y$d[a])
+  M.y$d.sampling.variance[a] = m$vi[1]
+}
+
+ustudy = unique(M.y$paper.ID)
+#for each study
+out = NULL
+b = 2
+c = 1
+d = 1
+e = 1
+
+for (b in 1:length(ustudy)){
+  s.tmp = subset(M.y, paper.ID == ustudy[b])
+  upath = unique(s.tmp$pathway)
+#for each pathway in study
+    for (c in 1:length(upath)){
+      p.tmp = subset(s.tmp, pathway == upath[c])
+      umeasure = unique(p.tmp$measure.general)
+      #for each general measure, find all variables within that measure
+      for (d in 1:length(umeasure)){
+        inds = which(p.tmp$measure.general == umeasure[d])
+        m.tmp = p.tmp[inds,]
+        #unique variable
+        uvar = unique(m.tmp$measure.specific....outcome.variable)
+        for (e in 1:length(uvar)){
+          v.tmp = subset(m.tmp, measure.specific....outcome.variable == uvar[e])
+          if (dim(v.tmp)[1]>1){
+            #if more than one record for a variable, find pooled estimate across all records
+            m = escalc(yi = v.tmp$d,
+                       vi = v.tmp$d.sampling.variance,
+                       measure = "MN")  
+            v.tmp$d = m$yi[1]
+            v.tmp$d.sampling.variance = m$vi[1]
+            v.tmp = v.tmp[1,]
+            out = rbind(out, v.tmp)
+          }#end if statement
+          else {#else use value already gotten
+            out = rbind(out, v.tmp)
+          }#end else
+          print("b")
+          print(b)
+          print("c")
+          print(c)
+          print("d")
+          print(d)
+          print("e")
+          print(e)
+          print(v.tmp$d)
+          
+        }#end variable
+        
+      }#end general measure
+  }#end pathway
+}#end study
+dim(out)
+
+M = rbind(M.n, out)
+save(M, file = "M.Rdata")
+
+out$pathway = factor(out$pathway)
+out$measure.general=factor(out$measure.general)
+out$paper.ID=factor(out$paper.ID)
+m1 = rma.uni(d ~ pathway +measure.general -1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+# anova(m1)
+#permutest(m1, exact=TRUE)#number of iter too large
+# permutest(m1, iter=10000)#
+m.pathway = rma.uni(d ~ pathway -1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+
+m.measure = rma.uni(d ~ factor(measure.general)-1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+
+# summary(glht(m.measure, linfct=cbind(contrMat(c("biogeochemical cycles"=1,"primary production" = 1, "secondary production"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
+
+# library(multcomp)
+# 
+# dat <- escalc(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=dat.bcg)
+# dat
+
+# res <- rma(yi, vi, mods = ~ factor(alloc) + year + ablat - 1, data=dat)
+# res
+# summary(glht(res, linfct=cbind(contrMat(c("alternate"=1,"random"=1,"systematic"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
+
+####more complicated version
+#find number of variables and number of secondary factors for each variable
+#for each variable and each secondary, etc. factor within that variable
+#if number of secondary, etc. factors is three
+#for each quaternary factor, find the pooled estimate for all records across that quaternary factor, save to output including pooled estimates for tertiary factors
+#for each 
+#for each 
+
+#if one variable and no secondary_factors, use effect size and SE for that record
+#else if one variable and secondary variables within that
+#if more than one variable, then for each variable:
+#find whether secondary_factor, tertiary_factor, quaternary_factor have been filled in
+#if secondary_factor filled in, then get  pooled estimate across all variables within that measure.
+#if there are more than one variable within that measure
+#if there is a secondary level within , get pooled estimate for all records within that  
+```
+
+
+##one-way ANOVA: calculate effect sizes from F and sample size
+#To do: determine if we can infer positive or negative in effect size if study does not report direction, for non-significant results
+```{r}
+load("M.Rdata")
+M.y = subset(M, data.to.use == "one-way ANVOA F _ degrees freedom")
+M.n = subset(M, data.to.use != "one-way ANVOA F _ degrees freedom")
+#calculate d (effect size) from F and sample size (Koricheva et al. p. 200, F ratio from one-way ANOVA)
+#calculate SE from d and P value (
+```
+
+#percent difference and P
+```{r}
+#calculate effect size from percent change
+#calculate SE from effect size and P value
+```
+
+##means and P
+```{r means P}
+#calculate percent difference between two means. 
+#calculate SE based on P
+```
+
+#R2 and direction and sample size
+```{r}
+
+```
+
+#"correlation coefficient and P and sample size"
+```{r}
+
+```
+
+
+
 ###pathogen vs. host test for significant associations using chi-square
 ```{r}
 load("M.Rdata")
@@ -340,7 +547,7 @@ ggsave(plot = plot, filename = paste0("Figure.A.1",
                                       "pathogen-host-facet", ".jpg"))
 ```
 
-###make contingency table of pathogen vs. ecosystem, and host vs. ecosystem
+###make contingency table of pathogen vs. ecosystem type, and host vs. ecosystem
 ```{r}
 load("PH.Rdata")
 #make table of counts of each combination of two variables
@@ -566,6 +773,7 @@ save_plot( "Figure.A.4.host.pathway.jpg", plot, nrow = 1, dpi = 600, base_height
 
 ###run chi squared test and make plots for pathogen and host kingdom vs. ecosystem process
 ```{r}
+load("M.Rdata")
 #get one row per study
 PHP = M[,c("paper.ID", "Pathogen.kingdom", "Host.kingdom", "System", "measure.general")]
 PHP = PHP[!duplicated(PHP), ]
@@ -591,7 +799,7 @@ df$Pathogen.kingdom[df$Pathogen.kingdom=="eukaryote"] ="euk."
 df$measure.general <- factor(df$measure.general, levels = c("primary production",
   "secondary production", 
   "biogeochemical cycles"))
-
+tbl_fxn <- xtabs(~measure.general, data=df)
 tbl <- xtabs(~Pathogen.kingdom+ measure.general, data=df)
 jpeg("Figure.A.pathogen.ecosystem.function.jpeg", width = 9, height = 10, units = 'in', res = 300)
 par(mar=rep(5,4))
@@ -682,6 +890,9 @@ save_plot( "Figure.A.6.pathogen.measure.jpg", plot, nrow = 1, dpi = 600, base_he
 
 
 ```
+
+
+
 
 #####SCRATCH work below here. 
 
