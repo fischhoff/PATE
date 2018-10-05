@@ -4,7 +4,6 @@ author: "Ilya"
 date: "8/17/2018"
 output: github_document
 ---
-#use 
 
 
 ```{r setup, include=FALSE}
@@ -120,7 +119,7 @@ test
 table(out$include_article_review)
 ```
 
-#read in studies spreadsheet and remove ones that were later excluded
+####read in studies spreadsheet and remove ones that were later excluded
 ```{r}
 S <- read.csv("meta_data_20180724 - studies.csv")
 #unique(S$exclude)
@@ -169,32 +168,32 @@ P = rbind(D.not, out)
 save(P, file = "P.Rdata")
 ```
 
-##combine study and measures data 
+####combine study and measures data 
 ###includes error check that identifies couple of papers inadvertantly reviewed twice.  
 ##fields in PATE_data.csv:
 ##paper.ID: unique identifier for each paper (matches numbers in each screener's file)
 ##author: study lead author
 ##Pathogen.kingdom; Host.kingdom: note that there are some entries here for entities that are higher or lower than kingdom or (e.g. dinoflagellates) paraphyletic. We may want to limit analysis to categories that appear relatively frequently. 
-##System: aquatic, terrestrial
-##System.2: if we decide to use this we may want to bin these into fewer categories of biomes
-##PP.to.ecosystem.fxn: 1 (pathway present), 0 (absent); this describes direct effect of PP on ecosystem function, e.g. biomass of trematodes, primary production of hemiparasitic plants
-##"PP.abundance": this seems lower priority for analysis, refers to whether study included info on abundance of PP in the environment
-##"PP.morbidity": did the study contain info on the phenotype of pathogens (e.g. vigor of hemiparasitic plants). this seems lower priority for inclusion in analysis. 
-##"PP.to.host.infection.prevalence...intensity": does the paper report on PP infection prevalence or intensity? lower priority for analysis
-##"PP.to.abund.biomass", "PP.to.morbidity", "PP.to.unknown": does paper report on each of these pathways from PP to host/community. Unknown includes cases where it is not possible to determine whether effects are on abund/biomass or on morbidity
-##"abund.biomass.to.ecosystem.fxn", "morbidity.to.ecosystem.fxn", "unknown.to.ecosystem.fxn": does paper report on each of these pathways
-##abiotic.or.biotic: does paper report on abiotic or biotic factors that mediate influence of PP on other components in model? 
-##"experimental..PP.manipulation.or.mimic...1..observational..2..both..3.": is paper experimental, observational, or both; note entries in this field currently include some notes and would need to be cleaned up to be used in analysis. 
-##"process.vs..standing.stock.vs..both": does paper report on ecosystem effects as process (e.g. rate), standing stock, or report on both? 
-##"highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact": what is the highest observational scale at which ecosystem function effects have been measured: species, assemblage (multiple species), or ecosystem (includes papers in which effects at level of a functional group have been measured e.g. biomass of all trees) 
-##spatial scale: area or volume of sampling unit; description would require some recoding to be used in analysis 
-##"coordinates.in.paper": are lat/long reported in paper (note: have not extracted this info)
-##measureID: if a study reported on an ecosystem process measure (e.g. morbidity --> ecosystem fxn), we assumed that there was also a measure at an earlier stage in the conceptual diagram (PP --> morbidity). We created an additional record for this earlier stage, and linked the two stages with a measureID unique to that study. The two measures are also linked by having the same value for "measure.specific....outcome.variable", which is also unique within the study.  
-##pathway: what pathway has been measued
-##measure.general: in the case of (X --> ecosystem fxn), this is either biogeochemical cycles, primary production, or secondary production. For (PP --> X), there is more variation in how measures have been described, and some recoding would be needed to make these data comparable. 
-##"measure.specific....outcome.variable": the measure as described in the paper
-##effects.on.hoste; effects.on.community: was the PP --> X effect on the host or not, on the community or not; note this has not been filled in for all rows but could be based (have checked this for part) on the measure.general and measure.specific
-##ecosystem_process_mediate: did an ecosystem process mediate the relationship between PP and other components of the conceptual diagram. Note this has not been filled in throughout, but could be based on other data (have checked this for part) 
+###System: aquatic, terrestrial
+###System.2: if we decide to use this we may want to bin these into fewer categories of biomes
+###PP.to.ecosystem.fxn: 1 (pathway present), 0 (absent); this describes direct effect of PP on ecosystem function, e.g. biomass of trematodes, primary production of hemiparasitic plants
+###"PP.abundance": this seems lower priority for analysis, refers to whether study included info on abundance of PP in the environment
+###"PP.morbidity": did the study contain info on the phenotype of pathogens (e.g. vigor of hemiparasitic plants). this seems lower priority for inclusion in analysis. 
+###"PP.to.host.infection.prevalence...intensity": does the paper report on PP infection prevalence or intensity? lower priority for analysis
+###"PP.to.abund.biomass", "PP.to.morbidity", "PP.to.unknown": does paper report on each of these pathways from PP to host/community. Unknown includes cases where it is not possible to determine whether effects are on abund/biomass or on morbidity
+###"abund.biomass.to.ecosystem.fxn", "morbidity.to.ecosystem.fxn", "unknown.to.ecosystem.fxn": does paper report on each of these pathways
+###abiotic.or.biotic: does paper report on abiotic or biotic factors that mediate influence of PP on other components in model? 
+###"experimental..PP.manipulation.or.mimic...1..observational..2..both..3.": is paper experimental, observational, or both; note entries in this field currently include some notes and would need to be cleaned up to be used in analysis. 
+###"process.vs..standing.stock.vs..both": does paper report on ecosystem effects as process (e.g. rate), standing stock, or report on both? 
+###"highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact": what is the highest observational scale at which ecosystem function effects have been measured: species, assemblage (multiple species), or ecosystem (includes papers in which effects at level of a functional group have been measured e.g. biomass of all trees) 
+###spatial scale: area or volume of sampling unit; description would require some recoding to be used in analysis 
+###"coordinates.in.paper": are lat/long reported in paper (note: have not extracted this info)
+###measureID: if a study reported on an ecosystem process measure (e.g. morbidity --> ecosystem fxn), we assumed that there was also a measure at an earlier stage in the conceptual diagram (PP --> morbidity). We created an additional record for this earlier stage, and linked the two stages with a measureID unique to that study. The two measures are also linked by having the same value for "measure.specific....outcome.variable", which is also unique within the study.  
+###pathway: what pathway has been measued
+###measure.general: in the case of (X --> ecosystem fxn), this is either biogeochemical cycles, primary production, or secondary production. For (PP --> X), there is more variation in how measures have been described, and some recoding would be needed to make these data comparable. 
+###"measure.specific....outcome.variable": the measure as described in the paper
+###effects.on.host; effects.on.community: was the PP --> X effect on the host or not, on the community or not; note this has not been filled in for all rows but could be based (have checked this for part) on the measure.general and measure.specific
+###ecosystem_process_mediate: did an ecosystem process mediate the relationship between PP and other components of the conceptual diagram. Note this has not been filled in throughout, but could be based on other data (have checked this for part) 
 ```{r}
 load("S.Rdata")
 load("P.Rdata")
@@ -274,10 +273,114 @@ write.csv(M, file ="PATE_data.csv")
 
 ###meta-analysis
 
-#mean_variance
-#exclude data points with standard deviation equal to zero
+###functions
+###write function to get pooled value for variable across all "levels" within a study, pathway, and general.measure  
+```{r}
+
+one.per.var = function(M.y){
+  ustudy = unique(M.y$paper.ID)
+  out = NULL
+  for (b in 1:length(ustudy)){
+  s.tmp = subset(M.y, paper.ID == ustudy[b])
+  upath = unique(s.tmp$pathway)
+#for each pathway in study
+    for (c in 1:length(upath)){
+      p.tmp = subset(s.tmp, pathway == upath[c])
+      umeasure = unique(p.tmp$measure.general)
+      #for each general measure, find all variables within that measure
+      for (d in 1:length(umeasure)){
+        inds = which(p.tmp$measure.general == umeasure[d])
+        m.tmp = p.tmp[inds,]
+        #unique variable
+        uvar = unique(m.tmp$measure.specific....outcome.variable)
+        for (e in 1:length(uvar)){
+          v.tmp = subset(m.tmp, measure.specific....outcome.variable == uvar[e])
+          if (dim(v.tmp)[1]>1){
+            #if more than one record for a variable, find pooled estimate across all records
+            #print(v.tmp$d)
+            m = rma(yi = v.tmp$d,
+                       vi = v.tmp$d.sampling.variance,
+                       measure = "MN")  
+            #print(m)
+            v.tmp$d = m$yi[1]
+            v.tmp$d.sampling.variance = m$vi[1]
+            v.tmp = v.tmp[1,]
+            
+            out = rbind(out, v.tmp)
+          }#end if statement
+          else {#else use value already gotten
+            out = rbind(out, v.tmp)
+          }#end else
+          # print("b")
+          # print(b)
+          # print("c")
+          # print(c)
+          # print("d")
+          # print(d)
+          # print("e")
+          # print(e)
+          # print(v.tmp$d)
+          
+        }#end variable
+        
+      }#end general measure
+   }#end pathway
+  }#end study
+  return(out)
+}#end function
+
+save(one.per.var, file = "one.per.var.Rdata")
+
+```
+
+###write function to get standard error based on p value and effect size
+```{r}
+se_from_p <- function(effect, p){
+  z = -0.862 + sqrt(0.743 - 2.404*log(p))
+  SE = effect/z
+  return(SE)
+}
+save(se_from_p, file = "se_from_p.Rdata")
+```
+
+###function to calculate SE from r and n
+###source: Zar, J. 1999. Biostatistical analysis. p. 373
+```{r}
+se.calc.from.r.n <-  function( r, n){
+  se.calc = sqrt((1-r^2)/(n-2))
+  return (se.calc)
+}
+save(se.calc.from.r.n,file="se.calc.from.r.n.Rdata")
+```
+
+###function to calculate d from r
+```{r}
+r_to_d <- function(df ){
+      r = df$correlation.coefficient
+      r2 = r^2
+      d = 2*r/sqrt(1-r2)
+      #Standard deviation (s) = Standard Error * √n 
+      print(as.numeric(as.character(df$correlation.coefficient.se)))
+      s_r = as.numeric(as.character(df$correlation.coefficient.se))*sqrt(df$sample.size.total)
+      var_r = s_r^2
+      var_d = 4*var_r/((1-r2)^3)
+      #from d and var_d to log odds ratio
+      df$d =d
+      df$d.sampling.variance = var_d
+      df2 <-df
+  return(df2)
+}
+save(r_to_d, file = "r_to_d.Rdata")
+```
+
+###following chunks each handle one data type encountered in papers, and convert that data type to d (standardized mean difference) and sampling variance in d
+
+###mean_variance
+###exclude data points with standard deviation equal to zero
 ```{r mean_variance}
 load("M.Rdata")
+load("one.per.var.Rdata")
+
 # sd_adjust = 0.0001
 M = subset(M, pathway %in% c("morbidity to ecosystem fxn",
                              "unknown to ecosystem fxn",
@@ -328,21 +431,160 @@ for (a in 1:dim(M.y)[1]){
          n1i = n1i,
          n2i = n2i)
   M.y$d[a] =m$yi[1]
-  print("a")
-  print(a)
-  print(M.y$d[a])
+  #print("a")
+  #print(a)
+  #print(M.y$d[a])
   M.y$d.sampling.variance[a] = m$vi[1]
 }
 
 ustudy = unique(M.y$paper.ID)
 #for each study
-out = NULL
-b = 2
+out = one.per.var(M.y)
+
+dim(out)
+
+M = rbind(M.n, out)
+save(M, file = "M.Rdata")
+
+
+####brainstorming, more complicated version, not doing
+#find number of variables and number of secondary factors for each variable
+#for each variable and each secondary, etc. factor within that variable
+#if number of secondary, etc. factors is three
+#for each quaternary factor, find the pooled estimate for all records across that quaternary factor, save to output including pooled estimates for tertiary factors
+#if one variable and no secondary_factors, use effect size and SE for that record
+#else if one variable and secondary variables within that
+#if more than one variable, then for each variable:
+#find whether secondary_factor, tertiary_factor, quaternary_factor have been filled in
+#if secondary_factor filled in, then get  pooled estimate across all variables within that measure.
+#if there are more than one variable within that measure
+#if there is a secondary level within , get pooled estimate for all records within that  
+```
+
+###t and sample sizes and p
+```{r}
+load("M.Rdata")
+load("se_from_p.Rdata")
+load("one.per.var.Rdata")
+#d = t*sqrt((nt+nc)/nt*ntc)#formula from p. 200 of Koricheva et al. 2013
+M.y = subset(M, data.to.use == "t and sample sizes and p")
+M.n = subset(M, data.to.use != "t and sample sizes and p")
+M.y$P=as.character(M.y$P)
+M.y$P[M.y$P=="<0.0005"]=0.0005
+M.y$P = as.numeric(M.y$P)
+unique_vars = length(unique(M.y$measure.specific....outcome.variable))
+dimM = dim(M.y)[1]
+if (dimM==unique_vars){
+  print("okay")  
+} else {
+  #for each record
+  for (a in 1:dimM){
+    M.y$d[a] = M.y$t[a] * sqrt((M.y$sample.size.control[a] + M.y$sample.size.infected[a])/
+                              (M.y$sample.size.control[a] * M.y$sample.size.infected[a]))
+    se = se_from_p(M.y$d[a],M.y$P[a])
+    #http://mathworld.wolfram.com/StandardError.html
+    M.y$d.sampling.variance[a]=se^2
+    if(M.y$variable.greater.without.pathogen.parasite[a]==1){
+      M.y$d[a]=M.y$d[a]*-1
+    }
+  }
+}
+M.y.2 = one.per.var(M.y)
+M = rbind(M.n, M.y.2)
+save(M, file = "M.Rdata")
+```
+
+###R2 and direction and sample size
+```{r}
+load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
+load("r_to_d.Rdata")#function to get d, var.d from r
+load("one.per.var.Rdata")
+load("M.Rdata")
+M$correlation.coefficient.se = NA
+M.n = subset(M,data.to.use!="R2 and direction and sample size")
+M.y = subset(M,data.to.use=="R2 and direction and sample size")
+
+#M.y.se =subset(M.y, R-squared-se !="") 
+#M.y.nose =subset(M.y, R-squared-se !="") 
+lev = dim(M.y)[1]
+for (c in 1:lev){
+      ri = as.numeric(as.character(M.y$R.squared[c]))#get inputs for rma
+      ri = sqrt(ri)
+      ri = ri*as.numeric(as.character(M.y$direction[c]))#multiply by 1 or -1
+      M.y$correlation.coefficient[c]=ri
+      ni = M.y$sample.size.total[c]
+      M.y$correlation.coefficient.se[c] = se.calc.from.r.n(ri, ni)#get SE
+      M.y[c,]=r_to_d(M.y[c,])
+}
+
+M.y$d.sampling.variance
+M.y$d
+
+#for each study
+out = one.per.var(M.y)
+M = rbind(out, M.n)
+save(M, file = "M.Rdata")
+
+
+```
+
+
+###correlation coefficient and sample size and P
+###use P to calculate SE
+```{r}
+#load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
+load("se_from_p.Rdata")#fxn to get SE from r and n
+load("r_to_d.Rdata")#function to get d, var.d from r
+load("one.per.var.Rdata")
+load("M.Rdata")
+M$correlation.coefficient.se = NA
+M.n = subset(M,data.to.use!="correlation coefficient and sample size and P")
+M.y = subset(M,data.to.use=="correlation coefficient and sample size and P")
+M.y$P = as.character(M.y$P)
+M.y$P[M.y$P == "<0.001"]="0.001"
+M.y$P = as.numeric(M.y$P)
+
+lev = dim(M.y)[1]
+for (c in 1:lev){
+      ri = as.numeric(as.character(M.y$correlation.coefficient[c]))#get inputs for rma
+      ni = M.y$sample.size.total[c]
+      P = M.y$P[c]
+      #M.y$correlation.coefficient.se[c] = se_from_p(ri, P)#get SE#this results in even larger variance
+      M.y$correlation.coefficient.se[c] = se.calc.from.r.n(ri, ni)#get SE
+      M.y[c,]=r_to_d(M.y[c,])
+}
+
+M.y$d.sampling.variance
+M.y$d
+
+#for each study
+out = one.per.var(M.y)
+M = rbind(out, M.n)
+save(M, file = "M.Rdata")
+
+
+```
+
+###effect and raw predictor
+###perform linear model between predictor and effect. model coefficient and standard errors are log odds and log standard error for the effect of interest. convert these values to d, variance in d  
+#note: have not attempted to fix so that negative effects of PP have negative effect size
+```{r}
+load("M.Rdata")
+M.y = subset(M, data.to.use == "effect and raw predictor")
+M.y$predictor.value=as.character(M.y$predictor.value)
+M.y$predictor.value[M.y$predictor.value=="–"]=NA
+M.y$predictor.value=as.numeric(M.y$predictor.value)
+M.y = subset(M.y, !is.na(predictor.value))
+M.n = subset(M, data.to.use != "effect and raw predictor")
+#str(M.y$infected.mean)
+b = 1
 c = 1
 d = 1
 e = 1
-
-for (b in 1:length(ustudy)){
+one.per.var.regression = function(M.y){
+  ustudy = unique(M.y$paper.ID)
+  out = NULL
+  for (b in 1:length(ustudy)){
   s.tmp = subset(M.y, paper.ID == ustudy[b])
   upath = unique(s.tmp$pathway)
 #for each pathway in study
@@ -356,122 +598,197 @@ for (b in 1:length(ustudy)){
         #unique variable
         uvar = unique(m.tmp$measure.specific....outcome.variable)
         for (e in 1:length(uvar)){
+          # print("e")
+          # print(e)
           v.tmp = subset(m.tmp, measure.specific....outcome.variable == uvar[e])
-          if (dim(v.tmp)[1]>1){
             #if more than one record for a variable, find pooled estimate across all records
-            m = escalc(yi = v.tmp$d,
-                       vi = v.tmp$d.sampling.variance,
-                       measure = "MN")  
-            v.tmp$d = m$yi[1]
-            v.tmp$d.sampling.variance = m$vi[1]
+            #print(v.tmp$d)
+            m = lm(infected.mean ~ predictor.value,
+                       data = v.tmp,
+                   na.action = na.omit)
+            #print(m)
+            log.odds.ratio = m$coefficients[1]
+            log.odds.se = coef(summary(m))[2,"Std. Error"]
+            log.odds.variance = log.odds.se^2
+            #https://www.meta-analysis.com/downloads/Meta-analysis%20Converting%20among%20effect%20sizes.pdf
+            v.tmp$d = log.odds.ratio*(sqrt(3)/pi)
+            v.tmp$d.sampling.variance=log.odds.variance*(3/pi^2)
             v.tmp = v.tmp[1,]
+            # 
             out = rbind(out, v.tmp)
-          }#end if statement
-          else {#else use value already gotten
-            out = rbind(out, v.tmp)
-          }#end else
-          print("b")
-          print(b)
-          print("c")
-          print(c)
-          print("d")
-          print(d)
-          print("e")
-          print(e)
-          print(v.tmp$d)
+          # print("b")
+          # print(b)
+          # print("c")
+          # print(c)
+          # print("d")
+          # print(d)
+          # print("e")
+          # print(e)
+          # print(v.tmp$d)
           
         }#end variable
         
       }#end general measure
-  }#end pathway
-}#end study
-dim(out)
+   }#end pathway
+  }#end study
+  return(v.tmp)
+}#end function
 
+out = one.per.var.regression(M.y)
+out
 M = rbind(M.n, out)
 save(M, file = "M.Rdata")
-
-out$pathway = factor(out$pathway)
-out$measure.general=factor(out$measure.general)
-out$paper.ID=factor(out$paper.ID)
-m1 = rma.uni(d ~ pathway +measure.general -1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-# anova(m1)
-#permutest(m1, exact=TRUE)#number of iter too large
-# permutest(m1, iter=10000)#
-m.pathway = rma.uni(d ~ pathway -1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-
-m.measure = rma.uni(d ~ factor(measure.general)-1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-
-# summary(glht(m.measure, linfct=cbind(contrMat(c("biogeochemical cycles"=1,"primary production" = 1, "secondary production"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
-
-# library(multcomp)
-# 
-# dat <- escalc(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=dat.bcg)
-# dat
-
-# res <- rma(yi, vi, mods = ~ factor(alloc) + year + ablat - 1, data=dat)
-# res
-# summary(glht(res, linfct=cbind(contrMat(c("alternate"=1,"random"=1,"systematic"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
-
-####more complicated version
-#find number of variables and number of secondary factors for each variable
-#for each variable and each secondary, etc. factor within that variable
-#if number of secondary, etc. factors is three
-#for each quaternary factor, find the pooled estimate for all records across that quaternary factor, save to output including pooled estimates for tertiary factors
-#for each 
-#for each 
-
-#if one variable and no secondary_factors, use effect size and SE for that record
-#else if one variable and secondary variables within that
-#if more than one variable, then for each variable:
-#find whether secondary_factor, tertiary_factor, quaternary_factor have been filled in
-#if secondary_factor filled in, then get  pooled estimate across all variables within that measure.
-#if there are more than one variable within that measure
-#if there is a secondary level within , get pooled estimate for all records within that  
 ```
 
-
 ##one-way ANOVA: calculate effect sizes from F and sample size
-#To do: determine if we can infer positive or negative in effect size if study does not report direction, for non-significant results
+##determined we cannot infer positive or negative in effect size if study does not report direction or means, for non-significant results, because F value is always positive.  
 ```{r}
 load("M.Rdata")
 M.y = subset(M, data.to.use == "one-way ANVOA F _ degrees freedom")
 M.n = subset(M, data.to.use != "one-way ANVOA F _ degrees freedom")
 #calculate d (effect size) from F and sample size (Koricheva et al. p. 200, F ratio from one-way ANOVA)
-#calculate SE from d and P value (
+#calculate SE from d and P value 
 ```
 
-#percent difference and P
+###percent difference and P -- don't know how to convert to d, so not doing
 ```{r}
 #calculate effect size from percent change
 #calculate SE from effect size and P value
 ```
 
-##means and P
+###means and P -- don't know how to convert to d, so not doing
 ```{r means P}
 #calculate percent difference between two means. 
 #calculate SE based on P
 ```
 
-#R2 and direction and sample size
+
+##meta-analysis
+###run mixed models, for pathway and for measure
 ```{r}
+load("M.Rdata")
+
+M.max = subset(M, d.sampling.variance == max(M$d.sampling.variance, na.rm=TRUE))
+M.max
+#note: removing observation with (high) outlier variance, because otherwise cannot obtain stable results. If this is not satisfactory, then we could switch to using e.g. lme4, though metafor author has some criticisms of going that route: 
+#http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
+M = subset(M, d.sampling.variance != max(M$d.sampling.variance, na.rm=TRUE))
+M = subset(M, !is.na(d))
+length(unique(M$paper.ID))#number of papers
+length(unique(M$data.to.use))#number of data types
+table(M$data.to.use)#table of variables represented by each data type 
+out = M
+out$pathway = factor(out$pathway)
+out$measure.general=factor(out$measure.general)
+out$paper.ID=factor(out$paper.ID)
+
+#for model with two predictors, estimated effects are relative to one condition, making it difficult to determine (even when subtracting one so that model has intercept of zero)
+m1 = rma.uni(abs(d) ~ pathway +measure.general -1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+m1
+
+#model with pathway as predictor
+m.pathway = rma.uni(abs(d) ~ pathway -1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+m.pathway
+save(m.pathway, file = "m.pathway.Rdata")
+
+#model with measure as predictor
+m.measure = rma.uni(abs(d) ~ factor(measure.general)-1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+m.measure
+save(m.measure, file = "m.measure.Rdata")
+
+#intercept-only model, may want to use this to estimate overall effect
+m.rand = rma.uni(abs(d) ~ 1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
 
 ```
 
-#"correlation coefficient and P and sample size"
-```{r}
+
+###visualize model results for pathway -- barplot with standard errors 
+```{r pathway_errorbar}
+require(cowplot)
+
+load("m.pathway.Rdata")
+s = summary(m.pathway)
+estimate = s$beta
+se = s$se
+rn = row.names(s$beta)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "pathway")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout[rnout == "abund biomass to ecosystem fxn"]="abundance"
+rnout[rnout == "morbidity to ecosystem fxn"]="phenotype"
+rnout[rnout == "unknown to ecosystem fxn"]="unknown"
+df = data.frame(effect = estimate,
+                se = se,
+                pathway = rnout)
+p1 <- ggplot(df, aes(x = pathway, y = effect)) +  
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=effect-se, 
+                    ymax=effect+se), width=.2,
+                 position=position_dodge(.9)) +
+  scale_fill_grey()+
+    #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  
+  xlab("pathway")+
+  ylab("Average absolute effect size (+-SE)")
+p1
+save_plot( "Figure.effect.pathway.jpg", p1, nrow = 1, dpi = 600)
 
 ```
 
 
+###visualize model results for measure -- barplot with standard errors 
+```{r measure_errorbar}
+require(cowplot)
+
+load("m.measure.Rdata")
+s = summary(m.measure)
+estimate = s$beta
+se = s$se
+rn = row.names(s$beta)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "general)")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+# rnout[rnout == "abund biomass to ecosystem fxn"]="abundance"
+# rnout[rnout == "morbidity to ecosystem fxn"]="phenotype"
+# rnout[rnout == "unknown to ecosystem fxn"]="unknown"
+df = data.frame(effect = estimate,
+                se = se,
+                measure = rnout)
+p1 <- ggplot(df, aes(x = measure, y = effect)) +  
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=effect-se, 
+                    ymax=effect+se), width=.2,
+                 position=position_dodge(.9)) +
+  scale_fill_grey()+
+    #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  
+  xlab("measure")+
+  ylab("Average absolute effect size (+-SE)")
+p1
+save_plot( "Figure.effect.measure.jpg", p1, nrow = 1, dpi = 600)
+```
+
+
+
+##qualitative analyses
 
 ###pathogen vs. host test for significant associations using chi-square
 ```{r}
@@ -640,7 +957,7 @@ save_plot( "Figure.A.2.jpg", p, nrow = 2, dpi = 600)
 ```
 
 
-#chi squared test and plots for pathogen and host taxa vs. pathway to ecosystem function
+###chi squared test and plots for pathogen and host taxa vs. pathway to ecosystem function
 ```{r}
 load("M.Rdata")
 require(cowplot)

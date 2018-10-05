@@ -3,9 +3,6 @@ PATE\_20180817
 Ilya
 8/17/2018
 
-use
-===
-
 ##### install packages
 
     ## 
@@ -332,8 +329,7 @@ table(out$include_article_review)
     ##                     no                    yes   yes -- requested ill 
     ##                    168                    140                      1
 
-read in studies spreadsheet and remove ones that were later excluded
-====================================================================
+#### read in studies spreadsheet and remove ones that were later excluded
 
 ``` r
 S <- read.csv("meta_data_20180724 - studies.csv")
@@ -349,7 +345,7 @@ P = read.csv("meta_data_20180724 - quant_data.csv")
 dim(P)
 ```
 
-    ## [1] 1944   56
+    ## [1] 1944   58
 
 ``` r
 P = subset(P, is.na(exclude.as.ecosystem.measure))
@@ -369,53 +365,48 @@ dim(P)[1]
 subset(P, is.na(paper.ID))#should be empty
 ```
 
-    ##     paper.ID measureID                        pathway      measure.general
-    ## 79        NA                                                              
-    ## 90        NA                                                              
-    ## 311       NA                                                              
-    ## 514       NA                                                              
-    ## 555       NA                                                              
-    ## 607       NA           abund biomass to ecosystem fxn secondary production
-    ## 678       NA                                                              
-    ## 736       NA                                                              
-    ## 821       NA                                                              
-    ##     measure.specific....outcome.variable              data.to.use percent
-    ## 79                                                                     NA
-    ## 90                                                                     NA
-    ## 311                                                                    NA
-    ## 514                                                                    NA
-    ## 555                                                                    NA
-    ## 607                          host weight percent difference and P      NA
-    ## 678                                                                    NA
-    ## 736                                                                    NA
-    ## 821                                                                    NA
-    ##     value digitizable.or.raw.data.available
-    ## 79     NA                                NA
-    ## 90     NA                                NA
-    ## 311    NA                                NA
-    ## 514    NA                                NA
-    ## 555    NA                                NA
-    ## 607    NA                                NA
-    ## 678    NA                                NA
-    ## 736    NA                                NA
-    ## 821    NA                                NA
+    ##     paper.ID measureID pathway measure.general
+    ## 79        NA                                  
+    ## 90        NA                                  
+    ## 311       NA                                  
+    ## 514       NA                                  
+    ## 555       NA                                  
+    ## 678       NA                                  
+    ## 736       NA                                  
+    ## 821       NA                                  
+    ##     measure.specific....outcome.variable data.to.use percent value
+    ## 79                                                        NA    NA
+    ## 90                                                        NA    NA
+    ## 311                                                       NA    NA
+    ## 514                                                       NA    NA
+    ## 555                                                       NA    NA
+    ## 678                                                       NA    NA
+    ## 736                                                       NA    NA
+    ## 821                                                       NA    NA
+    ##     digitizable.or.raw.data.available
+    ## 79                                 NA
+    ## 90                                 NA
+    ## 311                                NA
+    ## 514                                NA
+    ## 555                                NA
+    ## 678                                NA
+    ## 736                                NA
+    ## 821                                NA
     ##     variable.greater.without.pathogen.parasite direction
-    ## 79                                          NA          
-    ## 90                                          NA          
-    ## 311                                         NA          
-    ## 514                                         NA          
-    ## 555                                         NA          
-    ## 607                                          1          
-    ## 678                                         NA          
-    ## 736                                         NA          
-    ## 821                                         NA          
+    ## 79                                          NA        NA
+    ## 90                                          NA        NA
+    ## 311                                         NA        NA
+    ## 514                                         NA        NA
+    ## 555                                         NA        NA
+    ## 678                                         NA        NA
+    ## 736                                         NA        NA
+    ## 821                                         NA        NA
     ##     note.directionality.of.effect test.statistic.bounded.below
     ## 79                                                          NA
     ## 90                                                          NA
     ## 311                                                         NA
     ## 514                                                         NA
     ## 555                                                         NA
-    ## 607                                                         NA
     ## 678                                                         NA
     ## 736                                                         NA
     ## 821                                                         NA
@@ -425,7 +416,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                 NA   NA NA NA                NA                  NA
     ## 514                 NA   NA NA NA                NA                  NA
     ## 555                 NA   NA NA NA                NA                  NA
-    ## 607                  4   NA NA NA                NA                  NA
     ## 678                 NA   NA NA NA                NA                  NA
     ## 736                 NA   NA NA NA                NA                  NA
     ## 821                 NA   NA NA NA                NA                  NA
@@ -435,7 +425,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                   NA                                        
     ## 514                   NA                                        
     ## 555                   NA                                        
-    ## 607                   NA                                        
     ## 678                   NA                                        
     ## 736                   NA                                        
     ## 821                   NA                                        
@@ -445,7 +434,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                                                        
     ## 514                                                        
     ## 555                                                        
-    ## 607                                                        
     ## 678                                                        
     ## 736                                                        
     ## 821                                                        
@@ -455,47 +443,42 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                      NA                                             NA
     ## 514                      NA                                             NA
     ## 555                      NA                                             NA
-    ## 607                      NA                                             NA
     ## 678                      NA                                             NA
     ## 736                      NA                                             NA
     ## 821                      NA                                             NA
-    ##     control.CI.lower control.CI.upper infected.mean infected.variance
-    ## 79                NA               NA                              NA
-    ## 90                NA               NA                              NA
-    ## 311               NA               NA                              NA
-    ## 514               NA               NA                              NA
-    ## 555               NA               NA                              NA
-    ## 607               NA               NA                              NA
-    ## 678               NA               NA                              NA
-    ## 736               NA               NA                              NA
-    ## 821               NA               NA                              NA
-    ##     R.squared correlation.coefficient digitized_data predictor.variable
-    ## 79                                 NA             NA                   
-    ## 90                                 NA             NA                   
-    ## 311                                NA             NA                   
-    ## 514                                NA             NA                   
-    ## 555                                NA             NA                   
-    ## 607                                NA             NA                   
-    ## 678                                NA             NA                   
-    ## 736                                NA             NA                   
-    ## 821                                NA             NA                   
-    ##     predictor.value predictor.unit
-    ## 79                                
-    ## 90                                
-    ## 311                               
-    ## 514                               
-    ## 555                               
-    ## 607                               
-    ## 678                               
-    ## 736                               
-    ## 821                               
+    ##     variance.not.reported control.CI.lower control.CI.upper infected.mean
+    ## 79                     NA               NA               NA              
+    ## 90                     NA               NA               NA              
+    ## 311                    NA               NA               NA              
+    ## 514                    NA               NA               NA              
+    ## 555                    NA               NA               NA              
+    ## 678                    NA               NA               NA              
+    ## 736                    NA               NA               NA              
+    ## 821                    NA               NA               NA              
+    ##     infected.variance R.squared R.squared.se correlation.coefficient
+    ## 79                 NA        NA           NA                      NA
+    ## 90                 NA        NA           NA                      NA
+    ## 311                NA        NA           NA                      NA
+    ## 514                NA        NA           NA                      NA
+    ## 555                NA        NA           NA                      NA
+    ## 678                NA        NA           NA                      NA
+    ## 736                NA        NA           NA                      NA
+    ## 821                NA        NA           NA                      NA
+    ##     digitized_data predictor.variable predictor.value predictor.unit
+    ## 79              NA                                                  
+    ## 90              NA                                                  
+    ## 311             NA                                                  
+    ## 514             NA                                                  
+    ## 555             NA                                                  
+    ## 678             NA                                                  
+    ## 736             NA                                                  
+    ## 821             NA                                                  
     ##     outcome.unit...concat.w.measure.specific
     ## 79                                          
     ## 90                                          
     ## 311                                         
     ## 514                                         
     ## 555                                         
-    ## 607                                         
     ## 678                                         
     ## 736                                         
     ## 821                                         
@@ -505,7 +488,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                                                                     
     ## 514                                                                     
     ## 555                                                                     
-    ## 607                                                                     
     ## 678                                                                     
     ## 736                                                                     
     ## 821                                                                     
@@ -515,7 +497,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                        NA                             NA
     ## 514                        NA                             NA
     ## 555                        NA                             NA
-    ## 607                        NA                             NA
     ## 678                        NA                             NA
     ## 736                        NA                             NA
     ## 821                        NA                             NA
@@ -525,7 +506,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                                                                      NA
     ## 514                                                                      NA
     ## 555                                                                      NA
-    ## 607                                                                      NA
     ## 678                                                                      NA
     ## 736                                                                      NA
     ## 821                                                                      NA
@@ -535,7 +515,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                                                           NA
     ## 514                                                           NA
     ## 555                                                           NA
-    ## 607                                                           NA
     ## 678                                                           NA
     ## 736                                                           NA
     ## 821                                                           NA
@@ -545,7 +524,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                                                  NA                  
     ## 514                                                  NA                  
     ## 555                                                  NA                  
-    ## 607                                                  NA                  
     ## 678                                                  NA                  
     ## 736                                                  NA                  
     ## 821                                                  NA                  
@@ -555,7 +533,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                                NA                             
     ## 514                                NA                             
     ## 555                                NA                             
-    ## 607                                NA                             
     ## 678                                NA                             
     ## 736                                NA                             
     ## 821                                NA                             
@@ -565,7 +542,6 @@ subset(P, is.na(paper.ID))#should be empty
     ## 311                                                                   NA
     ## 514                                                                   NA
     ## 555                                                                   NA
-    ## 607                                                                   NA
     ## 678                                                                   NA
     ## 736                                                                   NA
     ## 821                                                                   NA
@@ -608,8 +584,7 @@ P = rbind(D.not, out)
 save(P, file = "P.Rdata")
 ```
 
-combine study and measures data
--------------------------------
+#### combine study and measures data
 
 ### includes error check that identifies couple of papers inadvertantly reviewed twice.
 
@@ -625,65 +600,45 @@ author: study lead author
 Pathogen.kingdom; Host.kingdom: note that there are some entries here for entities that are higher or lower than kingdom or (e.g. dinoflagellates) paraphyletic. We may want to limit analysis to categories that appear relatively frequently.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-System: aquatic, terrestrial
-----------------------------
+### System: aquatic, terrestrial
 
-System.2: if we decide to use this we may want to bin these into fewer categories of biomes
--------------------------------------------------------------------------------------------
+### System.2: if we decide to use this we may want to bin these into fewer categories of biomes
 
-PP.to.ecosystem.fxn: 1 (pathway present), 0 (absent); this describes direct effect of PP on ecosystem function, e.g. biomass of trematodes, primary production of hemiparasitic plants
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### PP.to.ecosystem.fxn: 1 (pathway present), 0 (absent); this describes direct effect of PP on ecosystem function, e.g. biomass of trematodes, primary production of hemiparasitic plants
 
-"PP.abundance": this seems lower priority for analysis, refers to whether study included info on abundance of PP in the environment
------------------------------------------------------------------------------------------------------------------------------------
+### "PP.abundance": this seems lower priority for analysis, refers to whether study included info on abundance of PP in the environment
 
-"PP.morbidity": did the study contain info on the phenotype of pathogens (e.g. vigor of hemiparasitic plants). this seems lower priority for inclusion in analysis.
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### "PP.morbidity": did the study contain info on the phenotype of pathogens (e.g. vigor of hemiparasitic plants). this seems lower priority for inclusion in analysis.
 
-"PP.to.host.infection.prevalence...intensity": does the paper report on PP infection prevalence or intensity? lower priority for analysis
------------------------------------------------------------------------------------------------------------------------------------------
+### "PP.to.host.infection.prevalence...intensity": does the paper report on PP infection prevalence or intensity? lower priority for analysis
 
-"PP.to.abund.biomass", "PP.to.morbidity", "PP.to.unknown": does paper report on each of these pathways from PP to host/community. Unknown includes cases where it is not possible to determine whether effects are on abund/biomass or on morbidity
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### "PP.to.abund.biomass", "PP.to.morbidity", "PP.to.unknown": does paper report on each of these pathways from PP to host/community. Unknown includes cases where it is not possible to determine whether effects are on abund/biomass or on morbidity
 
-"abund.biomass.to.ecosystem.fxn", "morbidity.to.ecosystem.fxn", "unknown.to.ecosystem.fxn": does paper report on each of these pathways
----------------------------------------------------------------------------------------------------------------------------------------
+### "abund.biomass.to.ecosystem.fxn", "morbidity.to.ecosystem.fxn", "unknown.to.ecosystem.fxn": does paper report on each of these pathways
 
-abiotic.or.biotic: does paper report on abiotic or biotic factors that mediate influence of PP on other components in model?
-----------------------------------------------------------------------------------------------------------------------------
+### abiotic.or.biotic: does paper report on abiotic or biotic factors that mediate influence of PP on other components in model?
 
-"experimental..PP.manipulation.or.mimic...1..observational..2..both..3.": is paper experimental, observational, or both; note entries in this field currently include some notes and would need to be cleaned up to be used in analysis.
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### "experimental..PP.manipulation.or.mimic...1..observational..2..both..3.": is paper experimental, observational, or both; note entries in this field currently include some notes and would need to be cleaned up to be used in analysis.
 
-"process.vs..standing.stock.vs..both": does paper report on ecosystem effects as process (e.g. rate), standing stock, or report on both?
-----------------------------------------------------------------------------------------------------------------------------------------
+### "process.vs..standing.stock.vs..both": does paper report on ecosystem effects as process (e.g. rate), standing stock, or report on both?
 
-"highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact": what is the highest observational scale at which ecosystem function effects have been measured: species, assemblage (multiple species), or ecosystem (includes papers in which effects at level of a functional group have been measured e.g. biomass of all trees)
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### "highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact": what is the highest observational scale at which ecosystem function effects have been measured: species, assemblage (multiple species), or ecosystem (includes papers in which effects at level of a functional group have been measured e.g. biomass of all trees)
 
-spatial scale: area or volume of sampling unit; description would require some recoding to be used in analysis
---------------------------------------------------------------------------------------------------------------
+### spatial scale: area or volume of sampling unit; description would require some recoding to be used in analysis
 
-"coordinates.in.paper": are lat/long reported in paper (note: have not extracted this info)
--------------------------------------------------------------------------------------------
+### "coordinates.in.paper": are lat/long reported in paper (note: have not extracted this info)
 
-measureID: if a study reported on an ecosystem process measure (e.g. morbidity --&gt; ecosystem fxn), we assumed that there was also a measure at an earlier stage in the conceptual diagram (PP --&gt; morbidity). We created an additional record for this earlier stage, and linked the two stages with a measureID unique to that study. The two measures are also linked by having the same value for "measure.specific....outcome.variable", which is also unique within the study.
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### measureID: if a study reported on an ecosystem process measure (e.g. morbidity --&gt; ecosystem fxn), we assumed that there was also a measure at an earlier stage in the conceptual diagram (PP --&gt; morbidity). We created an additional record for this earlier stage, and linked the two stages with a measureID unique to that study. The two measures are also linked by having the same value for "measure.specific....outcome.variable", which is also unique within the study.
 
-pathway: what pathway has been measued
---------------------------------------
+### pathway: what pathway has been measued
 
-measure.general: in the case of (X --&gt; ecosystem fxn), this is either biogeochemical cycles, primary production, or secondary production. For (PP --&gt; X), there is more variation in how measures have been described, and some recoding would be needed to make these data comparable.
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### measure.general: in the case of (X --&gt; ecosystem fxn), this is either biogeochemical cycles, primary production, or secondary production. For (PP --&gt; X), there is more variation in how measures have been described, and some recoding would be needed to make these data comparable.
 
-"measure.specific....outcome.variable": the measure as described in the paper
------------------------------------------------------------------------------
+### "measure.specific....outcome.variable": the measure as described in the paper
 
-effects.on.hoste; effects.on.community: was the PP --&gt; X effect on the host or not, on the community or not; note this has not been filled in for all rows but could be based (have checked this for part) on the measure.general and measure.specific
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### effects.on.host; effects.on.community: was the PP --&gt; X effect on the host or not, on the community or not; note this has not been filled in for all rows but could be based (have checked this for part) on the measure.general and measure.specific
 
-ecosystem\_process\_mediate: did an ecosystem process mediate the relationship between PP and other components of the conceptual diagram. Note this has not been filled in throughout, but could be based on other data (have checked this for part)
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### ecosystem\_process\_mediate: did an ecosystem process mediate the relationship between PP and other components of the conceptual diagram. Note this has not been filled in throughout, but could be based on other data (have checked this for part)
 
 ``` r
 load("S.Rdata")
@@ -701,14 +656,14 @@ ids.common = intersect(P$paper.ID, S$paper.ID)#
 dim(P)
 ```
 
-    ## [1] 2139   56
+    ## [1] 2139   58
 
 ``` r
 P = subset(P, paper.ID %in% ids.common)
 dim(P)
 ```
 
-    ## [1] 2112   56
+    ## [1] 2113   58
 
 ``` r
 out = NULL 
@@ -778,7 +733,7 @@ dim(M)[1]==dim(out)[1]
 dim(M)
 ```
 
-    ## [1] 2112   92
+    ## [1] 2113   94
 
 ``` r
 M <- out
@@ -788,14 +743,120 @@ write.csv(M, file ="PATE_data.csv")
 
 ### meta-analysis
 
-mean\_variance
-==============
+### functions
 
-exclude data points with standard deviation equal to zero
-=========================================================
+### write function to get pooled value for variable across all "levels" within a study, pathway, and general.measure
+
+``` r
+one.per.var = function(M.y){
+  ustudy = unique(M.y$paper.ID)
+  out = NULL
+  for (b in 1:length(ustudy)){
+  s.tmp = subset(M.y, paper.ID == ustudy[b])
+  upath = unique(s.tmp$pathway)
+#for each pathway in study
+    for (c in 1:length(upath)){
+      p.tmp = subset(s.tmp, pathway == upath[c])
+      umeasure = unique(p.tmp$measure.general)
+      #for each general measure, find all variables within that measure
+      for (d in 1:length(umeasure)){
+        inds = which(p.tmp$measure.general == umeasure[d])
+        m.tmp = p.tmp[inds,]
+        #unique variable
+        uvar = unique(m.tmp$measure.specific....outcome.variable)
+        for (e in 1:length(uvar)){
+          v.tmp = subset(m.tmp, measure.specific....outcome.variable == uvar[e])
+          if (dim(v.tmp)[1]>1){
+            #if more than one record for a variable, find pooled estimate across all records
+            #print(v.tmp$d)
+            m = rma(yi = v.tmp$d,
+                       vi = v.tmp$d.sampling.variance,
+                       measure = "MN")  
+            #print(m)
+            v.tmp$d = m$yi[1]
+            v.tmp$d.sampling.variance = m$vi[1]
+            v.tmp = v.tmp[1,]
+            
+            out = rbind(out, v.tmp)
+          }#end if statement
+          else {#else use value already gotten
+            out = rbind(out, v.tmp)
+          }#end else
+          # print("b")
+          # print(b)
+          # print("c")
+          # print(c)
+          # print("d")
+          # print(d)
+          # print("e")
+          # print(e)
+          # print(v.tmp$d)
+          
+        }#end variable
+        
+      }#end general measure
+   }#end pathway
+  }#end study
+  return(out)
+}#end function
+
+save(one.per.var, file = "one.per.var.Rdata")
+```
+
+### write function to get standard error based on p value and effect size
+
+``` r
+se_from_p <- function(effect, p){
+  z = -0.862 + sqrt(0.743 - 2.404*log(p))
+  SE = effect/z
+  return(SE)
+}
+save(se_from_p, file = "se_from_p.Rdata")
+```
+
+### function to calculate SE from r and n
+
+### source: Zar, J. 1999. Biostatistical analysis. p. 373
+
+``` r
+se.calc.from.r.n <-  function( r, n){
+  se.calc = sqrt((1-r^2)/(n-2))
+  return (se.calc)
+}
+save(se.calc.from.r.n,file="se.calc.from.r.n.Rdata")
+```
+
+### function to calculate d from r
+
+``` r
+r_to_d <- function(df ){
+      r = df$correlation.coefficient
+      r2 = r^2
+      d = 2*r/sqrt(1-r2)
+      #Standard deviation (s) = Standard Error * √n 
+      print(as.numeric(as.character(df$correlation.coefficient.se)))
+      s_r = as.numeric(as.character(df$correlation.coefficient.se))*sqrt(df$sample.size.total)
+      var_r = s_r^2
+      var_d = 4*var_r/((1-r2)^3)
+      #from d and var_d to log odds ratio
+      df$d =d
+      df$d.sampling.variance = var_d
+      df2 <-df
+  return(df2)
+}
+save(r_to_d, file = "r_to_d.Rdata")
+```
+
+### following chunks each handle one data type encountered in papers, and convert that data type to d (standardized mean difference) and sampling variance in d
+
+### mean\_variance
+
+### exclude data points with standard deviation equal to zero
 
 ``` r
 load("M.Rdata")
+load("one.per.var.Rdata")
+
 # sd_adjust = 0.0001
 M = subset(M, pathway %in% c("morbidity to ecosystem fxn",
                              "unknown to ecosystem fxn",
@@ -861,417 +922,205 @@ for (a in 1:dim(M.y)[1]){
          n1i = n1i,
          n2i = n2i)
   M.y$d[a] =m$yi[1]
-  print("a")
-  print(a)
-  print(M.y$d[a])
+  #print("a")
+  #print(a)
+  #print(M.y$d[a])
   M.y$d.sampling.variance[a] = m$vi[1]
+}
+
+ustudy = unique(M.y$paper.ID)
+#for each study
+out = one.per.var(M.y)
+```
+
+    ## Warning in rma(yi = v.tmp$d, vi = v.tmp$d.sampling.variance, measure =
+    ## "MN"): Studies with NAs omitted from model fitting.
+
+``` r
+dim(out)
+```
+
+    ## [1] 28 98
+
+``` r
+M = rbind(M.n, out)
+save(M, file = "M.Rdata")
+
+
+####brainstorming, more complicated version, not doing
+#find number of variables and number of secondary factors for each variable
+#for each variable and each secondary, etc. factor within that variable
+#if number of secondary, etc. factors is three
+#for each quaternary factor, find the pooled estimate for all records across that quaternary factor, save to output including pooled estimates for tertiary factors
+#if one variable and no secondary_factors, use effect size and SE for that record
+#else if one variable and secondary variables within that
+#if more than one variable, then for each variable:
+#find whether secondary_factor, tertiary_factor, quaternary_factor have been filled in
+#if secondary_factor filled in, then get  pooled estimate across all variables within that measure.
+#if there are more than one variable within that measure
+#if there is a secondary level within , get pooled estimate for all records within that  
+```
+
+### t and sample sizes and p
+
+``` r
+load("M.Rdata")
+load("se_from_p.Rdata")
+load("one.per.var.Rdata")
+#d = t*sqrt((nt+nc)/nt*ntc)#formula from p. 200 of Koricheva et al. 2013
+M.y = subset(M, data.to.use == "t and sample sizes and p")
+M.n = subset(M, data.to.use != "t and sample sizes and p")
+M.y$P=as.character(M.y$P)
+M.y$P[M.y$P=="<0.0005"]=0.0005
+M.y$P = as.numeric(M.y$P)
+unique_vars = length(unique(M.y$measure.specific....outcome.variable))
+dimM = dim(M.y)[1]
+if (dimM==unique_vars){
+  print("okay")  
+} else {
+  #for each record
+  for (a in 1:dimM){
+    M.y$d[a] = M.y$t[a] * sqrt((M.y$sample.size.control[a] + M.y$sample.size.infected[a])/
+                              (M.y$sample.size.control[a] * M.y$sample.size.infected[a]))
+    se = se_from_p(M.y$d[a],M.y$P[a])
+    #http://mathworld.wolfram.com/StandardError.html
+    M.y$d.sampling.variance[a]=se^2
+    if(M.y$variable.greater.without.pathogen.parasite[a]==1){
+      M.y$d[a]=M.y$d[a]*-1
+    }
+  }
+}
+M.y.2 = one.per.var(M.y)
+M = rbind(M.n, M.y.2)
+```
+
+    ## Warning in `[<-.factor`(`*tmp*`, ri, value = c(0.015, 0.02, 5e-04)):
+    ## invalid factor level, NA generated
+
+``` r
+save(M, file = "M.Rdata")
+```
+
+### R2 and direction and sample size
+
+``` r
+load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
+load("r_to_d.Rdata")#function to get d, var.d from r
+load("one.per.var.Rdata")
+load("M.Rdata")
+M$correlation.coefficient.se = NA
+M.n = subset(M,data.to.use!="R2 and direction and sample size")
+M.y = subset(M,data.to.use=="R2 and direction and sample size")
+
+#M.y.se =subset(M.y, R-squared-se !="") 
+#M.y.nose =subset(M.y, R-squared-se !="") 
+lev = dim(M.y)[1]
+for (c in 1:lev){
+      ri = as.numeric(as.character(M.y$R.squared[c]))#get inputs for rma
+      ri = sqrt(ri)
+      ri = ri*as.numeric(as.character(M.y$direction[c]))#multiply by 1 or -1
+      M.y$correlation.coefficient[c]=ri
+      ni = M.y$sample.size.total[c]
+      M.y$correlation.coefficient.se[c] = se.calc.from.r.n(ri, ni)#get SE
+      M.y[c,]=r_to_d(M.y[c,])
 }
 ```
 
-    ## [1] "a"
-    ## [1] 1
-    ## [1] 0.8475836
-    ## [1] "a"
-    ## [1] 2
-    ## [1] 0.8877142
-    ## [1] "a"
-    ## [1] 3
-    ## [1] -1.588274
-    ## [1] "a"
-    ## [1] 4
-    ## [1] -1.15229
-    ## [1] "a"
-    ## [1] 5
-    ## [1] -2.085546
-    ## [1] "a"
-    ## [1] 6
-    ## [1] -2.290532
-    ## [1] "a"
-    ## [1] 7
-    ## [1] -1.837976
-    ## [1] "a"
-    ## [1] 8
-    ## [1] -1.011372
-    ## [1] "a"
-    ## [1] 9
-    ## [1] -0.3179377
-    ## [1] "a"
-    ## [1] 10
-    ## [1] -0.5073987
-    ## [1] "a"
-    ## [1] 11
-    ## [1] 0.2555637
-    ## [1] "a"
-    ## [1] 12
-    ## [1] -0.2972895
-    ## [1] "a"
-    ## [1] 13
-    ## [1] -0.2828196
-    ## [1] "a"
-    ## [1] 14
-    ## [1] -0.2667701
-    ## [1] "a"
-    ## [1] 15
-    ## [1] -0.3779471
-    ## [1] "a"
-    ## [1] 16
-    ## [1] -0.5268314
-    ## [1] "a"
-    ## [1] 17
-    ## [1] -0.2337016
-    ## [1] "a"
-    ## [1] 18
-    ## [1] -0.7524972
-    ## [1] "a"
-    ## [1] 19
-    ## [1] -0.5422304
-    ## [1] "a"
-    ## [1] 20
-    ## [1] -0.3378157
-    ## [1] "a"
-    ## [1] 21
-    ## [1] -0.4595802
-    ## [1] "a"
-    ## [1] 22
-    ## [1] -0.4069509
-    ## [1] "a"
-    ## [1] 23
-    ## [1] -0.35293
-    ## [1] "a"
-    ## [1] 24
-    ## [1] -0.2527022
-    ## [1] "a"
-    ## [1] 25
-    ## [1] -0.164921
-    ## [1] "a"
-    ## [1] 26
-    ## [1] 0.1962844
-    ## [1] "a"
-    ## [1] 27
-    ## [1] -5.374003
-    ## [1] "a"
-    ## [1] 28
-    ## [1] 0.3074788
-    ## [1] "a"
-    ## [1] 29
-    ## [1] -0.1080644
-    ## [1] "a"
-    ## [1] 30
-    ## [1] 0.2140274
-    ## [1] "a"
-    ## [1] 31
-    ## [1] NA
-    ## [1] "a"
-    ## [1] 32
-    ## [1] -0.28528
-    ## [1] "a"
-    ## [1] 33
-    ## [1] 0.01959757
-    ## [1] "a"
-    ## [1] 34
-    ## [1] 0.2810299
-    ## [1] "a"
-    ## [1] 35
-    ## [1] -0.05564985
-    ## [1] "a"
-    ## [1] 36
-    ## [1] -0.4059833
-    ## [1] "a"
-    ## [1] 37
-    ## [1] -0.2620261
-    ## [1] "a"
-    ## [1] 38
-    ## [1] -0.284654
-    ## [1] "a"
-    ## [1] 39
-    ## [1] 0.2372401
-    ## [1] "a"
-    ## [1] 40
-    ## [1] -0.2841067
-    ## [1] "a"
-    ## [1] 41
-    ## [1] -0.3818054
-    ## [1] "a"
-    ## [1] 42
-    ## [1] -0.1817749
-    ## [1] "a"
-    ## [1] 43
-    ## [1] -0.253322
-    ## [1] "a"
-    ## [1] 44
-    ## [1] -0.4565935
-    ## [1] "a"
-    ## [1] 45
-    ## [1] -0.2742121
-    ## [1] "a"
-    ## [1] 46
-    ## [1] -6.244527
-    ## [1] "a"
-    ## [1] 47
-    ## [1] NA
-    ## [1] "a"
-    ## [1] 48
-    ## [1] NA
-    ## [1] "a"
-    ## [1] 49
-    ## [1] -2.25913
-    ## [1] "a"
-    ## [1] 50
-    ## [1] -2.722881
-    ## [1] "a"
-    ## [1] 51
-    ## [1] -2.201161
-    ## [1] "a"
-    ## [1] 52
-    ## [1] -3.493121
-    ## [1] "a"
-    ## [1] 53
-    ## [1] -1.375274
-    ## [1] "a"
-    ## [1] 54
-    ## [1] -0.4334238
-    ## [1] "a"
-    ## [1] 55
-    ## [1] -1.07986
-    ## [1] "a"
-    ## [1] 56
-    ## [1] -1.423906
-    ## [1] "a"
-    ## [1] 57
-    ## [1] -0.1276036
-    ## [1] "a"
-    ## [1] 58
-    ## [1] -2.018175
-    ## [1] "a"
-    ## [1] 59
-    ## [1] -4.203049
-    ## [1] "a"
-    ## [1] 60
-    ## [1] -1.480773
-    ## [1] "a"
-    ## [1] 61
-    ## [1] -1.924691
-    ## [1] "a"
-    ## [1] 62
-    ## [1] -2.998027
-    ## [1] "a"
-    ## [1] 63
-    ## [1] 1.009494
-    ## [1] "a"
-    ## [1] 64
-    ## [1] 0
-    ## [1] "a"
-    ## [1] 65
-    ## [1] -0.3685038
-    ## [1] "a"
-    ## [1] 66
-    ## [1] -0.6990683
-    ## [1] "a"
-    ## [1] 67
-    ## [1] 0.628025
-    ## [1] "a"
-    ## [1] 68
-    ## [1] -0.4766374
-    ## [1] "a"
-    ## [1] 69
-    ## [1] 0
-    ## [1] "a"
-    ## [1] 70
-    ## [1] 0
-    ## [1] "a"
-    ## [1] 71
-    ## [1] 0
-    ## [1] "a"
-    ## [1] 72
-    ## [1] -0.6467786
-    ## [1] "a"
-    ## [1] 73
-    ## [1] 1.218547
-    ## [1] "a"
-    ## [1] 74
-    ## [1] -2.601099
-    ## [1] "a"
-    ## [1] 75
-    ## [1] -11.12846
-    ## [1] "a"
-    ## [1] 76
-    ## [1] 1.78564
-    ## [1] "a"
-    ## [1] 77
-    ## [1] -8.466522
-    ## [1] "a"
-    ## [1] 78
-    ## [1] -7.28856
-    ## [1] "a"
-    ## [1] 79
-    ## [1] -5.785149
-    ## [1] "a"
-    ## [1] 80
-    ## [1] -8.056122
-    ## [1] "a"
-    ## [1] 81
-    ## [1] -6.423757
-    ## [1] "a"
-    ## [1] 82
-    ## [1] -3.84053
-    ## [1] "a"
-    ## [1] 83
-    ## [1] -4.154529
-    ## [1] "a"
-    ## [1] 84
-    ## [1] 0.7724622
-    ## [1] "a"
-    ## [1] 85
-    ## [1] 0.3453791
-    ## [1] "a"
-    ## [1] 86
-    ## [1] 1.922698
-    ## [1] "a"
-    ## [1] 87
-    ## [1] 1.228575
-    ## [1] "a"
-    ## [1] 88
-    ## [1] 1.87215
-    ## [1] "a"
-    ## [1] 89
-    ## [1] 1.180907
-    ## [1] "a"
-    ## [1] 90
-    ## [1] -0.8388898
-    ## [1] "a"
-    ## [1] 91
-    ## [1] -2.497289
-    ## [1] "a"
-    ## [1] 92
-    ## [1] -2.380869
-    ## [1] "a"
-    ## [1] 93
-    ## [1] -3.65432
-    ## [1] "a"
-    ## [1] 94
-    ## [1] 0.8341991
-    ## [1] "a"
-    ## [1] 95
-    ## [1] 1.280823
-    ## [1] "a"
-    ## [1] 96
-    ## [1] -1.702444
-    ## [1] "a"
-    ## [1] 97
-    ## [1] -0.1960252
-    ## [1] "a"
-    ## [1] 98
-    ## [1] -1.613666
-    ## [1] "a"
-    ## [1] 99
-    ## [1] -0.4162858
-    ## [1] "a"
-    ## [1] 100
-    ## [1] -1.504487
-    ## [1] "a"
-    ## [1] 101
-    ## [1] -0.6002489
-    ## [1] "a"
-    ## [1] 102
-    ## [1] 3.349469
-    ## [1] "a"
-    ## [1] 103
-    ## [1] -2.852232
-    ## [1] "a"
-    ## [1] 104
-    ## [1] -1.322158
-    ## [1] "a"
-    ## [1] 105
-    ## [1] 0.8106906
-    ## [1] "a"
-    ## [1] 106
-    ## [1] 2.86179
-    ## [1] "a"
-    ## [1] 107
-    ## [1] 1.442277
-    ## [1] "a"
-    ## [1] 108
-    ## [1] 19.06656
-    ## [1] "a"
-    ## [1] 109
-    ## [1] 11.45961
-    ## [1] "a"
-    ## [1] 110
-    ## [1] 15.7975
-    ## [1] "a"
-    ## [1] 111
-    ## [1] -5.783132
-    ## [1] "a"
-    ## [1] 112
-    ## [1] -1.943616
-    ## [1] "a"
-    ## [1] 113
-    ## [1] 11.31853
-    ## [1] "a"
-    ## [1] 114
-    ## [1] -5.155392
-    ## [1] "a"
-    ## [1] 115
-    ## [1] -10.84574
-    ## [1] "a"
-    ## [1] 116
-    ## [1] 5.615105
-    ## [1] "a"
-    ## [1] 117
-    ## [1] 2.08568
-    ## [1] "a"
-    ## [1] 118
-    ## [1] 4.096287
-    ## [1] "a"
-    ## [1] 119
-    ## [1] -0.1167094
-    ## [1] "a"
-    ## [1] 120
-    ## [1] 0.08435282
-    ## [1] "a"
-    ## [1] 121
-    ## [1] -9.167313
-    ## [1] "a"
-    ## [1] 122
-    ## [1] 6.91685
-    ## [1] "a"
-    ## [1] 123
-    ## [1] 1.164927
-    ## [1] "a"
-    ## [1] 124
-    ## [1] 4.422117
-    ## [1] "a"
-    ## [1] 125
-    ## [1] 0.6205459
-    ## [1] "a"
-    ## [1] 126
-    ## [1] 7.28509
-    ## [1] "a"
-    ## [1] 127
-    ## [1] -6.897287
-    ## [1] "a"
-    ## [1] 128
-    ## [1] 0.7864117
-    ## [1] "a"
-    ## [1] 129
-    ## [1] -0.8870533
-    ## [1] "a"
-    ## [1] 130
-    ## [1] 1.429912
-    ## [1] "a"
-    ## [1] 131
-    ## [1] 2.5121
+    ## [1] 0.6745369
+    ## [1] 0.6892024
 
 ``` r
-ustudy = unique(M.y$paper.ID)
+M.y$d.sampling.variance
+```
+
+    ## [1] 9.660669 8.864266
+
+``` r
+M.y$d
+```
+
+    ## [1] 0.6289709 0.4588315
+
+``` r
 #for each study
-out = NULL
-b = 2
+out = one.per.var(M.y)
+M = rbind(out, M.n)
+save(M, file = "M.Rdata")
+```
+
+### correlation coefficient and sample size and P
+
+### use P to calculate SE
+
+``` r
+#load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
+load("se_from_p.Rdata")#fxn to get SE from r and n
+load("r_to_d.Rdata")#function to get d, var.d from r
+load("one.per.var.Rdata")
+load("M.Rdata")
+M$correlation.coefficient.se = NA
+M.n = subset(M,data.to.use!="correlation coefficient and sample size and P")
+M.y = subset(M,data.to.use=="correlation coefficient and sample size and P")
+M.y$P = as.character(M.y$P)
+M.y$P[M.y$P == "<0.001"]="0.001"
+M.y$P = as.numeric(M.y$P)
+
+lev = dim(M.y)[1]
+for (c in 1:lev){
+      ri = as.numeric(as.character(M.y$correlation.coefficient[c]))#get inputs for rma
+      ni = M.y$sample.size.total[c]
+      P = M.y$P[c]
+      #M.y$correlation.coefficient.se[c] = se_from_p(ri, P)#get SE#this results in even larger variance
+      M.y$correlation.coefficient.se[c] = se.calc.from.r.n(ri, ni)#get SE
+      M.y[c,]=r_to_d(M.y[c,])
+}
+```
+
+    ## [1] 0.035915
+
+``` r
+M.y$d.sampling.variance
+```
+
+    ## [1] 385.035
+
+``` r
+M.y$d
+```
+
+    ## [1] -5.896022
+
+``` r
+#for each study
+out = one.per.var(M.y)
+M = rbind(out, M.n)
+save(M, file = "M.Rdata")
+```
+
+### effect and raw predictor
+
+### perform linear model between predictor and effect. model coefficient and standard errors are log odds and log standard error for the effect of interest. convert these values to d, variance in d
+
+note: have not attempted to fix so that negative effects of PP have negative effect size
+========================================================================================
+
+``` r
+load("M.Rdata")
+M.y = subset(M, data.to.use == "effect and raw predictor")
+M.y$predictor.value=as.character(M.y$predictor.value)
+M.y$predictor.value[M.y$predictor.value=="–"]=NA
+M.y$predictor.value=as.numeric(M.y$predictor.value)
+M.y = subset(M.y, !is.na(predictor.value))
+M.n = subset(M, data.to.use != "effect and raw predictor")
+#str(M.y$infected.mean)
+b = 1
 c = 1
 d = 1
 e = 1
-
-for (b in 1:length(ustudy)){
+one.per.var.regression = function(M.y){
+  ustudy = unique(M.y$paper.ID)
+  out = NULL
+  for (b in 1:length(ustudy)){
   s.tmp = subset(M.y, paper.ID == ustudy[b])
   upath = unique(s.tmp$pathway)
 #for each pathway in study
@@ -1285,399 +1134,540 @@ for (b in 1:length(ustudy)){
         #unique variable
         uvar = unique(m.tmp$measure.specific....outcome.variable)
         for (e in 1:length(uvar)){
+          # print("e")
+          # print(e)
           v.tmp = subset(m.tmp, measure.specific....outcome.variable == uvar[e])
-          if (dim(v.tmp)[1]>1){
             #if more than one record for a variable, find pooled estimate across all records
-            m = escalc(yi = v.tmp$d,
-                       vi = v.tmp$d.sampling.variance,
-                       measure = "MN")  
-            v.tmp$d = m$yi[1]
-            v.tmp$d.sampling.variance = m$vi[1]
+            #print(v.tmp$d)
+            m = lm(infected.mean ~ predictor.value,
+                       data = v.tmp,
+                   na.action = na.omit)
+            #print(m)
+            log.odds.ratio = m$coefficients[1]
+            log.odds.se = coef(summary(m))[2,"Std. Error"]
+            log.odds.variance = log.odds.se^2
+            #https://www.meta-analysis.com/downloads/Meta-analysis%20Converting%20among%20effect%20sizes.pdf
+            v.tmp$d = log.odds.ratio*(sqrt(3)/pi)
+            v.tmp$d.sampling.variance=log.odds.variance*(3/pi^2)
             v.tmp = v.tmp[1,]
+            # 
             out = rbind(out, v.tmp)
-          }#end if statement
-          else {#else use value already gotten
-            out = rbind(out, v.tmp)
-          }#end else
-          print("b")
-          print(b)
-          print("c")
-          print(c)
-          print("d")
-          print(d)
-          print("e")
-          print(e)
-          print(v.tmp$d)
+          # print("b")
+          # print(b)
+          # print("c")
+          # print(c)
+          # print("d")
+          # print(d)
+          # print("e")
+          # print(e)
+          # print(v.tmp$d)
           
         }#end variable
         
       }#end general measure
-  }#end pathway
-}#end study
+   }#end pathway
+  }#end study
+  return(v.tmp)
+}#end function
+
+out = one.per.var.regression(M.y)
+out
 ```
 
-    ## [1] "b"
-    ## [1] 1
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] 0.8475836
-    ## [1] "b"
-    ## [1] 2
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] -1.588274
-    ## [1] "b"
-    ## [1] 2
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 2
-    ## [1] -1.15229
-    ## [1] "b"
-    ## [1] 3
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] -2.085546
-    ## [1] "b"
-    ## [1] 3
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 2
-    ## [1] -1.837976
-    ## [1] "b"
-    ## [1] 3
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 3
-    ## [1] -0.3179377
-    ## [1] "b"
-    ## [1] 3
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 4
-    ## [1] NA
-    ## [1] "b"
-    ## [1] 3
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 5
-    ## [1] NA
-    ## [1] "b"
-    ## [1] 4
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] -2.25913
-    ## [1] "b"
-    ## [1] 4
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] -2.722881
-    ## [1] "b"
-    ## [1] 4
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 2
-    ## [1] -2.201161
-    ## [1] "b"
-    ## [1] 5
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] -3.493121
-    ## [1] "b"
-    ## [1] 5
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 2
-    ## [1] -0.1276036
-    ## [1] "b"
-    ## [1] 6
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] -2.998027
-    ## [1] "b"
-    ## [1] 6
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 2
-    ## [1] 0
-    ## [1] "b"
-    ## [1] 6
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 2
-    ## [1] "e"
-    ## [1] 1
-    ## [1] 1.009494
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 1
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] -0.6990683
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 1
-    ## [1] 0
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 2
-    ## [1] -0.6467786
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 3
-    ## [1] -7.28856
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 4
-    ## [1] 0.7724622
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 5
-    ## [1] -0.8388898
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 6
-    ## [1] -1.702444
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 7
-    ## [1] 3.349469
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 8
-    ## [1] 19.06656
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 9
-    ## [1] -5.155392
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 10
-    ## [1] 0.08435282
-    ## [1] "b"
-    ## [1] 7
-    ## [1] "c"
-    ## [1] 2
-    ## [1] "d"
-    ## [1] 1
-    ## [1] "e"
-    ## [1] 11
-    ## [1] 7.28509
-
-``` r
-dim(out)
-```
-
-    ## [1] 28 96
+    ##     paper.ID author
+    ## 443     1491     Li
+    ##                                                                                       title
+    ## 443 Lytic viral infection of bacterioplankton in deep waters of the western   Pacific Ocean
+    ##     Pathogen.kingdom pathogen.kingdom.notes Host.kingdom
+    ## 443            virus                            bacteria
+    ##     host.kingdom.notes  System System.2 System.2.simplified
+    ## 443                    aquatic    ocean                    
+    ##     PP.to.ecosystem.fxn PP.abundance PP.morbidity
+    ## 443                   0            1           NA
+    ##     PP.to.host.infection.prevalence...intensity PP.to.abund.biomass
+    ## 443                                           0                   1
+    ##     PP.to.morbidity PP.to.unknown abund.biomass.to.ecosystem.fxn
+    ## 443               0             0                              1
+    ##     morbidity.to.ecosystem.fxn unknown.to.ecosystem.fxn
+    ## 443                          0                        0
+    ##     ecosystem.fxn.to.PP abiotic.or.biotic        location
+    ## 443                   0                 1 western Pacific
+    ##                         note.x
+    ## 443 assemblage = Synechococcus
+    ##     experimental..PP.manipulation.or.mimic...1..observational..2..both..3.
+    ## 443                                                                      2
+    ##     process.vs..standing.stock.vs..both process.vs..standing.stock.notes
+    ## 443                             process                          process
+    ##     highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact
+    ## 443                                                                        assemblage
+    ##        type.of.manipulation.or.comparison
+    ## 443 lab assays with environmental samples
+    ##                                            spatial.scale
+    ## 443 bottles collected from 10 stations along 2 transects
+    ##     coordinates.in.paper date.processed time.start time.end time.elapsed
+    ## 443                    1            8/3      16:48    17:09      0:21:00
+    ##     exclude reason.for.excluding measureID                        pathway
+    ## 443      NA                                abund biomass to ecosystem fxn
+    ##           measure.general measure.specific....outcome.variable
+    ## 443 biogeochemical cycles              carbon released per day
+    ##                  data.to.use percent value
+    ## 443 effect and raw predictor      NA    NA
+    ##     digitizable.or.raw.data.available
+    ## 443                                NA
+    ##     variable.greater.without.pathogen.parasite direction
+    ## 443                                         NA        NA
+    ##     note.directionality.of.effect test.statistic.bounded.below
+    ## 443                                                         NA
+    ##     percent.difference P  F df  t sample.size.total sample.size.control
+    ## 443                 NA   NA NA NA                NA                  NA
+    ##     sample.size.infected secondary_factor secondary_factor_level
+    ## 443                   NA            depth                      0
+    ##     tertiary_factor tertiary_factor_level quaternary.factor
+    ## 443         station                    N1                  
+    ##     quaternary.factor.level variance.measure control.mean control.variance
+    ## 443                      NA                            NA               NA
+    ##     variance.not.reported control.CI.lower control.CI.upper infected.mean
+    ## 443                    NA               NA               NA          4.35
+    ##     infected.variance R.squared R.squared.se correlation.coefficient
+    ## 443                NA        NA           NA                      NA
+    ##     digitized_data predictor.variable predictor.value       predictor.unit
+    ## 443             NA          lytic vmm           35.12 ×107 cells L−1 day−1
+    ##     outcome.unit...concat.w.measure.specific
+    ## 443                             ug L-1 day-1
+    ##     morbid_or_abund_biomass_measure effects.on.host effects.on.community
+    ## 443                                                                     
+    ##     ecosystem_process_mediate have.not.added.double.counting
+    ## 443                        NA                           <NA>
+    ##     double.counted.effect.on.plants...photosynthesizers.as.ecosystem.effect
+    ## 443                                                                      NA
+    ##     double.counted.effect.on.non.plant.hosts.as.ecosystem.effect
+    ## 443                                                           NA
+    ##     ecosystem.function.not.linked.to.morbidity.or.abund location.in.paper
+    ## 443                                                  NA                T4
+    ##     note.y exclude.as.ecosystem.measure include.as.ecosystem.measure
+    ## 443                                  NA                             
+    ##     reason.for.inclusion.or.exclusion.as.ecosystem.measure notes confirm
+    ## 443                                                                   NA
+    ##            d control_sd infected_sd d.sampling.variance
+    ## 443 0.653055         NA          NA        7.869836e-06
+    ##     correlation.coefficient.se
+    ## 443                         NA
 
 ``` r
 M = rbind(M.n, out)
 save(M, file = "M.Rdata")
-
-out$pathway = factor(out$pathway)
-out$measure.general=factor(out$measure.general)
-out$paper.ID=factor(out$paper.ID)
-m1 = rma.uni(d ~ pathway +measure.general -1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-```
-
-    ## Warning in rma.uni(d ~ pathway + measure.general - 1, vi =
-    ## d.sampling.variance, : Studies with NAs omitted from model fitting.
-
-``` r
-# anova(m1)
-#permutest(m1, exact=TRUE)#number of iter too large
-# permutest(m1, iter=10000)#
-m.pathway = rma.uni(d ~ pathway -1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-```
-
-    ## Warning in rma.uni(d ~ pathway - 1, vi = d.sampling.variance, slab =
-    ## paper.ID, : Studies with NAs omitted from model fitting.
-
-``` r
-m.measure = rma.uni(d ~ factor(measure.general)-1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-```
-
-    ## Warning in rma.uni(d ~ factor(measure.general) - 1, vi =
-    ## d.sampling.variance, : Studies with NAs omitted from model fitting.
-
-``` r
-# summary(glht(m.measure, linfct=cbind(contrMat(c("biogeochemical cycles"=1,"primary production" = 1, "secondary production"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
-
-# library(multcomp)
-# 
-# dat <- escalc(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=dat.bcg)
-# dat
-
-# res <- rma(yi, vi, mods = ~ factor(alloc) + year + ablat - 1, data=dat)
-# res
-# summary(glht(res, linfct=cbind(contrMat(c("alternate"=1,"random"=1,"systematic"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
-
-####more complicated version
-#find number of variables and number of secondary factors for each variable
-#for each variable and each secondary, etc. factor within that variable
-#if number of secondary, etc. factors is three
-#for each quaternary factor, find the pooled estimate for all records across that quaternary factor, save to output including pooled estimates for tertiary factors
-#for each 
-#for each 
-
-#if one variable and no secondary_factors, use effect size and SE for that record
-#else if one variable and secondary variables within that
-#if more than one variable, then for each variable:
-#find whether secondary_factor, tertiary_factor, quaternary_factor have been filled in
-#if secondary_factor filled in, then get  pooled estimate across all variables within that measure.
-#if there are more than one variable within that measure
-#if there is a secondary level within , get pooled estimate for all records within that  
 ```
 
 one-way ANOVA: calculate effect sizes from F and sample size
 ------------------------------------------------------------
 
-To do: determine if we can infer positive or negative in effect size if study does not report direction, for non-significant results
-====================================================================================================================================
+determined we cannot infer positive or negative in effect size if study does not report direction or means, for non-significant results, because F value is always positive.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ``` r
 load("M.Rdata")
 M.y = subset(M, data.to.use == "one-way ANVOA F _ degrees freedom")
 M.n = subset(M, data.to.use != "one-way ANVOA F _ degrees freedom")
 #calculate d (effect size) from F and sample size (Koricheva et al. p. 200, F ratio from one-way ANOVA)
-#calculate SE from d and P value (
+#calculate SE from d and P value 
 ```
 
-percent difference and P
-========================
+### percent difference and P -- don't know how to convert to d, so not doing
 
 ``` r
 #calculate effect size from percent change
 #calculate SE from effect size and P value
 ```
 
-means and P
------------
+### means and P -- don't know how to convert to d, so not doing
 
 ``` r
 #calculate percent difference between two means. 
 #calculate SE based on P
 ```
 
-R2 and direction and sample size
-================================
+meta-analysis
+-------------
 
-"correlation coefficient and P and sample size"
-===============================================
+### run mixed models, for pathway and for measure
+
+``` r
+load("M.Rdata")
+
+M.max = subset(M, d.sampling.variance == max(M$d.sampling.variance, na.rm=TRUE))
+M.max
+```
+
+    ##     paper.ID author
+    ## 334      474  Sheik
+    ##                                                                                                 title
+    ## 334 Responses of the coastal bacterial community to\nviral infection of the algae Phaeocystis globosa
+    ##     Pathogen.kingdom pathogen.kingdom.notes Host.kingdom
+    ## 334            virus                               plant
+    ##     host.kingdom.notes  System System.2 System.2.simplified
+    ## 334                    aquatic    ocean              marine
+    ##     PP.to.ecosystem.fxn PP.abundance PP.morbidity
+    ## 334                   0           NA           NA
+    ##     PP.to.host.infection.prevalence...intensity PP.to.abund.biomass
+    ## 334                                           0                   1
+    ##     PP.to.morbidity PP.to.unknown abund.biomass.to.ecosystem.fxn
+    ## 334               0             0                              1
+    ##     morbidity.to.ecosystem.fxn unknown.to.ecosystem.fxn
+    ## 334                          0                        0
+    ##     ecosystem.fxn.to.PP abiotic.or.biotic
+    ## 334                   0                 0
+    ##                               location note.x
+    ## 334 coastal North Sea, The Netherlands       
+    ##     experimental..PP.manipulation.or.mimic...1..observational..2..both..3.
+    ## 334                                                                      1
+    ##     process.vs..standing.stock.vs..both process.vs..standing.stock.notes
+    ## 334                                both                             both
+    ##     highest.observational.scale..species.vs..community.ecosystem..of.ecosystem.impact
+    ## 334                                                                        assemblage
+    ##                       type.of.manipulation.or.comparison spatial.scale
+    ## 334 experimental manipulation of viral lysis vs. control        flasks
+    ##     coordinates.in.paper date.processed time.start time.end time.elapsed
+    ## 334                    0           7/31      13:45    14:06      0:21:00
+    ##     exclude reason.for.excluding measureID                        pathway
+    ## 334      NA                                abund biomass to ecosystem fxn
+    ##           measure.general measure.specific....outcome.variable
+    ## 334 biogeochemical cycles              particulate organic 13C
+    ##                                       data.to.use percent value
+    ## 334 correlation coefficient and sample size and P      NA    NA
+    ##     digitizable.or.raw.data.available
+    ## 334                                NA
+    ##     variable.greater.without.pathogen.parasite direction
+    ## 334                                         NA        NA
+    ##     note.directionality.of.effect test.statistic.bounded.below
+    ## 334                                                         NA
+    ##     percent.difference     P  F df  t sample.size.total
+    ## 334                 NA 0.001 NA NA NA                82
+    ##     sample.size.control sample.size.infected secondary_factor
+    ## 334                  NA                   NA                 
+    ##     secondary_factor_level tertiary_factor tertiary_factor_level
+    ## 334                                                             
+    ##     quaternary.factor quaternary.factor.level variance.measure
+    ## 334                                        NA                 
+    ##     control.mean control.variance variance.not.reported control.CI.lower
+    ## 334           NA               NA                    NA               NA
+    ##     control.CI.upper infected.mean infected.variance R.squared
+    ## 334               NA            NA                NA        NA
+    ##     R.squared.se correlation.coefficient digitized_data predictor.variable
+    ## 334           NA                  -0.947             NA                   
+    ##     predictor.value predictor.unit
+    ## 334                               
+    ##     outcome.unit...concat.w.measure.specific
+    ## 334                                         
+    ##     morbid_or_abund_biomass_measure effects.on.host effects.on.community
+    ## 334                   host survival               ?                    ?
+    ##     ecosystem_process_mediate have.not.added.double.counting
+    ## 334                        NA                               
+    ##     double.counted.effect.on.plants...photosynthesizers.as.ecosystem.effect
+    ## 334                                                                      NA
+    ##     double.counted.effect.on.non.plant.hosts.as.ecosystem.effect
+    ## 334                                                           NA
+    ##     ecosystem.function.not.linked.to.morbidity.or.abund  location.in.paper
+    ## 334                                                  NA T2 (sample size); 
+    ##     note.y exclude.as.ecosystem.measure include.as.ecosystem.measure
+    ## 334                                  NA                             
+    ##     reason.for.inclusion.or.exclusion.as.ecosystem.measure
+    ## 334                                                       
+    ##                          notes confirm         d control_sd infected_sd
+    ## 334 changed from abund/biomass      NA -5.896022         NA          NA
+    ##     d.sampling.variance correlation.coefficient.se
+    ## 334             385.035                   0.035915
+
+``` r
+#note: removing observation with (high) outlier variance, because otherwise cannot obtain stable results. If this is not satisfactory, then we could switch to using e.g. lme4, though metafor author has some criticisms of going that route: 
+#http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
+M = subset(M, d.sampling.variance != max(M$d.sampling.variance, na.rm=TRUE))
+M = subset(M, !is.na(d))
+length(unique(M$paper.ID))#number of papers
+```
+
+    ## [1] 10
+
+``` r
+length(unique(M$data.to.use))#number of data types
+```
+
+    ## [1] 4
+
+``` r
+table(M$data.to.use)#table of variables represented by each data type 
+```
+
+    ## 
+    ##                                                                                   
+    ##                                                                                 0 
+    ##                                     correlation coefficient and sample size and P 
+    ##                                                                                 0 
+    ##                                                                       digitizable 
+    ##                                                                                 0 
+    ##                                                          effect and raw predictor 
+    ##                                                                                 1 
+    ##                                                          effect size not reported 
+    ##                                                                                 0 
+    ##                                       effect size not reported for all categories 
+    ##                                                                                 0 
+    ##                                                effect size reported in supplement 
+    ##                                                                                 0 
+    ##                                                                      mean P value 
+    ##                                                                                 0 
+    ##                                                       mean variance one condition 
+    ##                                                                                 0 
+    ##                                                          mean variance unreported 
+    ##                                                                                 0 
+    ##                                                                     mean_variance 
+    ##                                                                                26 
+    ##                                                                           means P 
+    ##                                                                                 0 
+    ##                                                                       no variance 
+    ##                                                                                 0 
+    ## not measured on its own -- only measured in relation to abiotic or biotic factors 
+    ##                                                                                 0 
+    ##                                                 one-way ANVOA F _ degrees freedom 
+    ##                                                                                 0 
+    ##                                                          percent difference and P 
+    ##                                                                                 0 
+    ##                                                 percent no variance (digitizable) 
+    ##                                                                                 0 
+    ##                                                  R2 and direction and sample size 
+    ##                                                                                 1 
+    ##                                                                           scratch 
+    ##                                                                                 0 
+    ##                                          t _ sample size _ test statistic bounded 
+    ##                                                                                 0 
+    ##                                                          t and sample sizes and p 
+    ##                                                                                 3
+
+``` r
+out = M
+out$pathway = factor(out$pathway)
+out$measure.general=factor(out$measure.general)
+out$paper.ID=factor(out$paper.ID)
+
+#for model with two predictors, estimated effects are relative to one condition, making it difficult to determine (even when subtracting one so that model has intercept of zero)
+m1 = rma.uni(abs(d) ~ pathway +measure.general -1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+m1
+```
+
+    ## 
+    ## Mixed-Effects Model (k = 31; tau^2 estimator: REML)
+    ## 
+    ## tau^2 (estimated amount of residual heterogeneity):     6.4479 (SE = 1.9526)
+    ## tau (square root of estimated tau^2 value):             2.5393
+    ## I^2 (residual heterogeneity / unaccounted variability): 96.44%
+    ## H^2 (unaccounted variability / sampling variability):   28.09
+    ## 
+    ## Test for Residual Heterogeneity: 
+    ## QE(df = 26) = 240.8840, p-val < .0001
+    ## 
+    ## Test of Moderators (coefficient(s) 1:5): 
+    ## QM(df = 5) = 24.1365, p-val = 0.0002
+    ## 
+    ## Model Results:
+    ## 
+    ##                                        estimate      se    zval    pval
+    ## pathwayabund biomass to ecosystem fxn    0.6758  1.8052  0.3744  0.7081
+    ## pathwaymorbidity to ecosystem fxn        1.5638  1.8317  0.8538  0.3932
+    ## pathwayunknown to ecosystem fxn          3.0894  0.7351  4.2028  <.0001
+    ## measure.generalprimary production        1.1495  2.0015  0.5743  0.5658
+    ## measure.generalsecondary production      0.7107  2.2219  0.3199  0.7491
+    ##                                          ci.lb   ci.ub     
+    ## pathwayabund biomass to ecosystem fxn  -2.8624  4.2140     
+    ## pathwaymorbidity to ecosystem fxn      -2.0261  5.1538     
+    ## pathwayunknown to ecosystem fxn         1.6486  4.5301  ***
+    ## measure.generalprimary production      -2.7735  5.0724     
+    ## measure.generalsecondary production    -3.6442  5.0656     
+    ## 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+#model with pathway as predictor
+m.pathway = rma.uni(abs(d) ~ pathway -1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+m.pathway
+```
+
+    ## 
+    ## Mixed-Effects Model (k = 31; tau^2 estimator: REML)
+    ## 
+    ## tau^2 (estimated amount of residual heterogeneity):     5.7369 (SE = 1.6802)
+    ## tau (square root of estimated tau^2 value):             2.3952
+    ## I^2 (residual heterogeneity / unaccounted variability): 97.22%
+    ## H^2 (unaccounted variability / sampling variability):   36.03
+    ## 
+    ## Test for Residual Heterogeneity: 
+    ## QE(df = 28) = 280.6639, p-val < .0001
+    ## 
+    ## Test of Moderators (coefficient(s) 1:3): 
+    ## QM(df = 3) = 25.9109, p-val < .0001
+    ## 
+    ## Model Results:
+    ## 
+    ##                                        estimate      se    zval    pval
+    ## pathwayabund biomass to ecosystem fxn    1.5502  0.6330  2.4490  0.0143
+    ## pathwaymorbidity to ecosystem fxn        1.5651  1.7319  0.9037  0.3662
+    ## pathwayunknown to ecosystem fxn          3.0420  0.6961  4.3700  <.0001
+    ##                                          ci.lb   ci.ub     
+    ## pathwayabund biomass to ecosystem fxn   0.3095  2.7909    *
+    ## pathwaymorbidity to ecosystem fxn      -1.8293  4.9595     
+    ## pathwayunknown to ecosystem fxn         1.6776  4.4063  ***
+    ## 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+save(m.pathway, file = "m.pathway.Rdata")
+
+#model with measure as predictor
+m.measure = rma.uni(abs(d) ~ factor(measure.general)-1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+m.measure
+```
+
+    ## 
+    ## Mixed-Effects Model (k = 31; tau^2 estimator: REML)
+    ## 
+    ## tau^2 (estimated amount of residual heterogeneity):     6.0614 (SE = 1.7677)
+    ## tau (square root of estimated tau^2 value):             2.4620
+    ## I^2 (residual heterogeneity / unaccounted variability): 97.66%
+    ## H^2 (unaccounted variability / sampling variability):   42.71
+    ## 
+    ## Test for Residual Heterogeneity: 
+    ## QE(df = 28) = 279.8254, p-val < .0001
+    ## 
+    ## Test of Moderators (coefficient(s) 1:3): 
+    ## QM(df = 3) = 23.2965, p-val < .0001
+    ## 
+    ## Model Results:
+    ## 
+    ##                                               estimate      se    zval
+    ## factor(measure.general)biogeochemical cycles    2.5829  0.6198  4.1673
+    ## factor(measure.general)primary production       1.8263  0.8410  2.1716
+    ## factor(measure.general)secondary production     1.3859  1.2575  1.1021
+    ##                                                 pval    ci.lb   ci.ub     
+    ## factor(measure.general)biogeochemical cycles  <.0001   1.3681  3.7977  ***
+    ## factor(measure.general)primary production     0.0299   0.1780  3.4746    *
+    ## factor(measure.general)secondary production   0.2704  -1.0787  3.8506     
+    ## 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+save(m.measure, file = "m.measure.Rdata")
+
+#intercept-only model, may want to use this to estimate overall effect
+m.rand = rma.uni(abs(d) ~ 1,
+             vi = d.sampling.variance,
+             slab = paper.ID,
+             data = out)
+```
+
+### visualize model results for pathway -- barplot with standard errors
+
+``` r
+require(cowplot)
+```
+
+    ## Loading required package: cowplot
+
+    ## 
+    ## Attaching package: 'cowplot'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     ggsave
+
+``` r
+load("m.pathway.Rdata")
+s = summary(m.pathway)
+estimate = s$beta
+se = s$se
+rn = row.names(s$beta)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "pathway")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout[rnout == "abund biomass to ecosystem fxn"]="abundance"
+rnout[rnout == "morbidity to ecosystem fxn"]="phenotype"
+rnout[rnout == "unknown to ecosystem fxn"]="unknown"
+df = data.frame(effect = estimate,
+                se = se,
+                pathway = rnout)
+p1 <- ggplot(df, aes(x = pathway, y = effect)) +  
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=effect-se, 
+                    ymax=effect+se), width=.2,
+                 position=position_dodge(.9)) +
+  scale_fill_grey()+
+    #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  
+  xlab("pathway")+
+  ylab("Average absolute effect size (+-SE)")
+p1
+```
+
+![](PATE_files/figure-markdown_github/pathway_errorbar-1.png)
+
+``` r
+save_plot( "Figure.effect.pathway.jpg", p1, nrow = 1, dpi = 600)
+```
+
+### visualize model results for measure -- barplot with standard errors
+
+``` r
+require(cowplot)
+
+load("m.measure.Rdata")
+s = summary(m.measure)
+estimate = s$beta
+se = s$se
+rn = row.names(s$beta)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "general)")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+# rnout[rnout == "abund biomass to ecosystem fxn"]="abundance"
+# rnout[rnout == "morbidity to ecosystem fxn"]="phenotype"
+# rnout[rnout == "unknown to ecosystem fxn"]="unknown"
+df = data.frame(effect = estimate,
+                se = se,
+                measure = rnout)
+p1 <- ggplot(df, aes(x = measure, y = effect)) +  
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=effect-se, 
+                    ymax=effect+se), width=.2,
+                 position=position_dodge(.9)) +
+  scale_fill_grey()+
+    #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  
+  xlab("measure")+
+  ylab("Average absolute effect size (+-SE)")
+p1
+```
+
+![](PATE_files/figure-markdown_github/measure_errorbar-1.png)
+
+``` r
+save_plot( "Figure.effect.measure.jpg", p1, nrow = 1, dpi = 600)
+```
+
+qualitative analyses
+--------------------
 
 ### pathogen vs. host test for significant associations using chi-square
 
@@ -1822,7 +1812,7 @@ plot<- ggplot(data = PH, mapping = aes(x = Pathogen.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ``` r
 ggsave(plot = plot, filename = paste0("Figure.A.1", 
@@ -1915,18 +1905,7 @@ tbl.p
 
 ``` r
 require(cowplot)
-```
 
-    ## Loading required package: cowplot
-
-    ## 
-    ## Attaching package: 'cowplot'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     ggsave
-
-``` r
 plot1<- ggplot(data = PH, mapping = aes(x = Pathogen.kingdom))+
   geom_bar()+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
@@ -1961,8 +1940,7 @@ save_plot( "Figure.A.2.jpg", p, nrow = 2, dpi = 600)
 #             frac_pathogen = count_pathogen/count_system)
 ```
 
-chi squared test and plots for pathogen and host taxa vs. pathway to ecosystem function
-=======================================================================================
+### chi squared test and plots for pathogen and host taxa vs. pathway to ecosystem function
 
 ``` r
 load("M.Rdata")
@@ -2143,7 +2121,7 @@ plot<- ggplot(data = df, mapping = aes(x = Pathogen.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ``` r
 save_plot( "Figure.A.3.pathogen.pathway.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
@@ -2159,7 +2137,7 @@ plot<- ggplot(data = df, mapping = aes(x = Host.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-12-2.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-19-2.png)
 
 ``` r
 save_plot( "Figure.A.4.host.pathway.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
@@ -2361,7 +2339,7 @@ plot<- ggplot(data = df, mapping = aes(x = Pathogen.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ``` r
 save_plot( "Figure.A.5.pathogen.measure.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
@@ -2376,7 +2354,7 @@ plot<- ggplot(data = df, mapping = aes(x = Host.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-13-2.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-20-2.png)
 
 ``` r
 save_plot( "Figure.A.6.pathogen.measure.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
