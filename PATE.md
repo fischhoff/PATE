@@ -37,6 +37,19 @@ Ilya
     ## Loading 'metafor' package (version 2.0-0). For an overview 
     ## and introduction to the package please type: help(metafor).
 
+    ## Loading required package: mvtnorm
+
+    ## Loading required package: survival
+
+    ## Loading required package: TH.data
+
+    ## 
+    ## Attaching package: 'TH.data'
+
+    ## The following object is masked from 'package:MASS':
+    ## 
+    ##     geyser
+
 ### summarize results of screening, based on each screener's results
 
 ``` r
@@ -1442,17 +1455,41 @@ table(M$data.to.use)#table of variables represented by each data type
     ##                                                                                 3
 
 ``` r
+M$pathway=as.character(M$pathway)
+M$measure.general = as.character(M$measure.general)
+xtabs(~pathway+measure.general, data = M)#check what combinations are present
+```
+
+    ##                                 measure.general
+    ## pathway                          biogeochemical cycles primary production
+    ##   abund biomass to ecosystem fxn                     2                 10
+    ##   morbidity to ecosystem fxn                         2                  0
+    ##   unknown to ecosystem fxn                          13                  0
+    ##                                 measure.general
+    ## pathway                          secondary production
+    ##   abund biomass to ecosystem fxn                    4
+    ##   morbidity to ecosystem fxn                        0
+    ##   unknown to ecosystem fxn                          0
+
+``` r
 out = M
 out$pathway = factor(out$pathway)
 out$measure.general=factor(out$measure.general)
 out$paper.ID=factor(out$paper.ID)
 
+
 #for model with two predictors, estimated effects are relative to one condition, making it difficult to determine (even when subtracting one so that model has intercept of zero)
-m1 = rma.uni(abs(d) ~ pathway +measure.general -1,
+m.pathway.measure = rma.uni(abs(d) ~ pathway:measure.general -1,
              vi = d.sampling.variance,
              slab = paper.ID,
              data = out)
-m1
+```
+
+    ## Warning in rma.uni(abs(d) ~ pathway:measure.general - 1, vi =
+    ## d.sampling.variance, : Redundant predictors dropped from the model.
+
+``` r
+m.pathway.measure
 ```
 
     ## 
@@ -1471,21 +1508,116 @@ m1
     ## 
     ## Model Results:
     ## 
-    ##                                        estimate      se    zval    pval
-    ## pathwayabund biomass to ecosystem fxn    0.6758  1.8052  0.3744  0.7081
-    ## pathwaymorbidity to ecosystem fxn        1.5638  1.8317  0.8538  0.3932
-    ## pathwayunknown to ecosystem fxn          3.0894  0.7351  4.2028  <.0001
-    ## measure.generalprimary production        1.1495  2.0015  0.5743  0.5658
-    ## measure.generalsecondary production      0.7107  2.2219  0.3199  0.7491
-    ##                                          ci.lb   ci.ub     
-    ## pathwayabund biomass to ecosystem fxn  -2.8624  4.2140     
-    ## pathwaymorbidity to ecosystem fxn      -2.0261  5.1538     
-    ## pathwayunknown to ecosystem fxn         1.6486  4.5301  ***
-    ## measure.generalprimary production      -2.7735  5.0724     
-    ## measure.generalsecondary production    -3.6442  5.0656     
+    ##                                                                             estimate
+    ## pathwayabund biomass to ecosystem fxn:measure.generalbiogeochemical cycles    0.6758
+    ## pathwaymorbidity to ecosystem fxn:measure.generalbiogeochemical cycles        1.5638
+    ## pathwayunknown to ecosystem fxn:measure.generalbiogeochemical cycles          3.0894
+    ## pathwayabund biomass to ecosystem fxn:measure.generalprimary production       1.8253
+    ## pathwayabund biomass to ecosystem fxn:measure.generalsecondary production     1.3866
+    ##                                                                                 se
+    ## pathwayabund biomass to ecosystem fxn:measure.generalbiogeochemical cycles  1.8052
+    ## pathwaymorbidity to ecosystem fxn:measure.generalbiogeochemical cycles      1.8317
+    ## pathwayunknown to ecosystem fxn:measure.generalbiogeochemical cycles        0.7351
+    ## pathwayabund biomass to ecosystem fxn:measure.generalprimary production     0.8645
+    ## pathwayabund biomass to ecosystem fxn:measure.generalsecondary production   1.2954
+    ##                                                                               zval
+    ## pathwayabund biomass to ecosystem fxn:measure.generalbiogeochemical cycles  0.3744
+    ## pathwaymorbidity to ecosystem fxn:measure.generalbiogeochemical cycles      0.8538
+    ## pathwayunknown to ecosystem fxn:measure.generalbiogeochemical cycles        4.2028
+    ## pathwayabund biomass to ecosystem fxn:measure.generalprimary production     2.1115
+    ## pathwayabund biomass to ecosystem fxn:measure.generalsecondary production   1.0704
+    ##                                                                               pval
+    ## pathwayabund biomass to ecosystem fxn:measure.generalbiogeochemical cycles  0.7081
+    ## pathwaymorbidity to ecosystem fxn:measure.generalbiogeochemical cycles      0.3932
+    ## pathwayunknown to ecosystem fxn:measure.generalbiogeochemical cycles        <.0001
+    ## pathwayabund biomass to ecosystem fxn:measure.generalprimary production     0.0347
+    ## pathwayabund biomass to ecosystem fxn:measure.generalsecondary production   0.2845
+    ##                                                                               ci.lb
+    ## pathwayabund biomass to ecosystem fxn:measure.generalbiogeochemical cycles  -2.8624
+    ## pathwaymorbidity to ecosystem fxn:measure.generalbiogeochemical cycles      -2.0261
+    ## pathwayunknown to ecosystem fxn:measure.generalbiogeochemical cycles         1.6486
+    ## pathwayabund biomass to ecosystem fxn:measure.generalprimary production      0.1310
+    ## pathwayabund biomass to ecosystem fxn:measure.generalsecondary production   -1.1524
+    ##                                                                              ci.ub
+    ## pathwayabund biomass to ecosystem fxn:measure.generalbiogeochemical cycles  4.2140
+    ## pathwaymorbidity to ecosystem fxn:measure.generalbiogeochemical cycles      5.1538
+    ## pathwayunknown to ecosystem fxn:measure.generalbiogeochemical cycles        4.5301
+    ## pathwayabund biomass to ecosystem fxn:measure.generalprimary production     3.5196
+    ## pathwayabund biomass to ecosystem fxn:measure.generalsecondary production   3.9255
+    ##                                                                                
+    ## pathwayabund biomass to ecosystem fxn:measure.generalbiogeochemical cycles     
+    ## pathwaymorbidity to ecosystem fxn:measure.generalbiogeochemical cycles         
+    ## pathwayunknown to ecosystem fxn:measure.generalbiogeochemical cycles        ***
+    ## pathwayabund biomass to ecosystem fxn:measure.generalprimary production       *
+    ## pathwayabund biomass to ecosystem fxn:measure.generalsecondary production      
     ## 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+summary(glht(m.pathway.measure, linfct=contrMat(c(
+  "abund biomass to ecosystem fxn:biogeochemical cycles"=1,
+  "morbidity to ecosystem fxn:biogeochemical cycles"=1,
+  "unknown to ecosystem fxn:biogeochemical cycles"=1,
+  "abund biomass to ecosystem fxn:primary production"=1,
+  "abund biomass to ecosystem fxn:secondary production"=1), type="Tukey")), test=adjusted("none"))
+```
+
+    ## 
+    ##   Simultaneous Tests for General Linear Hypotheses
+    ## 
+    ## Multiple Comparisons of Means: Tukey Contrasts
+    ## 
+    ## 
+    ## Fit: rma.uni(yi = abs(d) ~ pathway:measure.general - 1, vi = d.sampling.variance, 
+    ##     data = out, slab = paper.ID)
+    ## 
+    ## Linear Hypotheses:
+    ##                                                                                                                 Estimate
+    ## morbidity to ecosystem fxn:biogeochemical cycles - abund biomass to ecosystem fxn:biogeochemical cycles == 0      0.8880
+    ## unknown to ecosystem fxn:biogeochemical cycles - abund biomass to ecosystem fxn:biogeochemical cycles == 0        2.4135
+    ## abund biomass to ecosystem fxn:primary production - abund biomass to ecosystem fxn:biogeochemical cycles == 0     1.1495
+    ## abund biomass to ecosystem fxn:secondary production - abund biomass to ecosystem fxn:biogeochemical cycles == 0   0.7107
+    ## unknown to ecosystem fxn:biogeochemical cycles - morbidity to ecosystem fxn:biogeochemical cycles == 0            1.5255
+    ## abund biomass to ecosystem fxn:primary production - morbidity to ecosystem fxn:biogeochemical cycles == 0         0.2614
+    ## abund biomass to ecosystem fxn:secondary production - morbidity to ecosystem fxn:biogeochemical cycles == 0      -0.1773
+    ## abund biomass to ecosystem fxn:primary production - unknown to ecosystem fxn:biogeochemical cycles == 0          -1.2641
+    ## abund biomass to ecosystem fxn:secondary production - unknown to ecosystem fxn:biogeochemical cycles == 0        -1.7028
+    ## abund biomass to ecosystem fxn:secondary production - abund biomass to ecosystem fxn:primary production == 0     -0.4387
+    ##                                                                                                                 Std. Error
+    ## morbidity to ecosystem fxn:biogeochemical cycles - abund biomass to ecosystem fxn:biogeochemical cycles == 0        2.5717
+    ## unknown to ecosystem fxn:biogeochemical cycles - abund biomass to ecosystem fxn:biogeochemical cycles == 0          1.9492
+    ## abund biomass to ecosystem fxn:primary production - abund biomass to ecosystem fxn:biogeochemical cycles == 0       2.0015
+    ## abund biomass to ecosystem fxn:secondary production - abund biomass to ecosystem fxn:biogeochemical cycles == 0     2.2219
+    ## unknown to ecosystem fxn:biogeochemical cycles - morbidity to ecosystem fxn:biogeochemical cycles == 0              1.9736
+    ## abund biomass to ecosystem fxn:primary production - morbidity to ecosystem fxn:biogeochemical cycles == 0           2.0254
+    ## abund biomass to ecosystem fxn:secondary production - morbidity to ecosystem fxn:biogeochemical cycles == 0         2.2434
+    ## abund biomass to ecosystem fxn:primary production - unknown to ecosystem fxn:biogeochemical cycles == 0             1.1347
+    ## abund biomass to ecosystem fxn:secondary production - unknown to ecosystem fxn:biogeochemical cycles == 0           1.4894
+    ## abund biomass to ecosystem fxn:secondary production - abund biomass to ecosystem fxn:primary production == 0        1.5573
+    ##                                                                                                                 z value
+    ## morbidity to ecosystem fxn:biogeochemical cycles - abund biomass to ecosystem fxn:biogeochemical cycles == 0      0.345
+    ## unknown to ecosystem fxn:biogeochemical cycles - abund biomass to ecosystem fxn:biogeochemical cycles == 0        1.238
+    ## abund biomass to ecosystem fxn:primary production - abund biomass to ecosystem fxn:biogeochemical cycles == 0     0.574
+    ## abund biomass to ecosystem fxn:secondary production - abund biomass to ecosystem fxn:biogeochemical cycles == 0   0.320
+    ## unknown to ecosystem fxn:biogeochemical cycles - morbidity to ecosystem fxn:biogeochemical cycles == 0            0.773
+    ## abund biomass to ecosystem fxn:primary production - morbidity to ecosystem fxn:biogeochemical cycles == 0         0.129
+    ## abund biomass to ecosystem fxn:secondary production - morbidity to ecosystem fxn:biogeochemical cycles == 0      -0.079
+    ## abund biomass to ecosystem fxn:primary production - unknown to ecosystem fxn:biogeochemical cycles == 0          -1.114
+    ## abund biomass to ecosystem fxn:secondary production - unknown to ecosystem fxn:biogeochemical cycles == 0        -1.143
+    ## abund biomass to ecosystem fxn:secondary production - abund biomass to ecosystem fxn:primary production == 0     -0.282
+    ##                                                                                                                 Pr(>|z|)
+    ## morbidity to ecosystem fxn:biogeochemical cycles - abund biomass to ecosystem fxn:biogeochemical cycles == 0       0.730
+    ## unknown to ecosystem fxn:biogeochemical cycles - abund biomass to ecosystem fxn:biogeochemical cycles == 0         0.216
+    ## abund biomass to ecosystem fxn:primary production - abund biomass to ecosystem fxn:biogeochemical cycles == 0      0.566
+    ## abund biomass to ecosystem fxn:secondary production - abund biomass to ecosystem fxn:biogeochemical cycles == 0    0.749
+    ## unknown to ecosystem fxn:biogeochemical cycles - morbidity to ecosystem fxn:biogeochemical cycles == 0             0.440
+    ## abund biomass to ecosystem fxn:primary production - morbidity to ecosystem fxn:biogeochemical cycles == 0          0.897
+    ## abund biomass to ecosystem fxn:secondary production - morbidity to ecosystem fxn:biogeochemical cycles == 0        0.937
+    ## abund biomass to ecosystem fxn:primary production - unknown to ecosystem fxn:biogeochemical cycles == 0            0.265
+    ## abund biomass to ecosystem fxn:secondary production - unknown to ecosystem fxn:biogeochemical cycles == 0          0.253
+    ## abund biomass to ecosystem fxn:secondary production - abund biomass to ecosystem fxn:primary production == 0       0.778
+    ## (Adjusted p values reported -- none method)
 
 ``` r
 #model with pathway as predictor

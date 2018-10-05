@@ -19,7 +19,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor")
+neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -677,17 +677,28 @@ M = subset(M, !is.na(d))
 length(unique(M$paper.ID))#number of papers
 length(unique(M$data.to.use))#number of data types
 table(M$data.to.use)#table of variables represented by each data type 
+M$pathway=as.character(M$pathway)
+M$measure.general = as.character(M$measure.general)
+xtabs(~pathway+measure.general, data = M)#check what combinations are present
 out = M
 out$pathway = factor(out$pathway)
 out$measure.general=factor(out$measure.general)
 out$paper.ID=factor(out$paper.ID)
 
+
 #for model with two predictors, estimated effects are relative to one condition, making it difficult to determine (even when subtracting one so that model has intercept of zero)
-m1 = rma.uni(abs(d) ~ pathway +measure.general -1,
+m.pathway.measure = rma.uni(abs(d) ~ pathway:measure.general -1,
              vi = d.sampling.variance,
              slab = paper.ID,
              data = out)
-m1
+m.pathway.measure
+#http://www.metafor-project.org/doku.php/tips:multiple_factors_interactions#model_with_interaction
+summary(glht(m.pathway.measure, linfct=contrMat(c(
+  "abund biomass to ecosystem fxn:biogeochemical cycles"=1,
+  "morbidity to ecosystem fxn:biogeochemical cycles"=1,
+  "unknown to ecosystem fxn:biogeochemical cycles"=1,
+  "abund biomass to ecosystem fxn:primary production"=1,
+  "abund biomass to ecosystem fxn:secondary production"=1), type="Tukey")), test=adjusted("none"))
 
 #model with pathway as predictor
 m.pathway = rma.uni(abs(d) ~ pathway -1,
@@ -703,6 +714,16 @@ m.measure = rma.uni(abs(d) ~ factor(measure.general)-1,
              slab = paper.ID,
              data = out)
 m.measure
+#http://www.metafor-project.org/doku.php/tips:testing_factors_lincoms#all_pairwise_comparisons
+#this glht throws error: 
+# Error in glht.matrix(m.measure, linfct = cbind(contrMat(c(`biogeochemical cycles` = 1,  : 
+#   ‘ncol(linfct)’ is not equal to ‘length(coef(model))’
+
+# summary(glht(m.measure, linfct=cbind(contrMat(c("biogeochemical cycles"=1,
+#                                           "primary production"=1,
+#                                           "secondary production"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
+#http://www.metafor-project.org/doku.php/tips:testing_factors_lincoms#all_pairwise_comparisons
+
 save(m.measure, file = "m.measure.Rdata")
 
 #intercept-only model, may want to use this to estimate overall effect
