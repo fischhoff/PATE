@@ -19,7 +19,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp")
+neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp", "lme4", "lmerTest", "nlme", "gamlss.dist", "gamlss")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -276,28 +276,42 @@ write.csv(M, file ="PATE_data.csv")
 ###functions
 ###write function to get pooled value for variable across all "levels" within a study, pathway, and general.measure  
 ```{r}
-
+b  = 14
+c = 3
+d = 2
+e = 1
 one.per.var = function(M.y){
   ustudy = unique(M.y$paper.ID)
   out = NULL
   for (b in 1:length(ustudy)){
+  print("b")
+  print(b)
+
+    print(ustudy[b])
   s.tmp = subset(M.y, paper.ID == ustudy[b])
   upath = unique(s.tmp$pathway)
 #for each pathway in study
     for (c in 1:length(upath)){
       p.tmp = subset(s.tmp, pathway == upath[c])
       umeasure = unique(p.tmp$measure.general)
+      print("c")
+      print(c)
       #for each general measure, find all variables within that measure
       for (d in 1:length(umeasure)){
+        print("d")
+        print(d)
         inds = which(p.tmp$measure.general == umeasure[d])
         m.tmp = p.tmp[inds,]
         #unique variable
         uvar = unique(m.tmp$measure.specific....outcome.variable)
         for (e in 1:length(uvar)){
+          print("e")
+          print(e)
+
           v.tmp = subset(m.tmp, measure.specific....outcome.variable == uvar[e])
           if (dim(v.tmp)[1]>1){
-            #if more than one record for a variable, find pooled estimate across all records
-            #print(v.tmp$d)
+            #if more than one record for a variable, find pooled estimate across all records     
+            print("pooled estimate")
             m = rma(yi = v.tmp$d,
                        vi = v.tmp$d.sampling.variance,
                        measure = "MN")  
@@ -311,15 +325,9 @@ one.per.var = function(M.y){
           else {#else use value already gotten
             out = rbind(out, v.tmp)
           }#end else
-          # print("b")
-          # print(b)
-          # print("c")
-          # print(c)
-          # print("d")
-          # print(d)
-          # print("e")
-          # print(e)
-          # print(v.tmp$d)
+ 
+  
+          print(v.tmp$d)
           
         }#end variable
         
@@ -343,7 +351,7 @@ se_from_p <- function(effect, p){
 save(se_from_p, file = "se_from_p.Rdata")
 ```
 
-###function to calculate SE from r and n
+###function to calculate SE for correlation coefficient (r) from r and n (sample size)
 ###source: Zar, J. 1999. Biostatistical analysis. p. 373
 ```{r}
 se.calc.from.r.n <-  function( r, n){
@@ -353,7 +361,21 @@ se.calc.from.r.n <-  function( r, n){
 save(se.calc.from.r.n,file="se.calc.from.r.n.Rdata")
 ```
 
-###function to calculate d from r
+###function to calculate standardized mean difference (d) from regression coefficient (log odds ratio) and SE of coefficient
+```{r}
+or_to_d <- function(df){
+  log.odds.ratio = df$regression.coefficient
+  log.odds.se = df$regression.coefficient.SE
+  log.odds.variance = log.odds.se^2
+  #https://www.meta-analysis.com/downloads/Meta-analysis%20Converting%20among%20effect%20sizes.pdf
+  df$d = log.odds.ratio*(sqrt(3)/pi)
+  df$d.sampling.variance=log.odds.variance*(3/pi^2)
+  return(df)
+}
+save(or_to_d, file = "or_to_d.Rdata")
+```
+
+###function to calculate standardized mean difference (d) from correlation coefficient (r) and SE of r
 ```{r}
 r_to_d <- function(df ){
       r = df$correlation.coefficient
@@ -373,7 +395,27 @@ r_to_d <- function(df ){
 save(r_to_d, file = "r_to_d.Rdata")
 ```
 
+#fix P values that have characters in them
+```{r}
+load("M.Rdata")
+
+M$P = as.character(M$P)
+P = as.numeric(M$P)
+inds.na = which(is.na(P))
+is.not.empty = which(M$P !="")
+inds.na = intersect(inds.na, is.not.empty)
+a = 1
+for (a in 1:length(inds.na)){
+  M$P[inds.na[a]]=strsplit(M$P[inds.na[a]],"<")[[1]][2]
+  print(M$P[inds.na[a]])
+}
+M$P = as.numeric(M$P)
+save(M, file = "M.Rdata")
+```
+
+
 ###following chunks each handle one data type encountered in papers, and convert that data type to d (standardized mean difference) and sampling variance in d
+
 
 ###mean_variance
 ###exclude data points with standard deviation equal to zero
@@ -394,6 +436,8 @@ M$d = NA
 M$d.sampling.variance = NA
 M$control.mean=as.numeric(as.character(M$control.mean))
 M$infected.mean=as.numeric(as.character(M$infected.mean))
+unique(as.character(M$sample.size.infected))
+M$sample.size.infected=as.numeric(as.character(M$sample.size.infected))
 M.y = subset(M, data.to.use == "mean_variance" & !is.na(control.mean))
 M.n  = subset(M, data.to.use != "mean_variance" | (data.to.use == "mean_variance" & is.na(control.mean)))
 dim(M.y)[1]+dim(M.n)[1]==dim(M)[1]
@@ -402,6 +446,10 @@ a = 31
 for (a in 1:dim(M.y)[1]){
   #find out what type of variance measure is there
   var_measure = M.y$variance.measure[a]
+  if (var_measure == "SD"){
+    M.y$control_sd[a]=M.y$control.variance[a]
+    M.y$infected_sd[a]=M.y$infected.variance[a]
+  }
   if (var_measure == "SE"){
     M.y$control_sd[a]=M.y$control.variance[a]*sqrt(M.y$sample.size.control[a])
     M.y$infected_sd[a]=M.y$infected.variance[a]*sqrt(M.y$sample.size.infected[a])
@@ -444,6 +492,8 @@ out = one.per.var(M.y)
 dim(out)
 
 M = rbind(M.n, out)
+out$d
+out$d.sampling.variance
 save(M, file = "M.Rdata")
 
 
@@ -490,6 +540,10 @@ if (dimM==unique_vars){
   }
 }
 M.y.2 = one.per.var(M.y)
+M.y.2$d
+M.y.2$d.sampling.variance
+M.n$P = as.numeric(as.character(M.n$P))
+
 M = rbind(M.n, M.y.2)
 save(M, file = "M.Rdata")
 ```
@@ -516,9 +570,10 @@ for (c in 1:lev){
       M.y$correlation.coefficient.se[c] = se.calc.from.r.n(ri, ni)#get SE
       M.y[c,]=r_to_d(M.y[c,])
 }
-
-M.y$d.sampling.variance
+print("d")
 M.y$d
+print("variance")
+M.y$d.sampling.variance
 
 #for each study
 out = one.per.var(M.y)
@@ -532,17 +587,17 @@ save(M, file = "M.Rdata")
 ###correlation coefficient and sample size and P
 ###use P to calculate SE
 ```{r}
-#load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
-load("se_from_p.Rdata")#fxn to get SE from r and n
+load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
+#load("se_from_p.Rdata")#fxn to get SE from P
 load("r_to_d.Rdata")#function to get d, var.d from r
 load("one.per.var.Rdata")
 load("M.Rdata")
 M$correlation.coefficient.se = NA
 M.n = subset(M,data.to.use!="correlation coefficient and sample size and P")
 M.y = subset(M,data.to.use=="correlation coefficient and sample size and P")
-M.y$P = as.character(M.y$P)
-M.y$P[M.y$P == "<0.001"]="0.001"
-M.y$P = as.numeric(M.y$P)
+# M.y$P = as.character(M.y$P)
+# M.y$P[M.y$P == "<0.001"]="0.001"
+# M.y$P = as.numeric(M.y$P)
 
 lev = dim(M.y)[1]
 for (c in 1:lev){
@@ -554,11 +609,12 @@ for (c in 1:lev){
       M.y[c,]=r_to_d(M.y[c,])
 }
 
-M.y$d.sampling.variance
-M.y$d
 
 #for each study
 out = one.per.var(M.y)
+out$d
+out$d.sampling.variance
+
 M = rbind(out, M.n)
 save(M, file = "M.Rdata")
 
@@ -642,13 +698,62 @@ save(M, file = "M.Rdata")
 
 ##one-way ANOVA: calculate effect sizes from F and sample size
 ##determined we cannot infer positive or negative in effect size if study does not report direction or means, for non-significant results, because F value is always positive.  
+#where sample size not reported, assumed equal sample size for infected vs. control, used df = n-k (k = number of groups = 2) to determine sample size total. 
 ```{r}
 load("M.Rdata")
+M$d.absolute = 0#is d absolute value
 M.y = subset(M, data.to.use == "one-way ANVOA F _ degrees freedom")
 M.n = subset(M, data.to.use != "one-way ANVOA F _ degrees freedom")
+# P = as.numeric(M.y$P)
+# inds.na = which(is.na(P))
+# M.y$P = as.character(M.y$P)
+# a = 1
+# for (a in 1:length(inds.na)){
+#   M.y$P[inds.na[a]]=strsplit(M.y$P[inds.na[a]],"<")[[1]][2]
+#   print(M.y$P[inds.na[a]])
+# }
+# M.y$P = as.numeric(M.y$P)
+#infer sample size based on df for records without sample size
+na.inds = which(is.na(M.y$sample.size.control))
+M.y$sample.size.control[na.inds]=(M.y$df[na.inds]+2)/2
+M.y$sample.size.infected[na.inds]=(M.y$df[na.inds]+2)/2
+
 #calculate d (effect size) from F and sample size (Koricheva et al. p. 200, F ratio from one-way ANOVA)
-#calculate SE from d and P value 
+for (a in 1:dim(M.y)[1]){
+  ni = M.y$sample.size.infected[a]
+  nc = M.y$sample.size.control[a]
+  M.y$d[a]= sqrt(M.y$F[a]*(ni + nc)/(ni*nc))
+  #calculate SE from d and P value 
+  d_se = se_from_p(M.y$d[a], M.y$P[a])
+  #standard error = square root of the estimated error variance
+  var_d = d_se^2
+  M.y$d.sampling.variance[a]=var_d
+}
+M.y$d.absolute=1#these ones are absolute value
+print(M.y$d)
+print(M.y$d.sampling.variance)
+M = rbind(M.n, M.y)
 ```
+
+###regression coefficient and SE
+##coefficient is equal to log odds ratio. convert log odds ratio to d
+```{r}
+load("M.Rdata")
+load("or_to_d.Rdata")
+load("one.per.var.Rdata")
+M.y = subset(M, data.to.use == "regression coefficient and SE")
+M.n = subset(M, data.to.use != "regression coefficient and SE")
+
+for (a in 1:dim(M.y)[1]){
+  M.y[a,]=or_to_d(M.y[a,])
+}
+M.y = one.per.var(M.y)#in case there are duplicates
+print(M.y$d)
+print(M.y$d.sampling.variance)
+M = rbind(M.y, M.n)
+save(M, file = "M.Rdata")
+```
+
 
 ###percent difference and P -- don't know how to convert to d, so not doing
 ```{r}
@@ -663,149 +768,416 @@ M.n = subset(M, data.to.use != "one-way ANVOA F _ degrees freedom")
 ```
 
 
-##meta-analysis
-###run mixed models, for pathway and for measure
+#look at representation of pathways and measures in data
 ```{r}
 load("M.Rdata")
-
-M.max = subset(M, d.sampling.variance == max(M$d.sampling.variance, na.rm=TRUE))
-M.max
-#note: removing observation with (high) outlier variance, because otherwise cannot obtain stable results. If this is not satisfactory, then we could switch to using e.g. lme4, though metafor author has some criticisms of going that route: 
-#http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
-M = subset(M, d.sampling.variance != max(M$d.sampling.variance, na.rm=TRUE))
 M = subset(M, !is.na(d))
 length(unique(M$paper.ID))#number of papers
-length(unique(M$data.to.use))#number of data types
-table(M$data.to.use)#table of variables represented by each data type 
-M$pathway=as.character(M$pathway)
+#look at distribution of measures by pathway and measure 
+M$pathway = as.character(M$pathway)
 M$measure.general = as.character(M$measure.general)
-xtabs(~pathway+measure.general, data = M)#check what combinations are present
-out = M
-out$pathway = factor(out$pathway)
-out$measure.general=factor(out$measure.general)
-out$paper.ID=factor(out$paper.ID)
+xtabs(~pathway + measure.general, data = M)
+#look at distribution of number of observations per paper
+xtabs(~paper.ID, data = M)
+
+```
+
+##meta-analysis
+#check whether absoluate value of d is normally distributed, and whether log of abs(d) is normal
+```{r}
+load("M.Rdata")
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001#add small number so that can take log and it be definite
+#check normality of d
+shapiro.test(abs(dat$d))
+qqnorm(abs(dat$d))
+#check normality of log d -- slightly closer to normality but still very much not normal 
+shapiro.test(log(abs(dat$d)))
+
+qqnorm(log(abs(dat$d)))
+```
 
 
-#for model with two predictors, estimated effects are relative to one condition, making it difficult to determine (even when subtracting one so that model has intercept of zero)
-m.pathway.measure = rma.uni(abs(d) ~ pathway:measure.general -1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-m.pathway.measure
-#http://www.metafor-project.org/doku.php/tips:multiple_factors_interactions#model_with_interaction
-summary(glht(m.pathway.measure, linfct=contrMat(c(
-  "abund biomass to ecosystem fxn:biogeochemical cycles"=1,
-  "morbidity to ecosystem fxn:biogeochemical cycles"=1,
-  "unknown to ecosystem fxn:biogeochemical cycles"=1,
-  "abund biomass to ecosystem fxn:primary production"=1,
-  "abund biomass to ecosystem fxn:secondary production"=1), type="Tukey")), test=adjusted("none"))
+##use nlme and absolute value of d
+##http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
+```{r}
+#using package lmerTest to get p values
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+# dat$log.d = log(abs(dat$d))
 
-#model with pathway as predictor
-m.pathway = rma.uni(abs(d) ~ pathway -1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-m.pathway
-save(m.pathway, file = "m.pathway.Rdata")
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+res.lme.pathway <- lme(abs(d) ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.pathway)
+save(res.lme.pathway, file = "res.lme.pathway.Rdata")
 
-#model with measure as predictor
-m.measure = rma.uni(abs(d) ~ factor(measure.general)-1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
-m.measure
-#http://www.metafor-project.org/doku.php/tips:testing_factors_lincoms#all_pairwise_comparisons
-#this glht throws error: 
-# Error in glht.matrix(m.measure, linfct = cbind(contrMat(c(`biogeochemical cycles` = 1,  : 
-#   ‘ncol(linfct)’ is not equal to ‘length(coef(model))’
+#check which pathways are different from each other, if any
+summary(glht(res.lme.pathway, linfct=contrMat(c(
+  "abund biomass to ecosystem fxn"=1,
+  "morbidity to ecosystem fxn"=1,
+  "unknown to ecosystem fxn"=1), type="Tukey")), test=adjusted("none"))
 
-# summary(glht(m.measure, linfct=cbind(contrMat(c("biogeochemical cycles"=1,
-#                                           "primary production"=1,
-#                                           "secondary production"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
-#http://www.metafor-project.org/doku.php/tips:testing_factors_lincoms#all_pairwise_comparisons
+#measure
+res.lme.measure <- lme(abs(d) ~ measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.measure)
 
-save(m.measure, file = "m.measure.Rdata")
+summary(glht(res.lme.measure, linfct=contrMat(c(
+  "biogeochemical cycles"=1,
+  "primary production"=1,
+  "secondary production"=1), type="Tukey")), test=adjusted("none"))
 
-#intercept-only model, may want to use this to estimate overall effect
-m.rand = rma.uni(abs(d) ~ 1,
-             vi = d.sampling.variance,
-             slab = paper.ID,
-             data = out)
+
+#this doesn't work because of singularity
+# res.lme.pathway.measure <- lme(log.d ~ pathway*measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+# summary(res.lme.pathway.measure)
+
+```
+
+###try using weibull with gamlss -- haven't gotten this to work with our data
+#https://stats.stackexchange.com/questions/225457/fit-glm-for-weibull-family
+```{r}
+
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+
+#this works
+dat<-rWEI(100, mu=10, sigma=2)
+gamlss(dat~1, family=WEI)
+
+#this throws an error "response variable out of range"
+# d = dat$d
+# gamlss(d~1, family=WEI)
 
 ```
 
 
+###try using Gamma distribution with lme4
+```{r}
+load("M.Rdata")
+# install.packages("R2admb")
+# install.packages("glmmADMB", 
+#     repos=c("http://glmmadmb.r-forge.r-project.org/repos",
+#             getOption("repos")),
+#     type="source")
+# 
+# library(glmmADMB)
+# install.packages("glmmTMB")
+# library(glmmTMB)
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+M$paper.ID=factor(M$paper.ID)
+dat = M
+dat$d = dat$d+0.000001
+
+
+# hist(abs(M$d))
+# hist(log(abs(M$d)))
+#remove pathway to ecosystem function because there is not a difference between two means, for this measure
+
+dat$paper.ID=factor(dat$paper.ID)
+#gamma with log link doesn't work.
+# res.lmer.g <- glmer(abs(d) ~ pathway + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#                  control=glmerControl(check.nobs.vs.nlev="ignore", check.nobs.vs.nRE="ignore"),
+#                  family = Gamma(link = "log")
+#                  )
+
+#gamma without link doesn't work
+# res.lmer.g <- glmer(abs(d) ~ pathway + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#                  control=glmerControl(check.nobs.vs.nlev="ignore", check.nobs.vs.nRE="ignore"),
+#                  family = Gamma
+#                  )
+
+
+#this works, so there is something about the random effects that is problematic
+res.lmer.g <- glm(abs(d) ~ 1 , weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma
+)
+
+#model runs without paper.ID as random effect
+res.lmer.g <- glm(abs(d) ~ pathway-1 , weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma(link = "log")
+)
+
+# res.lmer.g <- glmmadmb(abs(d) ~ pathway + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#                  family = "gamma"
+# )
+
+# res.lmer.g <- glmmTMB(abs(d) ~ pathway + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#                  family = "Gamma"
+# )
+
+
+#gamma without log link doesn't work
+# res.lmer.g.nolog <- glmer(abs(d) ~ pathway + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#                  control=glmerControl(check.nobs.vs.nlev="ignore", check.nobs.vs.nRE="ignore"),
+#                  family = Gamma
+# )
+
+
+# tt <- getME(res.lmer.g,"theta")
+# ll <- getME(res.lmer.g,"lower")
+# min(tt[ll==0])
+# 
+# summary(res.lmer.g)
+
+
+
+```
+
+
+###run mixed models, for pathway and for measure
+##keeping for now but these may not be valid because assume normality
+```{r}
+
+# load("M.Rdata")
+# # 
+# M.max = subset(M, d.sampling.variance == max(M$d.sampling.variance, na.rm=TRUE))
+# M.max
+# #note: removing observation with (high) outlier variance, because otherwise cannot obtain stable results. If this is not satisfactory, then we could switch to using e.g. lme4, though metafor author has some criticisms of going that route:
+# #http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
+# M = subset(M, d.sampling.variance != max(M$d.sampling.variance, na.rm=TRUE))
+# M = subset(M, !is.na(d))
+# length(unique(M$paper.ID))#number of papers
+# # length(unique(M$data.to.use))#number of data types
+# table(M$data.to.use)#table of variables represented by each data type
+# out = M
+# 
+# #for model with two predictors, estimated effects are relative to one condition, making it difficult to determine (even when subtracting one so that model has intercept of zero)
+# m.pathway.measure = rma.uni(abs(d) ~ pathway:measure.general -1,
+#              vi = d.sampling.variance,
+#              slab = paper.ID,
+#              data = out)
+# m.pathway.measure
+# #http://www.metafor-project.org/doku.php/tips:multiple_factors_interactions#model_with_interaction
+# summary(glht(m.pathway.measure, linfct=contrMat(c(
+#   "abund biomass to ecosystem fxn:biogeochemical cycles"=1,
+#   "morbidity to ecosystem fxn:biogeochemical cycles"=1,
+#   "unknown to ecosystem fxn:biogeochemical cycles"=1,
+#   "abund biomass to ecosystem fxn:primary production"=1,
+#   "abund biomass to ecosystem fxn:secondary production"=1), type="Tukey")), test=adjusted("none"))
+# 
+# #model with pathway as predictor
+# m.pathway = rma.uni(abs(d) ~ pathway -1,
+#              vi = d.sampling.variance,
+#              slab = paper.ID,
+#              data = out)
+# m.pathway
+# save(m.pathway, file = "m.pathway.Rdata")
+# 
+# #model with measure as predictor
+# m.measure = rma.uni(abs(d) ~ factor(measure.general)-1,
+#              vi = d.sampling.variance,
+#              slab = paper.ID,
+#              data = out)
+# m.measure
+# #http://www.metafor-project.org/doku.php/tips:testing_factors_lincoms#all_pairwise_comparisons
+# #this glht throws error:
+# # Error in glht.matrix(m.measure, linfct = cbind(contrMat(c(`biogeochemical cycles` = 1,  :
+# #   ‘ncol(linfct)’ is not equal to ‘length(coef(model))’
+# 
+# # summary(glht(m.measure, linfct=cbind(contrMat(c("biogeochemical cycles"=1,
+# #                                           "primary production"=1,
+# #                                           "secondary production"=1), type="Tukey"), 0, 0)), test=adjusted("none"))
+# #http://www.metafor-project.org/doku.php/tips:testing_factors_lincoms#all_pairwise_comparisons
+# 
+# save(m.measure, file = "m.measure.Rdata")
+
+# #intercept-only model, may want to use this to estimate overall effect
+# m.rand = rma.uni(abs(d) ~ 1,
+#              vi = d.sampling.variance,
+#              slab = paper.ID,
+#              data = out)
+
+```
+
 ###visualize model results for pathway -- barplot with standard errors 
 ```{r pathway_errorbar}
-require(cowplot)
 
-load("m.pathway.Rdata")
-s = summary(m.pathway)
-estimate = s$beta
-se = s$se
-rn = row.names(s$beta)
-rnout = NULL
-for (a in 1:length(rn)){
-  tmp = strsplit(rn[a], "pathway")[[1]][2]
-  rnout = c(rnout, tmp)
-}
-rnout[rnout == "abund biomass to ecosystem fxn"]="abundance"
-rnout[rnout == "morbidity to ecosystem fxn"]="phenotype"
-rnout[rnout == "unknown to ecosystem fxn"]="unknown"
-df = data.frame(effect = estimate,
-                se = se,
-                pathway = rnout)
-p1 <- ggplot(df, aes(x = pathway, y = effect)) +  
-  geom_bar(stat="identity", color="black", 
-           position=position_dodge()) +
-  geom_errorbar(aes(ymin=effect-se, 
-                    ymax=effect+se), width=.2,
-                 position=position_dodge(.9)) +
-  scale_fill_grey()+
-    #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  
-  xlab("pathway")+
-  ylab("Average absolute effect size (+-SE)")
-p1
-save_plot( "Figure.effect.pathway.jpg", p1, nrow = 1, dpi = 600)
+# require(cowplot)
+# 
+# load("m.pathway.Rdata")
+# load("res.lme.pathway.Rdata")
+# s = summary(m.pathway)
+# estimate = s$beta
+# se = s$se
+# rn = row.names(s$beta)
+# rnout = NULL
+# for (a in 1:length(rn)){
+#   tmp = strsplit(rn[a], "pathway")[[1]][2]
+#   rnout = c(rnout, tmp)
+# }
+# rnout[rnout == "abund biomass to ecosystem fxn"]="abundance"
+# rnout[rnout == "morbidity to ecosystem fxn"]="phenotype"
+# rnout[rnout == "unknown to ecosystem fxn"]="unknown"
+# df = data.frame(effect = estimate,
+#                 se = se,
+#                 pathway = rnout)
+# p1 <- ggplot(df, aes(x = pathway, y = effect)) +  
+#   geom_bar(stat="identity", color="black", 
+#            position=position_dodge()) +
+#   geom_errorbar(aes(ymin=effect-se, 
+#                     ymax=effect+se), width=.2,
+#                  position=position_dodge(.9)) +
+#   scale_fill_grey()+
+#     #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+#   
+#   xlab("pathway")+
+#   ylab("Average absolute effect size (+-SE)")
+# p1
+# save_plot( "Figure.effect.pathway.jpg", p1, nrow = 1, dpi = 600)
 
 ```
 
 
 ###visualize model results for measure -- barplot with standard errors 
 ```{r measure_errorbar}
-require(cowplot)
 
-load("m.measure.Rdata")
-s = summary(m.measure)
-estimate = s$beta
-se = s$se
-rn = row.names(s$beta)
-rnout = NULL
-for (a in 1:length(rn)){
-  tmp = strsplit(rn[a], "general)")[[1]][2]
-  rnout = c(rnout, tmp)
-}
-# rnout[rnout == "abund biomass to ecosystem fxn"]="abundance"
-# rnout[rnout == "morbidity to ecosystem fxn"]="phenotype"
-# rnout[rnout == "unknown to ecosystem fxn"]="unknown"
-df = data.frame(effect = estimate,
-                se = se,
-                measure = rnout)
-p1 <- ggplot(df, aes(x = measure, y = effect)) +  
-  geom_bar(stat="identity", color="black", 
+# require(cowplot)
+# 
+# load("m.measure.Rdata")
+# s = summary(m.measure)
+# estimate = s$beta
+# se = s$se
+# rn = row.names(s$beta)
+# rnout = NULL
+# for (a in 1:length(rn)){
+#   tmp = strsplit(rn[a], "general)")[[1]][2]
+#   rnout = c(rnout, tmp)
+# }
+# # rnout[rnout == "abund biomass to ecosystem fxn"]="abundance"
+# # rnout[rnout == "morbidity to ecosystem fxn"]="phenotype"
+# # rnout[rnout == "unknown to ecosystem fxn"]="unknown"
+# df = data.frame(effect = estimate,
+#                 se = se,
+#                 measure = rnout)
+# p1 <- ggplot(df, aes(x = measure, y = effect)) +  
+#   geom_bar(stat="identity", color="black", 
+#            position=position_dodge()) +
+#   geom_errorbar(aes(ymin=effect-se, 
+#                     ymax=effect+se), width=.2,
+#                  position=position_dodge(.9)) +
+#   scale_fill_grey()+
+#     #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+#   
+#   xlab("measure")+
+#   ylab("Average absolute effect size (+-SE)")
+# p1
+# save_plot( "Figure.effect.measure.jpg", p1, nrow = 1, dpi = 600)
+```
+
+
+
+###visualize model results for pathway -- barplot with standard errors -- absolute value
+```{r pathway_errorbar_abs}
+require(cowplot)
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+M$paper.ID=factor(M$paper.ID)
+dat = M
+dat$d = dat$d+0.000001
+
+#use as sample size number of years
+dat2 <- dat %>%
+  group_by(pathway) %>%
+  summarize(abs = mean(abs(d)),
+         sd.abs = sd(abs(d)),# d = log.odds.ratio * sqrt(3)/pi,
+         se.abs = sd.abs/sqrt(length(d))
+         # var_d=(ratio.sd)^2
+         )
+
+dat2 = data.frame(dat2)
+# dat2 <- dat %>%
+#   group_by(pathway) %>%
+#   summarize(log.abs = mean(log(abs(d))),
+#          sd.log.abs = sd(log(abs(d))),# d = log.odds.ratio * sqrt(3)/pi,
+#          se.log.abs = sd.log.abs/sqrt(length(d))
+#          # var_d=(ratio.sd)^2
+#          )
+
+
+# load("res.lme.pathway.Rdata")
+# s = summary(res.lme.pathway)
+# estimate = s$beta
+# se = s$se
+# rn = row.names(s$beta)
+# rnout = NULL
+# for (a in 1:length(rn)){
+#   tmp = strsplit(rn[a], "pathway")[[1]][2]
+#   rnout = c(rnout, tmp)
+# }
+dat2$pathway=as.character(dat2$pathway)
+dat2$pathway[dat2$pathway == "abund biomass to ecosystem fxn"]="abundance"
+dat2$pathway[dat2$pathway == "morbidity to ecosystem fxn"]="phenotype"
+dat2$pathway[dat2$pathway == "unknown to ecosystem fxn"]="unknown"
+df = data.frame(effect = dat2$abs,
+                se = dat2$se.abs,
+                pathway = dat2$pathway)
+p1 <- ggplot(df, aes(x = pathway, y = effect)) +
+  geom_bar(stat="identity", color="black",
            position=position_dodge()) +
-  geom_errorbar(aes(ymin=effect-se, 
+  geom_errorbar(aes(ymin=effect-se,
                     ymax=effect+se), width=.2,
                  position=position_dodge(.9)) +
   scale_fill_grey()+
     #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  
+
+  xlab("pathway")+
+  ylab("Average absolute effect size (+-SE)")
+p1
+# save_plot( "Figure.effect.pathway.jpg", p1, nrow = 1, dpi = 600)
+
+```
+
+
+###visualize model results for measure -- barplot with standard errors -- absolute value
+```{r measure_errorbar_abs}
+require(cowplot)
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+M$paper.ID=factor(M$paper.ID)
+dat = M
+dat$d = dat$d+0.000001
+
+#use as sample size number of years
+dat2 <- dat %>%
+  group_by(measure.general) %>%
+  summarize(abs = mean(abs(d)),
+         sd.abs = sd(abs(d)),# d = log.odds.ratio * sqrt(3)/pi,
+         se.abs = sd.abs/sqrt(length(d))
+         # var_d=(ratio.sd)^2
+         )
+
+dat2 = data.frame(dat2)
+
+df = data.frame(effect = dat2$abs,
+                se = dat2$se.abs,
+                measure = dat2$measure.general)
+p1 <- ggplot(df, aes(x = measure, y = effect)) +
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=effect-se,
+                    ymax=effect+se), width=.2,
+                 position=position_dodge(.9)) +
+  scale_fill_grey()+
+    #theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+
   xlab("measure")+
   ylab("Average absolute effect size (+-SE)")
 p1
-save_plot( "Figure.effect.measure.jpg", p1, nrow = 1, dpi = 600)
+# save_plot( "Figure.effect.pathway.jpg", p1, nrow = 1, dpi = 600)
+
 ```
+
+
 
 
 
