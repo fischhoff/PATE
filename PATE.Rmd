@@ -19,7 +19,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp", "lme4", "lmerTest", "nlme", "gamlss.dist", "gamlss")
+neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp", "lme4", "lmerTest", "nlme", "gamlss.dist", "gamlss", "dplyr", "tibble", "robustlmm")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -419,6 +419,10 @@ save(M, file = "M.Rdata")
 
 ###mean_variance
 ###exclude data points with standard deviation equal to zero
+###includes parasite/pathogen removal (as control)
+###includes less vs. more virulent form of disease
+###includes only "control" treatments (invaded vs. uninvaded), in cases where host abundance was manipulated at local scale on top of effect of pathogen on host abundance (Connelly et al._2093)
+
 ```{r mean_variance}
 load("M.Rdata")
 load("one.per.var.Rdata")
@@ -438,11 +442,13 @@ M$control.mean=as.numeric(as.character(M$control.mean))
 M$infected.mean=as.numeric(as.character(M$infected.mean))
 unique(as.character(M$sample.size.infected))
 M$sample.size.infected=as.numeric(as.character(M$sample.size.infected))
-M.y = subset(M, data.to.use == "mean_variance" & !is.na(control.mean))
-M.n  = subset(M, data.to.use != "mean_variance" | (data.to.use == "mean_variance" & is.na(control.mean)))
+M.y = subset(M, (data.to.use == "mean_variance" | data.to.use == "mean_variance levels of disease" ) 
+             & !is.na(control.mean))
+M.n  = subset(M, (data.to.use != "mean_variance" & data.to.use != "mean_variance levels of disease") | ((data.to.use == "mean_variance" | data.to.use == "mean_variance levels of disease") & is.na(control.mean)))
 dim(M.y)[1]+dim(M.n)[1]==dim(M)[1]
 #for each record, get effect size and SE
 a = 31
+#M.y = subset(M.y, paper.ID == 1924)
 for (a in 1:dim(M.y)[1]){
   #find out what type of variance measure is there
   var_measure = M.y$variance.measure[a]
@@ -455,12 +461,17 @@ for (a in 1:dim(M.y)[1]){
     M.y$infected_sd[a]=M.y$infected.variance[a]*sqrt(M.y$sample.size.infected[a])
   }
   if (var_measure == "CV"){
-    #comment out these lines relevant for SE
-    # C.tmp$log.ci.ub = C.tmp$log.odds.ratio+1.96*C.tmp$log.se
-    # SE = (CI.upper - mean)/1.96
     M.y$control_sd[a] = M.y$control.variance[a]*M.y$control.mean[a]/100
     M.y$infected_sd[a] = M.y$infected.variance[a]*M.y$infected.mean[a]/100
   }
+  
+  if (var_measure == "CI"){
+    control.se = (M.y$control.CI.upper[a] - M.y$control.mean[a])/1.96
+    M.y$control_sd[a]= control.se * sqrt(M.y$sample.size.control[a])
+
+    infected.se = (M.y$infected.CI.upper[a] - M.y$infected.mean[a])/1.96        
+    M.y$infected_sd[a]= infected.se * sqrt(M.y$sample.size.infected[a])
+    }
   m1i = M.y$control.mean[a]
   m2i = M.y$infected.mean[a]
   sd1i = M.y$control_sd[a]
@@ -494,6 +505,7 @@ dim(out)
 M = rbind(M.n, out)
 out$d
 out$d.sampling.variance
+out$paper.ID
 save(M, file = "M.Rdata")
 
 
@@ -534,8 +546,10 @@ if (dimM==unique_vars){
     se = se_from_p(M.y$d[a],M.y$P[a])
     #http://mathworld.wolfram.com/StandardError.html
     M.y$d.sampling.variance[a]=se^2
-    if(M.y$variable.greater.without.pathogen.parasite[a]==1){
-      M.y$d[a]=M.y$d[a]*-1
+    if (!is.na(M.y$variable.greater.without.pathogen.parasite[a])){
+      if(M.y$variable.greater.without.pathogen.parasite[a]==1){
+        M.y$d[a]=M.y$d[a]*-1
+      }
     }
   }
 }
@@ -547,6 +561,7 @@ M.n$P = as.numeric(as.character(M.n$P))
 M = rbind(M.n, M.y.2)
 save(M, file = "M.Rdata")
 ```
+
 
 ###R2 and direction and sample size
 ```{r}
@@ -733,7 +748,42 @@ M.y$d.absolute=1#these ones are absolute value
 print(M.y$d)
 print(M.y$d.sampling.variance)
 M = rbind(M.n, M.y)
+save(M, file = "M.Rdata")
 ```
+
+###R2 and sample size
+###if direction not given for some measures in a study, then exclude direction information for all measures (e.g. Lovett et al. 2010)
+```{r}
+
+load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
+load("r_to_d.Rdata")#function to get d, var.d from r
+load("one.per.var.Rdata")
+load("M.Rdata")
+M.n = subset(M,data.to.use!="R2 and sample size")
+M.y = subset(M,data.to.use=="R2 and sample size")
+
+lev = dim(M.y)[1]
+for (c in 1:lev){
+      ri = as.numeric(as.character(M.y$R.squared[c]))#get inputs for rma
+      ri = sqrt(ri)
+      M.y$correlation.coefficient[c]=ri
+      ni = M.y$sample.size.total[c]
+      M.y$correlation.coefficient.se[c] = se.calc.from.r.n(ri, ni)#get SE
+      M.y[c,]=r_to_d(M.y[c,])
+      M.y$d.absolute[c]=1
+
+}
+print("d")
+print("variance")
+M.y$d.sampling.variance
+
+#for each study
+out = one.per.var(M.y)
+M = rbind(out, M.n)
+save(M, file = "M.Rdata")
+
+```
+
 
 ###regression coefficient and SE
 ##coefficient is equal to log odds ratio. convert log odds ratio to d
@@ -752,6 +802,36 @@ print(M.y$d)
 print(M.y$d.sampling.variance)
 M = rbind(M.y, M.n)
 save(M, file = "M.Rdata")
+```
+
+###Mann-Whitney U and sample sizes. source: Koricheva et al. 2013 (p. 201)
+```{r}
+load("se.calc.from.r.n.Rdata")
+     # (ri, ni)
+load("M.Rdata")
+load("r_to_d.Rdata")
+load("one.per.var.Rdata")
+M.y = subset(M, data.to.use == "Mann-Whitney U and sample sizes")
+M.n = subset(M, data.to.use != "Mann-Whitney U and sample sizes")
+
+#C.tmp$z = -0.862 + sqrt(0.743 - 2.404*log(C.tmp$p.value))
+#SE.case = C.tmp$case_events/C.tmp$z
+for (a in 1:dim(M.y)[1]){
+  M.y$sample.size.total[a] = M.y$sample.size.control[a]
+  M.y$correlation.coefficient[a] = abs((1 - 2*M.y$U[a])/(M.y$sample.size.control[a]*M.y$sample.size.infected[a]))
+  ri = M.y$correlation.coefficient[a]
+  ni = M.y$sample.size.control[a]
+  M.y$correlation.coefficient.se[a] = se.calc.from.r.n(ri, ni)#get SE#this doesn't work
+
+  M.y[a,]=r_to_d(M.y[a,])
+}
+M.y = one.per.var(M.y)#in case there are duplicates
+print(M.y$d)
+print(M.y$d.sampling.variance)
+M = rbind(M.y, M.n)
+save(M, file = "M.Rdata")
+
+
 ```
 
 
@@ -784,18 +864,29 @@ xtabs(~paper.ID, data = M)
 
 ##meta-analysis
 #check whether absoluate value of d is normally distributed, and whether log of abs(d) is normal
-```{r}
+```{r distributions}
 load("M.Rdata")
 M = subset(M, pathway != "PP to ecosystem fxn")
 dat = M
 dat$d = dat$d+0.000001#add small number so that can take log and it be definite
 #check normality of d
+shapiro.test(dat$d)
+qqnorm(dat$d)
 shapiro.test(abs(dat$d))
 qqnorm(abs(dat$d))
 #check normality of log d -- slightly closer to normality but still very much not normal 
 shapiro.test(log(abs(dat$d)))
 
 qqnorm(log(abs(dat$d)))
+
+#make histogram for absolute value of d
+ggplot(dat, aes(abs(d), fill = pathway) )+
+  geom_histogram()
+
+#make histogram for log of absolute value of d
+ggplot(dat, aes(log(abs(d)), fill = pathway)) +
+  geom_histogram()
+
 ```
 
 
@@ -805,9 +896,11 @@ qqnorm(log(abs(dat$d)))
 #using package lmerTest to get p values
 load("M.Rdata")
 M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
 M = subset(M, pathway != "PP to ecosystem fxn")
 dat = M
 dat$d = dat$d+0.000001
+
 # dat$log.d = log(abs(dat$d))
 
 #construct model so that it goes through origin; use lmeControl so that exact weights are used
@@ -815,6 +908,8 @@ res.lme.pathway <- lme(abs(d) ~ pathway-1, random = ~ 1 | paper.ID, weights = va
 summary(res.lme.pathway)
 save(res.lme.pathway, file = "res.lme.pathway.Rdata")
 
+res.lme.pathway.r= residuals(res.lme.pathway)
+shapiro.test(res.lme.pathway.r)
 #check which pathways are different from each other, if any
 summary(glht(res.lme.pathway, linfct=contrMat(c(
   "abund biomass to ecosystem fxn"=1,
@@ -837,28 +932,201 @@ summary(glht(res.lme.measure, linfct=contrMat(c(
 
 ```
 
-###try using weibull with gamlss -- haven't gotten this to work with our data
-#https://stats.stackexchange.com/questions/225457/fit-glm-for-weibull-family
-```{r}
 
+##use nlme and log of absolute value of d
+##http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
+```{r nlme_log}
+#using package lmerTest to get p values
 load("M.Rdata")
 M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
 M = subset(M, pathway != "PP to ecosystem fxn")
 dat = M
 dat$d = dat$d+0.000001
 
-#this works
-dat<-rWEI(100, mu=10, sigma=2)
-gamlss(dat~1, family=WEI)
+# dat$log.d = log(abs(dat$d))
 
-#this throws an error "response variable out of range"
-# d = dat$d
-# gamlss(d~1, family=WEI)
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+res.lme.pathway <- lme(log(abs(d)) ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.pathway)
+save(res.lme.pathway, file = "res.lme.pathway.Rdata")
+
+res.lme.pathway.r= residuals(res.lme.pathway)
+shapiro.test(res.lme.pathway.r)
+#check which pathways are different from each other, if any
+summary(glht(res.lme.pathway, linfct=contrMat(c(
+  "abund biomass to ecosystem fxn"=1,
+  "morbidity to ecosystem fxn"=1,
+  "unknown to ecosystem fxn"=1), type="Tukey")), test=adjusted("none"))
+
+#measure
+res.lme.measure <- lme(log(abs(d)) ~ measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.measure)
+
+summary(glht(res.lme.measure, linfct=contrMat(c(
+  "biogeochemical cycles"=1,
+  "primary production"=1,
+  "secondary production"=1), type="Tukey")), test=adjusted("none"))
+
+
+#this doesn't work because of singularity
+# res.lme.pathway.measure <- lme(log.d ~ pathway*measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+# summary(res.lme.pathway.measure)
+
+```
+
+##use robustlmm::rlmer and log of absolute value of d -- doesn't work with weights, so not appropriate for meta-analysis
+##http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
+```{r robustlmm}
+#using package lmerTest to get p values
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+
+# dat$log.d = log(abs(dat$d))
+
+#construct model so that it goes through origin
+# res.lme.pathway <- robustlmm::rlmer(log(abs(d)) ~ pathway-1 + (1| paper.ID), weights = 1/d.sampling.variance, data=dat)
+# summary(res.lme.pathway)
+#Error in robustlmm::rlmer(log(abs(d)) ~ pathway - 1 + (1 | paper.ID), : Argument weights is unsave to use at the momen
+```
+
+
+###fixed effects w/ gamma distribution with lme4
+###estimate is very large for one value, small for other two values (for pathway model and for measures model)
+```{r}
+library(MuMIn)
+load("M.Rdata")
+
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+M$paper.ID=factor(M$paper.ID)
+dat = M
+dat$d = dat$d+0.000001
+#intercept - only model
+m.g.int <- glm(abs(d) ~1, weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma
+                 )
+summary(m.g.int)
+
+#pathway
+m.g.fixed <- glm(abs(d) ~pathway -1, weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma
+                 )
+summary(m.g.fixed)
+model.sel(m.g.int, m.g.fixed)
+#better fit with pathway than intercept model
+
+m.g.measure <- glm(abs(d) ~measure.general - 1, weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma
+                 )
+summary(m.g.measure)
 
 ```
 
 
-###try using Gamma distribution with lme4
+##bootstrap with our data
+```{r}
+load("M.Rdata")
+
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+M$paper.ID=factor(M$paper.ID)
+dat = M
+dat$d = dat$d+0.000001
+
+dat.sum <- dat %>%
+  group_by(pathway) %>%
+  summarize(
+            #mean = mean(abs(d),
+            sd = sd(abs(d)))
+            #max = max(abs(d)))
+runs = 100
+
+model.out = NULL
+upaper = unique(dat$paper.ID)
+
+for (r in 1:runs){
+  print(r)
+  paper.ID.list.rand = sample(upaper, size = length(upaper), replace = TRUE)
+  out = NULL
+  for (a in 1:length(paper.ID.list.rand)){
+    tmp = subset(dat, paper.ID == paper.ID.list.rand[a])
+    out = rbind(out, tmp)
+  }
+  #fixed effects model
+  m.g.fixed <- glm(abs(d) ~pathway -1, weights = 1/d.sampling.variance, data=out,
+                   family = Gamma
+                   )
+  s= summary(m.g.fixed)
+  s.c = data.frame(s$coefficients)
+  s.c <- s.c %>% rownames_to_column("category")
+  s.c$run = r
+  model.out= rbind(model.out, s.c)  
+}
+
+m.sum <- model.out %>%
+  group_by(category) %>%
+  summarize(
+            p_05 = length(which(Pr...t..<0.05)),
+            mean = mean(Estimate)
+            )
+m.sum = data.frame(m.sum)
+m.sum
+```
+
+###bootstrap with fake data (gamma-distributed random numbers), preserving number of observations per study
+##bootstrap and save test statistic values
+```{r}
+load("M.Rdata")
+
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+M$paper.ID=factor(M$paper.ID)
+dat = M
+dat$d = rgamma(dim(dat)[1], 2, rate = 1)
+
+runs = 100
+
+model.out = NULL
+upaper = unique(dat$paper.ID)
+
+for (r in 1:runs){
+  print(r)
+  paper.ID.list.rand = sample(upaper, size = length(upaper), replace = TRUE)
+  out = NULL
+  for (a in 1:length(paper.ID.list.rand)){
+    tmp = subset(dat, paper.ID == paper.ID.list.rand[a])
+    out = rbind(out, tmp)
+  }
+  #fixed effects model
+  m.g.fixed <- glm(abs(d) ~pathway -1, weights = 1/d.sampling.variance, data=out,
+                   family = Gamma
+                   )
+  s= summary(m.g.fixed)
+  s.c = data.frame(s$coefficients)
+  s.c <- s.c %>% rownames_to_column("category")
+  s.c$run = r
+  model.out= rbind(model.out, s.c)  
+}
+
+m.sum <- model.out %>%
+  group_by(category) %>%
+  summarize(
+    p_05 = length(which(Pr...t..<0.05)),
+            mean = mean(Estimate)
+            )
+#m.sum = data.frame(m.sum)
+m.sum
+```
+
+
+
+
+###try using Gamma distribution with lme4. note that lme4 does not have option of specifying that weights are exact
 ```{r}
 load("M.Rdata")
 # install.packages("R2admb")
@@ -876,34 +1144,71 @@ M$paper.ID=factor(M$paper.ID)
 dat = M
 dat$d = dat$d+0.000001
 
-
-# hist(abs(M$d))
-# hist(log(abs(M$d)))
-#remove pathway to ecosystem function because there is not a difference between two means, for this measure
-
 dat$paper.ID=factor(dat$paper.ID)
-#gamma with log link doesn't work.
-# res.lmer.g <- glmer(abs(d) ~ pathway + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#gamma with ONLY random effects (no fixed effects) runs, but with warning about "model failed to converge", despite paper.ID being factor. 
+# res.lmer.rand <- glmer(abs(d) ~ (1 | paper.ID), weights = 1/d.sampling.variance, data=dat_rep,
 #                  control=glmerControl(check.nobs.vs.nlev="ignore", check.nobs.vs.nRE="ignore"),
 #                  family = Gamma(link = "log")
 #                  )
+# Model failed to converge with max|grad| = 0.0736871 (tol = 0.001, component 1)Model is nearly unidentifiable: very large eigenvalue
+#  - Rescale variables?> 
 
-#gamma without link doesn't work
-# res.lmer.g <- glmer(abs(d) ~ pathway + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
-#                  control=glmerControl(check.nobs.vs.nlev="ignore", check.nobs.vs.nRE="ignore"),
+
+#gamma without log link doesn't work
+# res.lmer.g.nocontrol <- glmer(abs(d) ~ pathway -1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
 #                  family = Gamma
 #                  )
+#Error in (function (fr, X, reTrms, family, nAGQ = 1L, verbose = 0L, maxit = 100L,  : 
+#  (maxstephalfit) PIRLS step-halvings failed to reduce deviance in pwrssUpdate
+#this page from Bolker (one of lme4 authors) indicates error results from NaN values, suggests using log link for gamma: https://stat.ethz.ch/pipermail/r-sig-mixed-models/2016q1/024453.html
+
+#however, gamma with log link also doesn't work. 
+# res.lmer.g <- glmer(abs(d) ~ pathway -1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#                  family = Gamma(link = "log")                 )
+#Error in (function (fr, X, reTrms, family, nAGQ = 1L, verbose = 0L, maxit = 100L,  : 
+#  (maxstephalfit) PIRLS step-halvings failed to reduce deviance in pwrssUpdate
+
+#this works (with only fixed effect), so there is something about the random effects that is problematic
+# res.lmer.pathway <- glm(abs(d) ~ pathway-1 , weights = 1/d.sampling.variance, data=dat,
+#                  family = Gamma(link = "log")
+# )
+# summary(res.lmer.pathway)
 
 
-#this works, so there is something about the random effects that is problematic
-res.lmer.g <- glm(abs(d) ~ 1 , weights = 1/d.sampling.variance, data=dat,
-                 family = Gamma
-)
+# dat_rep = do.call("rbind", replicate(100, dat, simplify = FALSE))
+# dat_rep$d = sample(dat_rep$d, replace = TRUE)
+# dat_rep$d.sampling.variance = sample(dat_rep$d.sampling.variance, replace = TRUE)
 
-#model runs without paper.ID as random effect
-res.lmer.g <- glm(abs(d) ~ pathway-1 , weights = 1/d.sampling.variance, data=dat,
-                 family = Gamma(link = "log")
-)
+
+#with synthetic data (that have proportion of observations per study as in original, get a different error):
+#"unable to evaluate scaled gradientModel failed to converge: degenerate  Hessian with 1 negative eigenvalues"
+#this post suggests issue may be with optimizer, but changing optimizer as recommended didn't change warning https://stackoverflow.com/questions/21344555/convergence-error-for-development-version-of-lme4
+# res.lmer.g.synthetic <- glmer(abs(d) ~ pathway -1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat_rep,
+#                  family = Gamma(link = "log"),
+#                  control=glmerControl(optimizer="bobyqa")
+#                  )
+
+#try one more time after equalizing sample size by paper.ID, get error message about failing to converge 
+# dat_rep$paper.ID = factor(rep(seq(1,26),350))
+# res.lmer.g.synthetic <- glmer(abs(d) ~ pathway -1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat_rep,
+#                  family = Gamma(link = "log"),
+#                  control=glmerControl(optimizer="bobyqa")
+#                  )
+# "Model failed to converge with max|grad| = 238.147 (tol = 0.001, component 1)Model is nearly unidentifiable: very large eigenvalue
+#  - Rescale variables?;Model is nearly unidentifiable: large eigenvalue ratio
+#  - Rescale variables?> "
+
+
+
+#try with inverse gaussian
+# res.glmer.inverse.gaussian <- glmer(abs(d) ~ pathway -1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#                  family = inverse.gaussian)
+
+
+#try with quasi -- can't be used
+# res.glmer.quasi <- glmer(abs(d) ~ pathway -1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
+#                  family = quasi)
+
 
 # res.lmer.g <- glmmadmb(abs(d) ~ pathway + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat,
 #                  family = "gamma"
@@ -930,6 +1235,27 @@ res.lmer.g <- glm(abs(d) ~ pathway-1 , weights = 1/d.sampling.variance, data=dat
 
 
 ```
+
+###try using weibull with gamlss -- haven't gotten this to work with our data
+#https://stats.stackexchange.com/questions/225457/fit-glm-for-weibull-family
+```{r}
+
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+
+#this works
+dat<-rWEI(100, mu=10, sigma=2)
+gamlss(dat~1, family=WEI)
+
+#this throws an error "response variable out of range"
+# d = dat$d
+# gamlss(d~1, family=WEI)
+
+```
+
 
 
 ###run mixed models, for pathway and for measure
