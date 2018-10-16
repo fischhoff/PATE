@@ -3,6 +3,11 @@ PATE\_20180817
 Ilya
 8/17/2018
 
+To do: check whether to use variance or transform to log?
+=========================================================
+
+### To do: change to absolute value of d throughout, prior to averaging across records within a variable-- DONE
+
 ##### install packages
 
     ## 
@@ -90,6 +95,17 @@ Ilya
     ## The following object is masked from 'package:lme4':
     ## 
     ##     refit
+
+    ## NOTE: As of emmeans versions > 1.2.3,
+    ##       The 'cld' function will be deprecated in favor of 'CLD'.
+    ##       You may use 'cld' only if you have package:multcomp attached.
+
+    ## 
+    ## Attaching package: 'emmeans'
+
+    ## The following object is masked from 'package:multcomp':
+    ## 
+    ##     cld
 
 ### summarize results of screening, based on each screener's results
 
@@ -399,21 +415,21 @@ P = read.csv("meta_data_20180724 - quant_data.csv")
 dim(P)
 ```
 
-    ## [1] 2031   65
+    ## [1] 2038   65
 
 ``` r
 P = subset(P, is.na(exclude.as.ecosystem.measure))
 dim(P)[1]
 ```
 
-    ## [1] 1928
+    ## [1] 1935
 
 ``` r
 P = subset(P, !is.na(pathway))
 dim(P)[1]
 ```
 
-    ## [1] 1928
+    ## [1] 1935
 
 ``` r
 subset(P, is.na(paper.ID))#should be empty
@@ -738,7 +754,7 @@ D.not = subset(P, is.na(have.not.added.double.counting))
 dim(D)[1]+dim(D.not)[1]                 
 ```
 
-    ## [1] 1928
+    ## [1] 1935
 
 ``` r
 out = NULL
@@ -829,14 +845,14 @@ ids.common = intersect(P$paper.ID, S$paper.ID)#
 dim(P)
 ```
 
-    ## [1] 2245   65
+    ## [1] 2256   65
 
 ``` r
 P = subset(P, paper.ID %in% ids.common)
 dim(P)
 ```
 
-    ## [1] 2137   65
+    ## [1] 2148   65
 
 ``` r
 out = NULL 
@@ -906,7 +922,7 @@ dim(M)[1]==dim(out)[1]
 dim(M)
 ```
 
-    ## [1] 2137  107
+    ## [1] 2148  107
 
 ``` r
 M <- out
@@ -957,7 +973,7 @@ one.per.var = function(M.y){
           if (dim(v.tmp)[1]>1){
             #if more than one record for a variable, find pooled estimate across all records     
             print("pooled estimate")
-            m = rma(yi = v.tmp$d,
+            m = rma(yi = abs(v.tmp$d),
                        vi = v.tmp$d.sampling.variance,
                        measure = "MN")  
             #print(m)
@@ -1012,12 +1028,12 @@ save(se.calc.from.r.n,file="se.calc.from.r.n.Rdata")
 
 ``` r
 or_to_d <- function(df){
-  log.odds.ratio = df$regression.coefficient
-  log.odds.se = df$regression.coefficient.SE
-  log.odds.variance = log.odds.se^2
+  r = df$regression.coefficient
+  r.se = df$regression.coefficient.SE
+  r.variance = r.se^2
   #https://www.meta-analysis.com/downloads/Meta-analysis%20Converting%20among%20effect%20sizes.pdf
-  df$d = log.odds.ratio*(sqrt(3)/pi)
-  df$d.sampling.variance=log.odds.variance*(3/pi^2)
+  df$d = r*(sqrt(3)/pi)
+  df$d.sampling.variance=r.variance*(3/pi^2)
   return(df)
 }
 save(or_to_d, file = "or_to_d.Rdata")
@@ -1051,7 +1067,7 @@ fix P values that have characters in them
 load("M.Rdata")
 
 M$P = as.character(M$P)
-P = as.numeric(M$P)
+P = as.numeric(M$P)#this should convert some to NA
 ```
 
     ## Warning: NAs introduced by coercion
@@ -1099,6 +1115,8 @@ save(M, file = "M.Rdata")
 
 ### mean\_variance
 
+### include pre- vs. post (e.g. Colon-Gaud\_1263 2010)
+
 ### exclude data points with standard deviation equal to zero
 
 ### includes parasite/pathogen removal (as control)
@@ -1109,6 +1127,8 @@ save(M, file = "M.Rdata")
 
 ``` r
 load("M.Rdata")
+M$d.absolute = 0#is d absolute value
+
 load("one.per.var.Rdata")
 
 # sd_adjust = 0.0001
@@ -1138,7 +1158,8 @@ unique(as.character(M$sample.size.infected))
 ```
 
     ##  [1] "6"  "19" NA   "18" "5"  "1"  "20" "21" "82" "36" "63" "46" "10" "28"
-    ## [15] "38" "15" "4"  "40" "3"  "25" "23" "11" "12" "30" "31" "29" "14" "45"
+    ## [15] "38" "15" "4"  "40" "3"  "25" "23" "11" "12" "30" "31" "29" "14" "54"
+    ## [29] "60" "45"
 
 ``` r
 M$sample.size.infected=as.numeric(as.character(M$sample.size.infected))
@@ -1181,10 +1202,6 @@ for (a in 1:dim(M.y)[1]){
   m2i = M.y$infected.mean[a]
   sd1i = M.y$control_sd[a]
   sd2i = M.y$infected_sd[a]
-  # if (sd1i == 0 | sd2i == 0){
-  #   sd1i = sd1i+sd_adjust
-  #   sd2i = sd2i+sd_adjust
-  # }
   n1i = M.y$sample.size.control[a]
   n2i = M.y$sample.size.infected[a]
   m = escalc(measure = "SMD",
@@ -1201,6 +1218,9 @@ for (a in 1:dim(M.y)[1]){
   M.y$d.sampling.variance[a] = m$vi[1]
 }
 
+#change d to absolute value of d
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
 ustudy = unique(M.y$paper.ID)
 #for each study
 out = one.per.var(M.y)
@@ -1226,10 +1246,10 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -1.588274
+    ## [1] 1.588274
     ## [1] "e"
     ## [1] 2
-    ## [1] -1.15229
+    ## [1] 1.15229
     ## [1] "b"
     ## [1] 3
     ## [1] 59
@@ -1240,19 +1260,19 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -2.085546
+    ## [1] 2.085546
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -1.837976
+    ## [1] 1.837976
     ## [1] "e"
     ## [1] 3
     ## [1] "pooled estimate"
 
-    ## Warning in rma(yi = v.tmp$d, vi = v.tmp$d.sampling.variance, measure =
+    ## Warning in rma(yi = abs(v.tmp$d), vi = v.tmp$d.sampling.variance, measure =
     ## "MN"): Studies with NAs omitted from model fitting.
 
-    ## [1] -0.3179377
+    ## [1] 0.3179377
     ## [1] "e"
     ## [1] 4
     ## [1] NA
@@ -1268,17 +1288,17 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -2.25913
+    ## [1] 2.25913
     ## [1] "c"
     ## [1] 2
     ## [1] "d"
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -2.722881
+    ## [1] 2.722881
     ## [1] "e"
     ## [1] 2
-    ## [1] -2.201161
+    ## [1] 2.201161
     ## [1] "b"
     ## [1] 5
     ## [1] 474
@@ -1289,11 +1309,11 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -3.493121
+    ## [1] 3.493121
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -0.1276036
+    ## [1] 0.1276036
     ## [1] "b"
     ## [1] 6
     ## [1] 1375
@@ -1304,7 +1324,7 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -2.998027
+    ## [1] 2.998027
     ## [1] "e"
     ## [1] 2
     ## [1] 0
@@ -1322,7 +1342,7 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.11444
+    ## [1] 0.11444
     ## [1] "b"
     ## [1] 8
     ## [1] 1600
@@ -1332,7 +1352,7 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.320941
+    ## [1] 0.320941
     ## [1] "b"
     ## [1] 9
     ## [1] 1859
@@ -1343,7 +1363,7 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -0.6990683
+    ## [1] 0.6990683
     ## [1] "c"
     ## [1] 2
     ## [1] "d"
@@ -1355,11 +1375,11 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -0.6467786
+    ## [1] 0.6467786
     ## [1] "e"
     ## [1] 3
     ## [1] "pooled estimate"
-    ## [1] -7.28856
+    ## [1] 7.28856
     ## [1] "e"
     ## [1] 4
     ## [1] "pooled estimate"
@@ -1367,11 +1387,11 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 5
     ## [1] "pooled estimate"
-    ## [1] -0.8388898
+    ## [1] 0.8388898
     ## [1] "e"
     ## [1] 6
     ## [1] "pooled estimate"
-    ## [1] -1.702444
+    ## [1] 1.702444
     ## [1] "e"
     ## [1] 7
     ## [1] "pooled estimate"
@@ -1383,7 +1403,7 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 9
     ## [1] "pooled estimate"
-    ## [1] -5.155392
+    ## [1] 5.155392
     ## [1] "e"
     ## [1] 10
     ## [1] "pooled estimate"
@@ -1402,7 +1422,7 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -4.946866
+    ## [1] 4.946866
     ## [1] "b"
     ## [1] 11
     ## [1] 1924
@@ -1433,7 +1453,7 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.4268724
+    ## [1] 0.4268724
     ## [1] "b"
     ## [1] 14
     ## [1] 857
@@ -1443,7 +1463,7 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.5056529
+    ## [1] 0.5056529
     ## [1] "e"
     ## [1] 2
     ## [1] 0.1152573
@@ -1457,7 +1477,7 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -0.2948486
+    ## [1] 0.2948486
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
@@ -1487,15 +1507,15 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -9.421995
+    ## [1] 9.421995
     ## [1] "e"
     ## [1] 3
     ## [1] "pooled estimate"
-    ## [1] -13.54577
+    ## [1] 13.54577
     ## [1] "e"
     ## [1] 4
     ## [1] "pooled estimate"
-    ## [1] -25.43809
+    ## [1] 25.43809
     ## [1] "c"
     ## [1] 2
     ## [1] "d"
@@ -1513,11 +1533,11 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -0.4881669
+    ## [1] 0.4881669
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -0.8806509
+    ## [1] 0.8806509
     ## [1] "e"
     ## [1] 3
     ## [1] "pooled estimate"
@@ -1527,15 +1547,15 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -0.8532309
+    ## [1] 0.8532309
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -0.8198154
+    ## [1] 0.8198154
     ## [1] "e"
     ## [1] 3
     ## [1] "pooled estimate"
-    ## [1] -0.2594642
+    ## [1] 0.2594642
     ## [1] "e"
     ## [1] 4
     ## [1] "pooled estimate"
@@ -1549,13 +1569,13 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.361956
+    ## [1] 0.361956
     ## [1] "e"
     ## [1] 2
-    ## [1] -0.5536563
+    ## [1] 0.5536563
     ## [1] "e"
     ## [1] 3
-    ## [1] -0.476961
+    ## [1] 0.476961
     ## [1] "e"
     ## [1] 4
     ## [1] 0.4875272
@@ -1572,7 +1592,7 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -0.08986657
+    ## [1] 0.08986657
     ## [1] "b"
     ## [1] 20
     ## [1] 764
@@ -1584,16 +1604,53 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "pooled estimate"
 
-    ## Warning in rma(yi = v.tmp$d, vi = v.tmp$d.sampling.variance, measure =
+    ## Warning in rma(yi = abs(v.tmp$d), vi = v.tmp$d.sampling.variance, measure =
     ## "MN"): Studies with NAs omitted from model fitting.
 
-    ## [1] -1.026506
+    ## [1] 1.026506
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
     ## [1] 0.5650913
     ## [1] "b"
     ## [1] 21
+    ## [1] 1132
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "d"
+    ## [1] 1
+    ## [1] "e"
+    ## [1] 1
+    ## [1] 13.26072
+    ## [1] "e"
+    ## [1] 2
+    ## [1] 56.6498
+    ## [1] "e"
+    ## [1] 3
+    ## [1] 59.33135
+    ## [1] "e"
+    ## [1] 4
+    ## [1] 61.52463
+    ## [1] "e"
+    ## [1] 5
+    ## [1] 55.69085
+    ## [1] "e"
+    ## [1] 6
+    ## [1] 53.49401
+    ## [1] "e"
+    ## [1] 7
+    ## [1] 12.4486
+    ## [1] "e"
+    ## [1] 8
+    ## [1] 24.78486
+    ## [1] "e"
+    ## [1] 9
+    ## [1] 2.544279
+    ## [1] "e"
+    ## [1] 10
+    ## [1] 4.231521
+    ## [1] "b"
+    ## [1] 22
     ## [1] 1176
     ## [1] "c"
     ## [1] 1
@@ -1607,7 +1664,7 @@ out = one.per.var(M.y)
     ## [1] 6.17962
     ## [1] "e"
     ## [1] 3
-    ## [1] -2.34072
+    ## [1] 2.34072
     ## [1] "e"
     ## [1] 4
     ## [1] 0.6479996
@@ -1620,7 +1677,7 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 7
     ## [1] "pooled estimate"
-    ## [1] -1.542103
+    ## [1] 1.542103
     ## [1] "e"
     ## [1] 8
     ## [1] "pooled estimate"
@@ -1630,14 +1687,14 @@ out = one.per.var(M.y)
     ## [1] 8.115066
     ## [1] "e"
     ## [1] 10
-    ## [1] -2.89534
+    ## [1] 2.89534
     ## [1] "d"
     ## [1] 2
     ## [1] "e"
     ## [1] 1
-    ## [1] -1.093939
+    ## [1] 1.093939
     ## [1] "b"
-    ## [1] 22
+    ## [1] 23
     ## [1] 1183
     ## [1] "c"
     ## [1] 1
@@ -1645,52 +1702,85 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -8.394141
+    ## [1] 8.394141
     ## [1] "c"
     ## [1] 2
     ## [1] "d"
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -1.199163
+    ## [1] 1.199163
     ## [1] "d"
     ## [1] 2
     ## [1] "e"
     ## [1] 1
-    ## [1] -1.857855
+    ## [1] 1.857855
     ## [1] "e"
     ## [1] 2
-    ## [1] -1.257504
+    ## [1] 1.257504
     ## [1] "e"
     ## [1] 3
-    ## [1] -1.358415
+    ## [1] 1.358415
     ## [1] "e"
     ## [1] 4
-    ## [1] -0.461441
+    ## [1] 0.461441
     ## [1] "e"
     ## [1] 5
-    ## [1] -0.8296003
+    ## [1] 0.8296003
     ## [1] "c"
     ## [1] 3
     ## [1] "d"
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.9998739
+    ## [1] 0.9998739
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -0.6571926
+    ## [1] 0.6571926
     ## [1] "e"
     ## [1] 3
     ## [1] "pooled estimate"
-    ## [1] -0.8235464
+    ## [1] 0.8235464
     ## [1] "e"
     ## [1] 4
     ## [1] "pooled estimate"
-    ## [1] -0.343708
+    ## [1] 0.343708
     ## [1] "b"
-    ## [1] 23
+    ## [1] 24
+    ## [1] 1263
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "d"
+    ## [1] 1
+    ## [1] "e"
+    ## [1] 1
+    ## [1] 0.08196578
+    ## [1] "e"
+    ## [1] 2
+    ## [1] "pooled estimate"
+    ## [1] 0.06162072
+    ## [1] "d"
+    ## [1] 2
+    ## [1] "e"
+    ## [1] 1
+    ## [1] 0.2754573
+    ## [1] "e"
+    ## [1] 2
+    ## [1] 0.03230319
+    ## [1] "e"
+    ## [1] 3
+    ## [1] 0.01595378
+    ## [1] "e"
+    ## [1] 4
+    ## [1] 0.2118236
+    ## [1] "d"
+    ## [1] 3
+    ## [1] "e"
+    ## [1] 1
+    ## [1] 0.654683
+    ## [1] "b"
+    ## [1] 25
     ## [1] 1290
     ## [1] "c"
     ## [1] 1
@@ -1699,7 +1789,7 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -0.190606
+    ## [1] 0.190606
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
@@ -1715,11 +1805,11 @@ out = one.per.var(M.y)
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -0.2993274
+    ## [1] 0.2993274
     ## [1] "e"
     ## [1] 3
     ## [1] "pooled estimate"
-    ## [1] -0.4150337
+    ## [1] 0.4150337
     ## [1] "e"
     ## [1] 4
     ## [1] "pooled estimate"
@@ -1733,66 +1823,75 @@ out = one.per.var(M.y)
 dim(out)
 ```
 
-    ## [1]  90 111
+    ## [1] 107 112
 
 ``` r
 M = rbind(M.n, out)
 out$d
 ```
 
-    ##  [1]   0.84758364  -1.58827419  -1.15228964  -2.08554620  -1.83797592
-    ##  [6]  -0.31793767           NA           NA  -2.25912972  -2.72288063
-    ## [11]  -2.20116132  -3.49312060  -0.12760364  -2.99802746   0.00000000
-    ## [16]   1.00949416  -0.11444004  -0.32094103  -0.69906826   0.00000000
-    ## [21]  -0.64677856  -7.28855991   0.77246217  -0.83888982  -1.70244399
-    ## [26]   3.34946917  19.06655631  -5.15539160   0.08435282   7.28508977
-    ## [31]  -4.94686605   2.38351163   0.79924498  -0.42687239  -0.50565292
-    ## [36]   0.11525726  -0.29484856   0.31150621   0.41220028   0.53775096
-    ## [41]   0.11518963   5.99465703  -9.42199504 -13.54576986 -25.43808878
-    ## [46]   3.16438571  -0.48816686  -0.88065086   0.21283657  -0.85323085
-    ## [51]  -0.81981538  -0.25946425   0.00000000  -0.36195598  -0.55365633
-    ## [56]  -0.47696105   0.48752722   1.46534857  -0.08986657  -1.02650645
-    ## [61]   0.56509128   9.14278738   6.17961988  -2.34072010   0.64799960
-    ## [66]   0.91488433   0.50107515  -1.54210329   0.79925214   8.11506637
-    ## [71]  -2.89533963  -1.09393949  -8.39414104  -1.19916301  -1.85785470
-    ## [76]  -1.25750427  -1.35841476  -0.46144100  -0.82960033  -0.99987388
-    ## [81]  -0.65719262  -0.82354645  -0.34370805  -0.19060599   0.75151802
-    ## [86]   0.32515225  -0.29932742  -0.41503370   0.29262210   0.14779648
+    ##   [1]  0.84758364  1.58827419  1.15228964  2.08554620  1.83797592
+    ##   [6]  0.31793767          NA          NA  2.25912972  2.72288063
+    ##  [11]  2.20116132  3.49312060  0.12760364  2.99802746  0.00000000
+    ##  [16]  1.00949416  0.11444004  0.32094103  0.69906826  0.00000000
+    ##  [21]  0.64677856  7.28855991  0.77246217  0.83888982  1.70244399
+    ##  [26]  3.34946917 19.06655631  5.15539160  0.08435282  7.28508977
+    ##  [31]  4.94686605  2.38351163  0.79924498  0.42687239  0.50565292
+    ##  [36]  0.11525726  0.29484856  0.31150621  0.41220028  0.53775096
+    ##  [41]  0.11518963  5.99465703  9.42199504 13.54576986 25.43808878
+    ##  [46]  3.16438571  0.48816686  0.88065086  0.21283657  0.85323085
+    ##  [51]  0.81981538  0.25946425  0.00000000  0.36195598  0.55365633
+    ##  [56]  0.47696105  0.48752722  1.46534857  0.08986657  1.02650645
+    ##  [61]  0.56509128 13.26071605 56.64980382 59.33134631 61.52462817
+    ##  [66] 55.69085346 53.49400537 12.44859889 24.78485646  2.54427932
+    ##  [71]  4.23152064  9.14278738  6.17961988  2.34072010  0.64799960
+    ##  [76]  0.91488433  0.50107515  1.54210329  0.79925214  8.11506637
+    ##  [81]  2.89533963  1.09393949  8.39414104  1.19916301  1.85785470
+    ##  [86]  1.25750427  1.35841476  0.46144100  0.82960033  0.99987388
+    ##  [91]  0.65719262  0.82354645  0.34370805  0.08196578  0.06162072
+    ##  [96]  0.27545725  0.03230319  0.01595378  0.21182362  0.65468297
+    ## [101]  0.19060599  0.75151802  0.32515225  0.29932742  0.41503370
+    ## [106]  0.29262210  0.14779648
 
 ``` r
 out$d.sampling.variance
 ```
 
-    ##  [1]  0.36326658  0.14614743  0.12955238  0.61747515  0.56890777
-    ##  [6]  0.40505422          NA          NA  0.16379584  0.19267599
-    ## [11]  0.16056389  0.31582953  0.13119909  0.99934270  0.50000000
-    ## [16]  0.55661547  0.19122091  0.05330923  0.14147827  0.13333333
-    ## [21]  0.14030538  1.01871843  0.14327830  0.14506227  0.18163859
-    ## [26]  0.32031573  6.19222616  0.57630104  0.13345192  1.01787555
-    ## [31]  1.62357418  0.85507048  0.71989938  0.11926981  0.08255685
-    ## [36]  0.08013284  0.25241488  0.26042976  0.26257308  0.26608094
-    ## [41]  0.25036857  2.19679565  2.41934976  4.78719702 16.37740902
-    ## [46]  1.12583356  0.14711262  0.15670618  0.14366606  0.15585719
-    ## [51]  0.15485888  0.14405932  0.14285714  0.06775843  0.06922113
-    ## [56]  0.06856243  0.06864736  0.08456039  0.20020190  0.56585722
-    ## [61]  0.51995801  0.76325468  0.38489752  0.11232475  0.07016586
-    ## [66]  0.07364178  0.06875897  0.08648402  0.07199003  0.61545252
-    ## [71]  0.13652493  0.07663920  1.96154009  0.23594980  0.28629060
-    ## [76]  0.23953292  0.24613227  0.20532319  0.21720592  0.22499369
-    ## [81]  0.21079755  0.21695572  0.20295338  0.04464628  0.04758211
-    ## [86]  0.04503180  0.04494221  0.04540141  0.04492015  0.04456580
+    ##   [1]   0.36326658   0.14614743   0.12955238   0.61747515   0.56890777
+    ##   [6]   0.40505422           NA           NA   0.16379584   0.19267599
+    ##  [11]   0.16056389   0.31582953   0.13119909   0.99934270   0.50000000
+    ##  [16]   0.55661547   0.19122091   0.05330923   0.14147827   0.13333333
+    ##  [21]   0.14030538   1.01871843   0.14327830   0.14506227   0.18163859
+    ##  [26]   0.32031573   6.19222616   0.57630104   0.13345192   1.01787555
+    ##  [31]   1.62357418   0.85507048   0.71989938   0.11926981   0.08255685
+    ##  [36]   0.08013284   0.25241488   0.26042976   0.26257308   0.26608094
+    ##  [41]   0.25036857   2.19679565   2.41934976   4.78719702  16.37740902
+    ##  [46]   1.12583356   0.14711262   0.15670618   0.14366606   0.15585719
+    ##  [51]   0.15485888   0.14405932   0.14285714   0.06775843   0.06922113
+    ##  [56]   0.06856243   0.06864736   0.08456039   0.20020190   0.56585722
+    ##  [61]   0.51995801  15.32054919 268.10002271 294.01738791 316.10665594
+    ##  [66] 259.12259662 239.13405085  13.58063453  51.85742580   1.20611310
+    ##  [71]   2.15881391   0.76325468   0.38489752   0.11232475   0.07016586
+    ##  [76]   0.07364178   0.06875897   0.08648402   0.07199003   0.61545252
+    ##  [81]   0.13652493   0.07663920   1.96154009   0.23594980   0.28629060
+    ##  [86]   0.23953292   0.24613227   0.20532319   0.21720592   0.22499369
+    ##  [91]   0.21079755   0.21695572   0.20295338   0.02647369   0.02381902
+    ##  [96]   0.02399922   0.02381213   0.02381016   0.02392170   0.02488105
+    ## [101]   0.04464628   0.04758211   0.04503180   0.04494221   0.04540141
+    ## [106]   0.04492015   0.04456580
 
 ``` r
 out$paper.ID
 ```
 
-    ##  [1]   42   53   53   59   59   59   59   59  328  328  328  474  474 1375
-    ## [15] 1375 1375 1493 1600 1859 1859 1859 1859 1859 1859 1859 1859 1859 1859
-    ## [29] 1859 1859 1881 1924 2012 2123  857  857  917  917  917  917  917  930
-    ## [43]  930  930  930  930  570  570  570  570  570  570  570  608  608  608
-    ## [57]  608  608  683  764  764 1176 1176 1176 1176 1176 1176 1176 1176 1176
-    ## [71] 1176 1176 1183 1183 1183 1183 1183 1183 1183 1183 1183 1183 1183 1290
-    ## [85] 1290 1290 1290 1290 1290 1290
+    ##   [1]   42   53   53   59   59   59   59   59  328  328  328  474  474 1375
+    ##  [15] 1375 1375 1493 1600 1859 1859 1859 1859 1859 1859 1859 1859 1859 1859
+    ##  [29] 1859 1859 1881 1924 2012 2123  857  857  917  917  917  917  917  930
+    ##  [43]  930  930  930  930  570  570  570  570  570  570  570  608  608  608
+    ##  [57]  608  608  683  764  764 1132 1132 1132 1132 1132 1132 1132 1132 1132
+    ##  [71] 1132 1176 1176 1176 1176 1176 1176 1176 1176 1176 1176 1176 1183 1183
+    ##  [85] 1183 1183 1183 1183 1183 1183 1183 1183 1183 1263 1263 1263 1263 1263
+    ##  [99] 1263 1263 1290 1290 1290 1290 1290 1290 1290
 
 ``` r
 save(M, file = "M.Rdata")
@@ -1818,7 +1917,7 @@ save(M, file = "M.Rdata")
 load("M.Rdata")
 load("se_from_p.Rdata")
 load("one.per.var.Rdata")
-#d = t*sqrt((nt+nc)/nt*ntc)#formula from p. 200 of Koricheva et al. 2013
+#d = t*sqrt((nt+nc)/nt*nc)#formula from p. 200 of Koricheva et al. 2013
 M.y = subset(M, data.to.use == "t and sample sizes and p")
 M.n = subset(M, data.to.use != "t and sample sizes and p")
 M.y$P=as.character(M.y$P)
@@ -1843,6 +1942,10 @@ if (dimM==unique_vars){
     }
   }
 }
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 M.y.2 = one.per.var(M.y)
 ```
 
@@ -1856,11 +1959,11 @@ M.y.2 = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -2.561445
+    ## [1] 2.561445
     ## [1] "e"
     ## [1] 2
     ## [1] "pooled estimate"
-    ## [1] -2.359059
+    ## [1] 2.359059
     ## [1] "b"
     ## [1] 2
     ## [1] 1568
@@ -1871,7 +1974,7 @@ M.y.2 = one.per.var(M.y)
     ## [1] "e"
     ## [1] 1
     ## [1] "pooled estimate"
-    ## [1] -0.9543775
+    ## [1] 0.9543775
     ## [1] "b"
     ## [1] 3
     ## [1] 892
@@ -1909,14 +2012,14 @@ M.y.2 = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.8654016
+    ## [1] 0.8654016
 
 ``` r
 M.y.2$d
 ```
 
-    ##  [1] -2.56144490 -2.35905913 -0.95437750  1.62491025  0.74490268
-    ##  [6]  0.85444719  0.07668116  0.13145341  0.73029674 -0.86540164
+    ##  [1] 2.56144490 2.35905913 0.95437750 1.62491025 0.74490268 0.85444719
+    ##  [7] 0.07668116 0.13145341 0.73029674 0.86540164
 
 ``` r
 M.y.2$d.sampling.variance
@@ -1964,6 +2067,10 @@ for (c in 1:lev){
     ## [1] 0.1283378
 
 ``` r
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 print("d")
 ```
 
@@ -1973,7 +2080,7 @@ print("d")
 M.y$d
 ```
 
-    ## [1]  0.6289709  0.4588315 -0.9370426 -2.9154759  1.7728105
+    ## [1] 0.6289709 0.4588315 0.9370426 2.9154759 1.7728105
 
 ``` r
 print("variance")
@@ -2012,7 +2119,7 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.9370426
+    ## [1] 0.9370426
     ## [1] "b"
     ## [1] 3
     ## [1] 2145
@@ -2022,7 +2129,7 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -2.915476
+    ## [1] 2.915476
     ## [1] "b"
     ## [1] 4
     ## [1] 1063
@@ -2040,8 +2147,6 @@ save(M, file = "M.Rdata")
 ```
 
 ### correlation coefficient and sample size and P
-
-### use P to calculate SE
 
 ``` r
 load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
@@ -2077,8 +2182,13 @@ for (c in 1:lev){
     ## [1] 0.1247197
     ## [1] 0.1019559
     ## [1] 0.1635992
+    ## [1] 0.02724532
 
 ``` r
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 #for each study
 out = one.per.var(M.y)
 ```
@@ -2092,7 +2202,7 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -5.896022
+    ## [1] 5.896022
     ## [1] "b"
     ## [1] 2
     ## [1] 1590
@@ -2102,7 +2212,7 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -2.484754
+    ## [1] 2.484754
     ## [1] "b"
     ## [1] 3
     ## [1] 2167
@@ -2154,21 +2264,31 @@ out = one.per.var(M.y)
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.6289709
+    ## [1] 0.6289709
+    ## [1] "b"
+    ## [1] 7
+    ## [1] 781
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "d"
+    ## [1] 1
+    ## [1] "e"
+    ## [1] 1
+    ## [1] 5.060405
 
 ``` r
 out$d
 ```
 
-    ## [1] -5.8960216 -2.4847537  0.8216336  0.9255952  2.4928908  2.3387383
-    ## [7]  0.3659777  2.9761724 -0.6289709
+    ##  [1] 5.8960216 2.4847537 0.8216336 0.9255952 2.4928908 2.3387383 0.3659777
+    ##  [8] 2.9761724 0.6289709 5.0604049
 
 ``` r
 out$d.sampling.variance
 ```
 
-    ## [1] 385.035005  28.230080   5.604203   6.048152  26.752847  22.993631
-    ## [7]   4.523680  45.462431   5.114472
+    ##  [1] 385.035005  28.230080   5.604203   6.048152  26.752847  22.993631
+    ##  [7]   4.523680  45.462431   5.114472 221.562230
 
 ``` r
 M = rbind(out, M.n)
@@ -2176,8 +2296,6 @@ save(M, file = "M.Rdata")
 ```
 
 ### effect and raw predictor
-
-### perform linear model between predictor and effect. model coefficient and standard errors are log odds and log standard error for the effect of interest. convert these values to d, variance in d
 
 note: have not attempted to fix so that negative effects of PP have negative effect size
 ========================================================================================
@@ -2217,12 +2335,20 @@ one.per.var.regression = function(M.y){
           v.tmp = subset(m.tmp, measure.specific....outcome.variable == uvar[e])
             #if more than one record for a variable, find pooled estimate across all records
             #print(v.tmp$d)
-            m = lm(infected.mean ~ predictor.value,
+            m = stats::lm(infected.mean ~ predictor.value,
                        data = v.tmp,
                    na.action = na.omit)
             #print(m)
-            log.odds.ratio = m$coefficients[1]
-            log.odds.se = coef(summary(m))[2,"Std. Error"]
+            ##############
+            # s = data.frame(m$coefficients)
+            # row.ind = which(row.names(s)=="predictor.value")
+            # col.ind.estimate = which(names(s)=="Estimate")
+            # col.ind.se = which(names(s)=="Std..Error")
+            # log.odds.ratio = s[row.ind,col.ind.estimate]
+            # log.odds.se = s[row.ind,col.ind.se]
+            ind = which(row.names(coef(summary(m)))=="predictor.value")
+            log.odds.ratio = coef(summary(m))[ind,"Estimate"]
+            log.odds.se = coef(summary(m))[ind,"Std. Error"]
             log.odds.variance = log.odds.se^2
             #https://www.meta-analysis.com/downloads/Meta-analysis%20Converting%20among%20effect%20sizes.pdf
             v.tmp$d = log.odds.ratio*(sqrt(3)/pi)
@@ -2248,7 +2374,11 @@ one.per.var.regression = function(M.y){
   return(v.tmp)
 }#end function
 
-out = one.per.var.regression(M.y)
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
+out = one.per.var.regression(M.y)#this function is in the same chunk
 out
 ```
 
@@ -2334,10 +2464,22 @@ out
     ## 407                                  NA                             
     ##     reason.for.inclusion.or.exclusion.as.ecosystem.measure notes confirm
     ## 407                                                                   NA
-    ##            d control_sd infected_sd d.sampling.variance
-    ## 407 0.653055         NA          NA        7.869836e-06
+    ##     d.absolute          d control_sd infected_sd d.sampling.variance
+    ## 407          1 0.01179567         NA          NA        7.869836e-06
     ##     correlation.coefficient.se
     ## 407                         NA
+
+``` r
+print(out$d)
+```
+
+    ## [1] 0.01179567
+
+``` r
+print(out$d.sampling.variance)
+```
+
+    ## [1] 7.869836e-06
 
 ``` r
 M = rbind(M.n, out)
@@ -2355,19 +2497,8 @@ where sample size not reported, assumed equal sample size for infected vs. contr
 
 ``` r
 load("M.Rdata")
-M$d.absolute = 0#is d absolute value
 M.y = subset(M, data.to.use == "one-way ANVOA F _ degrees freedom")
 M.n = subset(M, data.to.use != "one-way ANVOA F _ degrees freedom")
-# P = as.numeric(M.y$P)
-# inds.na = which(is.na(P))
-# M.y$P = as.character(M.y$P)
-# a = 1
-# for (a in 1:length(inds.na)){
-#   M.y$P[inds.na[a]]=strsplit(M.y$P[inds.na[a]],"<")[[1]][2]
-#   print(M.y$P[inds.na[a]])
-# }
-# M.y$P = as.numeric(M.y$P)
-#infer sample size based on df for records without sample size
 na.inds = which(is.na(M.y$sample.size.control))
 M.y$sample.size.control[na.inds]=(M.y$df[na.inds]+2)/2
 M.y$sample.size.infected[na.inds]=(M.y$df[na.inds]+2)/2
@@ -2395,7 +2526,7 @@ print(M.y$d.sampling.variance)
 ```
 
     ##  [1] 0.56805060 0.07058640 0.06251936 0.05850665 1.63814959 0.69794320
-    ##  [7] 0.68138795 0.85389743 2.64457116 1.64483429 2.23912402 0.61181994
+    ##  [7] 0.68138795 0.82222412 2.64457116 1.64483429 2.23912402 0.61181994
     ## [13] 0.48815229
 
 ``` r
@@ -2460,6 +2591,10 @@ for (c in 1:lev){
     ## [1] 0.1524313
 
 ``` r
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 print("d")
 ```
 
@@ -2599,6 +2734,11 @@ M.n = subset(M, data.to.use != "regression coefficient and SE")
 for (a in 1:dim(M.y)[1]){
   M.y[a,]=or_to_d(M.y[a,])
 }
+
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 M.y = one.per.var(M.y)#in case there are duplicates
 ```
 
@@ -2611,7 +2751,7 @@ M.y = one.per.var(M.y)#in case there are duplicates
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.02205316
+    ## [1] 0.02205316
     ## [1] "b"
     ## [1] 2
     ## [1] 1063
@@ -2621,19 +2761,19 @@ M.y = one.per.var(M.y)#in case there are duplicates
     ## [1] 1
     ## [1] "e"
     ## [1] 1
-    ## [1] -0.002347558
+    ## [1] 0.002347558
     ## [1] "e"
     ## [1] 2
     ## [1] 7.112143e-05
     ## [1] "e"
     ## [1] 3
-    ## [1] -0.0009372591
+    ## [1] 0.0009372591
     ## [1] "e"
     ## [1] 4
     ## [1] 2.09505e-06
     ## [1] "e"
     ## [1] 5
-    ## [1] -0.0003307973
+    ## [1] 0.0003307973
     ## [1] "b"
     ## [1] 3
     ## [1] 929
@@ -2644,20 +2784,30 @@ M.y = one.per.var(M.y)#in case there are duplicates
     ## [1] "e"
     ## [1] 1
     ## [1] 0.008843315
+    ## [1] "b"
+    ## [1] 4
+    ## [1] 781
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "d"
+    ## [1] 1
+    ## [1] "e"
+    ## [1] 1
+    ## [1] 0.5788953
 
 ``` r
 print(M.y$d)
 ```
 
-    ## [1] -2.205316e-02 -2.347558e-03  7.112143e-05 -9.372591e-04  2.095050e-06
-    ## [6] -3.307973e-04  8.843315e-03
+    ## [1] 2.205316e-02 2.347558e-03 7.112143e-05 9.372591e-04 2.095050e-06
+    ## [6] 3.307973e-04 8.843315e-03 5.788953e-01
 
 ``` r
 print(M.y$d.sampling.variance)
 ```
 
     ## [1] 3.039636e-05 3.039636e-07 7.003320e-10 4.863417e-08 4.377075e-13
-    ## [6] 1.215854e-08 5.109627e-04
+    ## [6] 1.215854e-08 5.109627e-04 8.784547e-03
 
 ``` r
 M = rbind(M.y, M.n)
@@ -2675,8 +2825,6 @@ load("one.per.var.Rdata")
 M.y = subset(M, data.to.use == "Mann-Whitney U and sample sizes")
 M.n = subset(M, data.to.use != "Mann-Whitney U and sample sizes")
 
-#C.tmp$z = -0.862 + sqrt(0.743 - 2.404*log(C.tmp$p.value))
-#SE.case = C.tmp$case_events/C.tmp$z
 for (a in 1:dim(M.y)[1]){
   M.y$sample.size.total[a] = M.y$sample.size.control[a]
   M.y$correlation.coefficient[a] = abs((1 - 2*M.y$U[a])/(M.y$sample.size.control[a]*M.y$sample.size.infected[a]))
@@ -2691,6 +2839,10 @@ for (a in 1:dim(M.y)[1]){
     ## [1] 0.1243929
 
 ``` r
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 M.y = one.per.var(M.y)#in case there are duplicates
 ```
 
@@ -2745,7 +2897,7 @@ M = subset(M, !is.na(d))
 length(unique(M$paper.ID))#number of papers
 ```
 
-    ## [1] 41
+    ## [1] 44
 
 ``` r
 #look at distribution of measures by pathway and measure 
@@ -2756,14 +2908,14 @@ xtabs(~pathway + measure.general, data = M)
 
     ##                                 measure.general
     ## pathway                          biogeochemical cycles primary production
-    ##   abund biomass to ecosystem fxn                    19                 41
-    ##   morbidity to ecosystem fxn                        31                  4
+    ##   abund biomass to ecosystem fxn                    23                 42
+    ##   morbidity to ecosystem fxn                        41                  4
     ##   PP to ecosystem fxn                                1                  1
     ##   unknown to ecosystem fxn                          43                  3
     ##                                 measure.general
     ## pathway                          secondary production
-    ##   abund biomass to ecosystem fxn                    6
-    ##   morbidity to ecosystem fxn                        5
+    ##   abund biomass to ecosystem fxn                    8
+    ##   morbidity to ecosystem fxn                        7
     ##   PP to ecosystem fxn                               1
     ##   unknown to ecosystem fxn                          0
 
@@ -2773,22 +2925,29 @@ xtabs(~paper.ID, data = M)
 ```
 
     ## paper.ID
-    ##   42   53   59  328  474  570  608  631  683  762  764  857  892  917  928 
-    ##    1    6    9    3    3    7    5    1    1    2    2    2    8    5    1 
-    ##  929  930 1063 1176 1183 1290 1371 1375 1436 1491 1493 1568 1590 1600 1859 
-    ##    1    5    6   11   11    7    1    3    3    1    1    1    1    1   12 
-    ## 1881 1924 1984 1993 2012 2119 2123 2137 2145 2146 2167 
-    ##    1    1    1    1    1    1    1    1    1   21    4
+    ##   42   53   59  328  474  570  608  631  683  762  764  781  857  892  917 
+    ##    1    6    9    3    3    7    5    1    1    2    2    2    2    8    5 
+    ##  928  929  930 1063 1132 1176 1183 1263 1290 1371 1375 1436 1491 1493 1568 
+    ##    1    1    5    6   10   11   11    7    7    1    3    3    1    1    1 
+    ## 1590 1600 1859 1881 1924 1984 1993 2012 2119 2123 2137 2145 2146 2167 
+    ##    1    1   12    1    1    1    1    1    1    1    1    1   21    4
 
 meta-analysis
 -------------
 
-check whether absoluate value of d is normally distributed, and whether log of abs(d) is normal
-===============================================================================================
+### check whether absoluate value of d is normally distributed, and whether log of abs(d) is normal
 
 ``` r
 load("M.Rdata")
 M = subset(M, pathway != "PP to ecosystem fxn")
+M = subset(M ,!is.na(d))
+tmp = subset(M, paper.ID == "82")
+tmp$d
+```
+
+    ## numeric(0)
+
+``` r
 dat = M
 dat$d = dat$d+0.000001#add small number so that can take log and it be definite
 #check normality of d
@@ -2799,15 +2958,10 @@ shapiro.test(dat$d)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  dat$d
-    ## W = 0.69511, p-value = 2.29e-16
+    ## W = 0.35197, p-value < 2.2e-16
 
 ``` r
 qqnorm(dat$d)
-```
-
-![](PATE_files/figure-markdown_github/distributions-1.png)
-
-``` r
 shapiro.test(abs(dat$d))
 ```
 
@@ -2815,13 +2969,13 @@ shapiro.test(abs(dat$d))
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  abs(dat$d)
-    ## W = 0.52173, p-value < 2.2e-16
+    ## W = 0.35197, p-value < 2.2e-16
 
 ``` r
 qqnorm(abs(dat$d))
 ```
 
-![](PATE_files/figure-markdown_github/distributions-2.png)
+![](PATE_files/figure-markdown_github/distributions-1.png)
 
 ``` r
 #check normality of log d -- slightly closer to normality but still very much not normal 
@@ -2832,46 +2986,605 @@ shapiro.test(log(abs(dat$d)))
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  log(abs(dat$d))
-    ## W = 0.6652, p-value < 2.2e-16
+    ## W = 0.7498, p-value = 9.176e-16
 
 ``` r
 qqnorm(log(abs(dat$d)))
 ```
 
-![](PATE_files/figure-markdown_github/distributions-3.png)
+![](PATE_files/figure-markdown_github/distributions-2.png)
+
+### compare\_pathways: compare mean values of d by pathway, using one measure per paper.ID
+
+``` r
+load("M.Rdata")
+M = subset(M, pathway != "PP to ecosystem fxn")
+M = subset(M ,!is.na(d))
+tmp = subset(M, paper.ID == "82")
+tmp$d
+```
+
+    ## numeric(0)
+
+``` r
+dat = M
+#get mean by paper, pathway
+dat1 <- dat %>%
+  group_by(paper.ID,pathway) %>%
+  summarize(mean_d_per_study = mean(d))
+
+#now get mean by pathway
+dat2 <- dat1 %>%
+  group_by(pathway) %>%
+  summarize(mean_d = mean(mean_d_per_study))
+dat2
+```
+
+    ## # A tibble: 3 x 2
+    ##   pathway                        mean_d
+    ##   <fct>                           <dbl>
+    ## 1 abund biomass to ecosystem fxn   1.34
+    ## 2 morbidity to ecosystem fxn       4.24
+    ## 3 unknown to ecosystem fxn         1.42
 
 ``` r
 #make histogram for absolute value of d
-ggplot(dat, aes(abs(d), fill = pathway) )+
+ggplot(dat1, aes(mean_d_per_study, fill = pathway) )+
   geom_histogram()
 ```
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 379 rows containing non-finite values (stat_bin).
+![](PATE_files/figure-markdown_github/compare_pathways-1.png)
 
-![](PATE_files/figure-markdown_github/distributions-4.png)
+### one.per.study.by.var: write function to get pooled value by variable within each study
 
 ``` r
-#make histogram for log of absolute value of d
-ggplot(dat, aes(log(abs(d)), fill = pathway)) +
-  geom_histogram()
+one.per.study.by.var = function(M.y, var_name){
+  ustudy = unique(M.y$paper.ID)
+  out = NULL
+  var_col_ind = which(names(M.y) == var_name)
+  for (b in 1:length(ustudy)){
+  print("b")
+  print(b)
+  print(ustudy[b])
+  s.tmp = subset(M.y, paper.ID == ustudy[b])
+
+  uvar = unique(s.tmp[,var_col_ind])
+#for each variable in study
+    for (c in 1:length(uvar)){
+      inds = which(s.tmp[,var_col_ind]==uvar[c])
+      v.tmp = s.tmp[inds,]
+      print("c")
+      print(c)
+          if (dim(v.tmp)[1]>1){
+            #if more than one record for a variable, find pooled estimate across all records     
+            print("pooled estimate")
+            m = rma(yi = abs(v.tmp$d),
+                       vi = v.tmp$d.sampling.variance,
+                       measure = "MN")  
+            #print(m)
+            v.tmp$d = m$yi[1]
+            v.tmp$d.sampling.variance = m$vi[1]
+            v.tmp = v.tmp[1,]
+            
+            out = rbind(out, v.tmp)
+          }#end if statement
+          else {#else use value already gotten
+            out = rbind(out, v.tmp)
+          }#end else
+   }#end pathway
+  }#end study
+  return(out)
+}#end function
+
+save(one.per.study.by.var, file = "one.per.study.by.var.Rdata")
 ```
 
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 379 rows containing non-finite values (stat_bin).
-
-![](PATE_files/figure-markdown_github/distributions-5.png)
-
-use nlme and absolute value of d
---------------------------------
-
-<http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer>
------------------------------------------------------------------
+#### get pooled value by paper.ID and pathway
 
 ``` r
-#using package lmerTest to get p values
+load("one.per.study.by.var.Rdata")
+load("M.Rdata")
+M = subset(M, !is.na(d))
+
+M1 = one.per.study.by.var(M, "pathway")
+```
+
+    ## [1] "b"
+    ## [1] 1
+    ## [1] 1993
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 2
+    ## [1] 2137
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 3
+    ## [1] 1063
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "b"
+    ## [1] 4
+    ## [1] 929
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 5
+    ## [1] 781
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 6
+    ## [1] 2146
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 7
+    ## [1] 762
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 8
+    ## [1] 474
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 9
+    ## [1] 1590
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 10
+    ## [1] 2167
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 11
+    ## [1] 928
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 12
+    ## [1] 631
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 13
+    ## [1] 1371
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 14
+    ## [1] 2119
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 15
+    ## [1] 2145
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 16
+    ## [1] 42
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 17
+    ## [1] 53
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 18
+    ## [1] 59
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 19
+    ## [1] 328
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 20
+    ## [1] 1375
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 21
+    ## [1] 1493
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 22
+    ## [1] 1600
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 23
+    ## [1] 1859
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 24
+    ## [1] 1881
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 25
+    ## [1] 1924
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 26
+    ## [1] 2012
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 27
+    ## [1] 2123
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 28
+    ## [1] 857
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 29
+    ## [1] 917
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 30
+    ## [1] 930
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "b"
+    ## [1] 31
+    ## [1] 570
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 32
+    ## [1] 608
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 33
+    ## [1] 683
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 34
+    ## [1] 764
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 35
+    ## [1] 1132
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 36
+    ## [1] 1176
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 37
+    ## [1] 1183
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "pooled estimate"
+    ## [1] "c"
+    ## [1] 3
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 38
+    ## [1] 1263
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 39
+    ## [1] 1290
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 40
+    ## [1] 1568
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 41
+    ## [1] 892
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "c"
+    ## [1] 2
+    ## [1] "c"
+    ## [1] 3
+    ## [1] "c"
+    ## [1] 4
+    ## [1] "b"
+    ## [1] 42
+    ## [1] 1491
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "b"
+    ## [1] 43
+    ## [1] 1436
+    ## [1] "c"
+    ## [1] 1
+    ## [1] "pooled estimate"
+    ## [1] "b"
+    ## [1] 44
+    ## [1] 1984
+    ## [1] "c"
+    ## [1] 1
+
+``` r
+#for each pathway
+#for each paper.ID
+dim(M1)
+```
+
+    ## [1]  56 113
+
+``` r
+table(M1$pathway)
+```
+
+    ## 
+    ##                                             
+    ##                                           0 
+    ##                           abiotic or biotic 
+    ##                                           0 
+    ##              abund biomass to ecosystem fxn 
+    ##                                          30 
+    ##                         ecosystem fxn to PP 
+    ##                                           0 
+    ##                  morbidity to ecosystem fxn 
+    ##                                          15 
+    ##                                PP abundance 
+    ##                                           0 
+    ##                                PP morbidity 
+    ##                                           0 
+    ##                         PP to abund biomass 
+    ##                                           0 
+    ##                         PP to ecosystem fxn 
+    ##                                           3 
+    ## PP to host infection prevalence / intensity 
+    ##                                           0 
+    ##                             PP to morbidity 
+    ##                                           0 
+    ##                               PP to unknown 
+    ##                                           0 
+    ##                              PP to unknown  
+    ##                                           0 
+    ##                    unknown to ecosystem fxn 
+    ##                                           8
+
+``` r
+save(M1, file = "M1.Rdata")
+shapiro.test(M1$d)
+```
+
+    ## 
+    ##  Shapiro-Wilk normality test
+    ## 
+    ## data:  M1$d
+    ## W = 0.69897, p-value = 2.024e-09
+
+``` r
+# shapiro.test(log(M1$d))
+M1$d = M1$d+0.000001#add small number to all so that log can be used (though not using log in this chunk)
+shapiro.test(log(M1$d))
+```
+
+    ## 
+    ##  Shapiro-Wilk normality test
+    ## 
+    ## data:  log(M1$d)
+    ## W = 0.71357, p-value = 3.836e-09
+
+``` r
+M1 = subset(M1, pathway != "PP to ecosystem fxn")
+M1_sum <- M1 %>%
+  group_by(pathway) %>%
+  summarize(mean_d = mean(d),
+            mean_variance = mean(d.sampling.variance),
+            median_variance = median(d.sampling.variance))
+M1_sum
+```
+
+    ## # A tibble: 3 x 4
+    ##   pathway                        mean_d mean_variance median_variance
+    ##   <fct>                           <dbl>         <dbl>           <dbl>
+    ## 1 abund biomass to ecosystem fxn   1.70         18.5            0.615
+    ## 2 morbidity to ecosystem fxn       2.28          1.82           0.178
+    ## 3 unknown to ecosystem fxn         1.05          2.74           0.239
+
+``` r
+#compare relation between d and d.sampling variance for abundance and morbidity; look pretty similar
+M1 = subset(M1, pathway != "unknown to ecosystem fxn")
+plot <- ggplot(data = M1, aes(x = d, y = d.sampling.variance, color = pathway))+
+  geom_point()+
+  geom_smooth()+
+  scale_y_log10()+
+  scale_x_log10()
+plot
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](PATE_files/figure-markdown_github/pooled_pathway-1.png)
+
+### fixed effects model -- compare fits of normal, log-normal, and
+
+### gamma distributed intercept-only models
+
+``` r
+load("M1.Rdata")
+M = M1
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001#add small number to all so that log can be used (though not using log in this chunk)
+
+# res.lm.pathway.log <- glm(d ~ pathway-1, weights = 1/d.sampling.variance, data=dat, family = gaussian ( link="log"))
+# summary(res.lm.pathway.log)
+# # 
+# res.lm.pathway <- lm(d ~ pathway-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.pathway)
+
+# m.g <- glm(d ~pathway-1, weights = 1/d.sampling.variance, data=dat,
+#                  family = Gamma
+#                  )
+# summary(m.g)
+
+# model.sel(res.lm.pathway.log, res.lm.pathway, m.g)
+
+#m.g.predict = predict(m.g, newdata = dat) 
+
+#seems more generally useful to find out which intercept-only model is best, rather than which pathway model
+m.normal <- lm(d ~ 1, weights = 1/d.sampling.variance, data=dat)
+summary(m.normal)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = d ~ 1, data = dat, weights = 1/d.sampling.variance)
+    ## 
+    ## Weighted Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -1.1001  0.4408  1.3792  2.9961 10.4617 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 0.002955   0.001515   1.951   0.0565 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 2.815 on 52 degrees of freedom
+
+``` r
+#keep d as is, make link log 
+#http://pj.freefaculty.org/guides/stat/Regression-GLM/Gamma/GammaGLM-01.pdf
+m.log.normal <- glm(d ~ 1, weights = 1/d.sampling.variance, data=dat, 
+                    family = gaussian ( link="log"))
+summary(m.log.normal)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = d ~ 1, family = gaussian(link = "log"), data = dat, 
+    ##     weights = 1/d.sampling.variance)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.1001   0.4408   1.3792   2.9961  10.4617  
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  -5.8242     0.5126  -11.36 1.06e-15 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for gaussian family taken to be 7.923053)
+    ## 
+    ##     Null deviance: 411.94  on 52  degrees of freedom
+    ## Residual deviance: 411.94  on 52  degrees of freedom
+    ## AIC: 203.04
+    ## 
+    ## Number of Fisher Scoring iterations: 11
+
+``` r
+#use log of d
+m.log <- lm(log(d) ~ 1, weights = 1/d.sampling.variance, data=dat)
+#note link equals identity
+m.g <- glm(d ~1, weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma(link = identity)
+                 )
+
+#use model.sel to compare fits of models
+model.sel(m.log.normal, m.g, m.normal, m.log)
+```
+
+    ## Warning in model.sel.default(m.log.normal, m.g, m.normal, m.log): response
+    ## differs between models
+
+    ## Model selection table 
+    ##                (Intrc) family class df       logLik        AICc    delta
+    ## m.g           0.002955 Gm(id)   glm  2 17737655.217 -35475306.2        0
+    ## m.log.normal -5.824000 gs(lg)   glm  2      -99.520       203.3 35475509
+    ## m.normal      0.002955     gs    lm  2      -99.520       203.3 35475509
+    ## m.log        -5.972000     gs    lm  2     -286.996       578.2 35475884
+    ##              weight
+    ## m.g               1
+    ## m.log.normal      0
+    ## m.normal          0
+    ## m.log             0
+    ## Abbreviations:
+    ## family: Gm(id) = 'Gamma(identity)', gs = 'gaussian', 
+    ##         gs(lg) = 'gaussian(log)'
+    ## Models ranked by AICc(x)
+
+``` r
+#this below (using rma from function metafor) doesn't work because of error, which could only be resolved by reclassifying variables or excluding high/low variance points:
+# Error in rma(log(abs(d)) ~ pathway - 1, vi = d.sampling.variance, data = dat) : 
+#   Ratio of largest to smallest sampling variance extremely large. Cannot obtain stable results.
+# m.pathway = rma(log(abs(d)) ~ pathway -1,
+#              vi = d.sampling.variance,
+#              data = dat)
+```
+
+### mixed effects model -- compare fits of normal vs. log-normal vs. log using AICc
+
+comment out
+-----------
+
+``` r
 load("M.Rdata")
 M = subset(M, !is.na(d))
 M.tmp = subset(M, is.na(d.sampling.variance))
@@ -2879,46 +3592,389 @@ M = subset(M, pathway != "PP to ecosystem fxn")
 dat = M
 dat$d = dat$d+0.000001
 
-# dat$log.d = log(abs(dat$d))
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+m.log <- lme(log(d) ~ 1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+m.normal <- lme(d ~ 1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# m.log.normal.glmm <- glmmPQL(d ~ 1, ~1 | paper.ID, family = gaussian(link = "log"),
+#     weights = 1/d.sampling.variance, data = dat, verbose = FALSE)
+
+m.log.normal.lmer <- glmer(d ~ 1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat, family =gaussian(link = "log") )
+
+# model.sel(m.log,m.normal, m.log.normal.glmm, m.log.normal.lmer )
+# model.sel(m.log,m.normal, m.log.normal.lmer )
+model.sel(m.normal, m.log)
+```
+
+    ## Warning in model.sel.default(m.normal, m.log): response differs between
+    ## models
+
+    ## Model selection table 
+    ##          (Intrc) df       logLik         AICc       delta weight
+    ## m.normal   1.185  2 -5.40869e+02 1.085800e+03           0      1
+    ## m.log     -1.303  2 -8.37887e+09 1.675774e+10 16757738184      0
+    ## Models ranked by AICc(x) 
+    ## Random terms (all models): 
+    ## '1 | paper.ID'
+
+``` r
+m.normal.p <- lme(d ~ pathway - 1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+marginal = emmeans(m.normal.p,
+                   ~ pathway)
+marginal
+```
+
+    ##  pathway                          emmean        SE  df  lower.CL upper.CL
+    ##  abund biomass to ecosystem fxn 1.184809 0.2702767 125 0.6498980 1.719720
+    ##  morbidity to ecosystem fxn     1.031098 0.2798035 125 0.4773325 1.584864
+    ##  unknown to ecosystem fxn       1.570507 0.2972640 125 0.9821852 2.158830
+    ## 
+    ## Degrees-of-freedom method: containment 
+    ## Confidence level used: 0.95
+
+``` r
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "pathway", ".group")]
+
+
+##measure
+m.normal.m <- lme(d ~ measure.general - 1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+summary(m.normal.m)
+```
+
+    ## Linear mixed-effects model fit by REML
+    ##  Data: dat 
+    ##        AIC      BIC    logLik
+    ##   1076.943 1089.439 -534.4717
+    ## 
+    ## Random effects:
+    ##  Formula: ~1 | paper.ID
+    ##         (Intercept) Residual
+    ## StdDev:    1.498492        1
+    ## 
+    ## Variance function:
+    ##  Structure: fixed weights
+    ##  Formula: ~d.sampling.variance 
+    ## Fixed effects: d ~ measure.general - 1 
+    ##                                         Value Std.Error  DF  t-value
+    ## measure.generalbiogeochemical cycles 1.155320 0.2594780 125 4.452477
+    ## measure.generalprimary production    1.309427 0.2635413 125 4.968584
+    ## measure.generalsecondary production  1.012408 0.2780706 125 3.640829
+    ##                                      p-value
+    ## measure.generalbiogeochemical cycles   0e+00
+    ## measure.generalprimary production      0e+00
+    ## measure.generalsecondary production    4e-04
+    ##  Correlation: 
+    ##                                     msr.gc msr.gnrlpp
+    ## measure.generalprimary production   0.937            
+    ## measure.generalsecondary production 0.885  0.853     
+    ## 
+    ## Standardized Within-Group Residuals:
+    ##        Min         Q1        Med         Q3        Max 
+    ## -3.7835726 -0.2535569  0.0712381  0.8759400  8.7559489 
+    ## 
+    ## Number of Observations: 171
+    ## Number of Groups: 44
+
+``` r
+marginal = emmeans(m.normal.m,
+                   ~ measure.general)
+marginal
+```
+
+    ##  measure.general         emmean        SE  df  lower.CL upper.CL
+    ##  biogeochemical cycles 1.155320 0.2594780 125 0.6417807 1.668859
+    ##  primary production    1.309427 0.2635413 125 0.7878464 1.831008
+    ##  secondary production  1.012408 0.2780706 125 0.4620714 1.562744
+    ## 
+    ## Degrees-of-freedom method: containment 
+    ## Confidence level used: 0.95
+
+``` r
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "measure.general", ".group")]
+
+
+
+
+
+# m.log.normal.lmer.p <- glmer(d ~ pathway - 1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat, family =gaussian(link = "log") )
+# summary(m.log.normal.lmer.p)
+# 
+# marginal = emmeans(m.log.normal.lmer.p, 
+#                    ~ pathway)
+# marginal
+# #"Results are given on the inverse (not the response) scale."
+# #https://cran.r-project.org/web/packages/emmeans/vignettes/FAQs.html
+# #Why do I get Inf for the degrees of freedom?
+# # This is simply the way that emmeans labels asymptotic results (that is, estimates that are tested against the standard normal distribution – z tests – rather than the t distribution). Note that obtaining quantiles or probabilities from the t distribution with infinite degrees of freedom is the same as obtaining the corresponding values from the standard normal. For example:
+# 
+```
+
+### use gamma distributed model (best fitting according to AICc comparison)
+
+predict d based on pathway
+==========================
+
+comment out
+===========
+
+``` r
+load("M1.Rdata")
+M = M1
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001#add small number to all so that log can be used (though not using log in this 
+
+m.g <- glm(d ~pathway-1, weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma(link = identity)
+                 )
+summary(m.g)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = d ~ pathway - 1, family = Gamma(link = identity), 
+    ##     data = dat, weights = 1/d.sampling.variance)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -67.760    2.974   16.666   40.612  231.904  
+    ## 
+    ## Coefficients:
+    ##                                        Estimate Std. Error t value
+    ## pathwayabund biomass to ecosystem fxn 1.436e-02  2.514e-02   0.571
+    ## pathwaymorbidity to ecosystem fxn     2.385e-03  9.272e-04   2.572
+    ## pathwayunknown to ecosystem fxn       8.447e-01  1.041e+02   0.008
+    ##                                       Pr(>|t|)  
+    ## pathwayabund biomass to ecosystem fxn   0.5706  
+    ## pathwaymorbidity to ecosystem fxn       0.0131 *
+    ## pathwayunknown to ecosystem fxn         0.9936  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for Gamma family taken to be 497194.5)
+    ## 
+    ##     Null deviance:    NaN  on 53  degrees of freedom
+    ## Residual deviance: 122612  on 50  degrees of freedom
+    ## AIC: -42937129
+    ## 
+    ## Number of Fisher Scoring iterations: 3
+
+``` r
+##We include the weights to make it a meta-analysis. Without incorporating the weights, morbidity is highest. 
+m.g.noweights <- glm(d ~pathway-1, data=dat,
+                 family = Gamma(link = identity)
+                 )
+summary(m.g.noweights)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = d ~ pathway - 1, family = Gamma(link = identity), 
+    ##     data = dat)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -5.0720  -1.2291  -0.5415   0.4058   2.4722  
+    ## 
+    ## Coefficients:
+    ##                                       Estimate Std. Error t value Pr(>|t|)
+    ## pathwayabund biomass to ecosystem fxn   1.6990     0.3882   4.376 6.15e-05
+    ## pathwaymorbidity to ecosystem fxn       2.2798     0.7368   3.094  0.00323
+    ## pathwayunknown to ecosystem fxn         1.0483     0.4639   2.260  0.02822
+    ##                                          
+    ## pathwayabund biomass to ecosystem fxn ***
+    ## pathwaymorbidity to ecosystem fxn     ** 
+    ## pathwayunknown to ecosystem fxn       *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for Gamma family taken to be 1.566623)
+    ## 
+    ##     Null deviance:    NaN  on 53  degrees of freedom
+    ## Residual deviance: 115.78  on 50  degrees of freedom
+    ## AIC: 158.89
+    ## 
+    ## Number of Fisher Scoring iterations: 3
+
+``` r
+#back to m.g
+marginal = emmeans(m.g, 
+                   ~ pathway)
+marginal
+```
+
+    ##  pathway                             emmean           SE  df     asymp.LCL
+    ##  abund biomass to ecosystem fxn 0.014355352 2.514414e-02 Inf -3.492625e-02
+    ##  morbidity to ecosystem fxn     0.002385168 9.272150e-04 Inf  5.678603e-04
+    ##  unknown to ecosystem fxn       0.844717543 1.041493e+02 Inf -2.032841e+02
+    ##     asymp.UCL
+    ##  6.363695e-02
+    ##  4.202476e-03
+    ##  2.049736e+02
+    ## 
+    ## Confidence level used: 0.95
+
+``` r
+#"Results are given on the inverse (not the response) scale."
+#https://cran.r-project.org/web/packages/emmeans/vignettes/FAQs.html
+#Why do I get Inf for the degrees of freedom?
+# This is simply the way that emmeans labels asymptotic results (that is, estimates that are tested against the standard normal distribution – z tests – rather than the t distribution). Note that obtaining quantiles or probabilities from the t distribution with infinite degrees of freedom is the same as obtaining the corresponding values from the standard normal. For example:
+
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "pathway", ".group")]
+###summary table
+s = summary(m.g)
+# anova(res.lme.pathway)
+
+stable = s$coefficients
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "pathway")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+```
+
+    ## [1] "abund biomass to ecosystem fxn" "morbidity to ecosystem fxn"    
+    ## [3] "unknown to ecosystem fxn"
+
+``` r
+stable$pathway = rnout
+
+#add variance as field
+  #standard error = square root of the estimated error variance
+
+# stable$CI.upper = stable$Estimate+1.96*stable$Std..Error
+# stable$CI.lower = stable$Estimate-1.96*stable$Std..Error
+# stable$`Effect size` = stable$Estimate
+# stable$t = round(stable$t.value, digits = 3)
+# stable$P = round(stable$Pr...value.., digits =4)
+# stable = stable[,c("pathway", 
+#                   "Effect size",
+#                   "CI.upper",
+#                   "CI.lower",
+#                    "DF",
+#                    "t",
+#                    "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+# 
+# stable.m = merge(cld.table, stable, by = "pathway")
+# stable.m = stable.m[order(stable.m$order),]
+# stable.m = stable.m[,c("pathway", 
+#                    "DF",
+#                    "t",
+#                    "P",
+#                   "Effect size",
+#                   "CI.upper",
+#                   "CI.lower",
+#                   ".group",
+#                   "order"
+# )]
+# names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+# names(stable.m)[names(stable.m)=="pathway"]= "Pathway"
+# names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+# names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+# stable.m$Pathway=as.character(stable.m$Pathway)
+# stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
+# stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+# 
+# namesok = setdiff(names(stable.m), "order")
+# stable.table = stable.m[,namesok]
+# write.csv(stable.table, "Table.pathway.csv", row.names = FALSE)
+# 
+# offset.h = -8.1  # offsets for mean letters
+# offset.v = 0.5
+# xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+# #sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+# plot <- ggplot(data = stable.m, aes(y = reorder(Pathway, order), x = `Effect size`))+
+#   geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+#                  height = 0)+
+#   geom_point()+
+#    geom_text(aes(label=stable.m$`Pairwise comparison`,
+#                  hjust=offset.h, vjust=offset.v)) +
+#   # xlim(0,7)+
+#   ylab("Pathway")+
+#   # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+#   # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+#   scale_x_continuous(breaks = pretty_breaks())
+# plot
+```
+
+use nlme and absolute value of d
+--------------------------------
+
+<http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer>
+-----------------------------------------------------------------
+
+comment out 20181016
+====================
+
+``` r
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001#add small number to all so that log can be used (though not using log in this chunk)
 
 #construct model so that it goes through origin; use lmeControl so that exact weights are used
 res.lme.pathway <- lme(abs(d) ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# res.lme.pathway <- lme(d ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), data=dat)
+
 summary(res.lme.pathway)
 ```
 
     ## Linear mixed-effects model fit by REML
     ##  Data: dat 
-    ##       AIC      BIC   logLik
-    ##   917.952 929.9677 -454.976
+    ##        AIC      BIC   logLik
+    ##   1071.182 1083.678 -531.591
     ## 
     ## Random effects:
     ##  Formula: ~1 | paper.ID
     ##         (Intercept) Residual
-    ## StdDev:    1.453642        1
+    ## StdDev:    1.548208        1
     ## 
     ## Variance function:
     ##  Structure: fixed weights
     ##  Formula: ~d.sampling.variance 
     ## Fixed effects: abs(d) ~ pathway - 1 
-    ##                                           Value Std.Error  DF  t-value
-    ## pathwayabund biomass to ecosystem fxn 1.1465127 0.2661850 109 4.307202
-    ## pathwaymorbidity to ecosystem fxn     0.9752217 0.2775499 109 3.513680
-    ## pathwayunknown to ecosystem fxn       1.5227999 0.2929370 109 5.198386
+    ##                                          Value Std.Error  DF  t-value
+    ## pathwayabund biomass to ecosystem fxn 1.184809 0.2702767 125 4.383690
+    ## pathwaymorbidity to ecosystem fxn     1.031098 0.2798035 125 3.685080
+    ## pathwayunknown to ecosystem fxn       1.570507 0.2972640 125 5.283208
     ##                                       p-value
     ## pathwayabund biomass to ecosystem fxn   0e+00
-    ## pathwaymorbidity to ecosystem fxn       6e-04
+    ## pathwaymorbidity to ecosystem fxn       3e-04
     ## pathwayunknown to ecosystem fxn         0e+00
     ##  Correlation: 
     ##                                   ptbtef pthwymtef
-    ## pathwaymorbidity to ecosystem fxn 0.859           
-    ## pathwayunknown to ecosystem fxn   0.819  0.801    
+    ## pathwaymorbidity to ecosystem fxn 0.862           
+    ## pathwayunknown to ecosystem fxn   0.824  0.805    
     ## 
     ## Standardized Within-Group Residuals:
     ##         Min          Q1         Med          Q3         Max 
-    ## -3.85743813 -0.29877673  0.06966431  0.64740701  8.73377859 
+    ## -3.85879162 -0.29547148  0.08443187  0.92396217  8.73337235 
     ## 
-    ## Number of Observations: 152
-    ## Number of Groups: 41
+    ## Number of Observations: 171
+    ## Number of Groups: 44
 
 ``` r
 save(res.lme.pathway, file = "res.lme.pathway.Rdata")
@@ -2931,7 +3987,7 @@ shapiro.test(res.lme.pathway.r)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  res.lme.pathway.r
-    ## W = 0.48455, p-value < 2.2e-16
+    ## W = 0.31552, p-value < 2.2e-16
 
 ``` r
 #check which pathways are different from each other, if any
@@ -2952,21 +4008,21 @@ summary(glht(res.lme.pathway, linfct=contrMat(c(
     ## 
     ## Linear Hypotheses:
     ##                                                                  Estimate
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0  -0.1713
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0     0.3763
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0         0.5476
+    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0  -0.1537
+    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0     0.3857
+    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0         0.5394
     ##                                                                  Std. Error
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0     0.1447
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0       0.1700
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0           0.1806
+    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0     0.1445
+    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0       0.1703
+    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0           0.1807
     ##                                                                  z value
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0  -1.184
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0     2.214
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0         3.032
+    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0  -1.063
+    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0     2.265
+    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0         2.985
     ##                                                                  Pr(>|z|)
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0  0.23644
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0    0.02684
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0        0.00243
+    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0  0.28761
+    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0    0.02353
+    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0        0.00284
     ##                                                                    
     ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0   
     ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0   * 
@@ -2976,77 +4032,169 @@ summary(glht(res.lme.pathway, linfct=contrMat(c(
     ## (Adjusted p values reported -- none method)
 
 ``` r
+marginal = emmeans(res.lme.pathway, 
+                   ~ pathway)
+
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "pathway", ".group")]
+###summary table
+s = summary(res.lme.pathway)
+# anova(res.lme.pathway)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "pathway")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+```
+
+    ## [1] "abund biomass to ecosystem fxn" "morbidity to ecosystem fxn"    
+    ## [3] "unknown to ecosystem fxn"
+
+``` r
+stable$pathway = rnout
+
+#add variance as field
+  #standard error = square root of the estimated error variance
+
+stable$CI.upper = stable$Value+1.96*stable$Std.Error
+stable$CI.lower = stable$Value-1.96*stable$Std.Error
+stable$`Effect size` = stable$Value
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("pathway", 
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "pathway")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("pathway", 
+                   "DF",
+                   "t",
+                   "P",
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                  ".group",
+                  "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="pathway"]= "Pathway"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Pathway=as.character(stable.m$Pathway)
+stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
+stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
+stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.pathway.csv", row.names = FALSE)
+
+offset.h = -8.1  # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Pathway, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+   geom_text(aes(label=stable.m$`Pairwise comparison`,
+                 hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("Pathway")+
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+  # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+  scale_x_continuous(breaks = pretty_breaks())
+plot
+```
+
+![](PATE_files/figure-markdown_github/unnamed-chunk-18-1.png)
+
+``` r
 #measure
-res.lme.measure <- lme(abs(d) ~ measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
-summary(res.lme.measure)
-```
 
-    ## Linear mixed-effects model fit by REML
-    ##  Data: dat 
-    ##        AIC      BIC    logLik
-    ##   924.9536 936.9694 -458.4768
-    ## 
-    ## Random effects:
-    ##  Formula: ~1 | paper.ID
-    ##         (Intercept) Residual
-    ## StdDev:    1.417825        1
-    ## 
-    ## Variance function:
-    ##  Structure: fixed weights
-    ##  Formula: ~d.sampling.variance 
-    ## Fixed effects: abs(d) ~ measure.general - 1 
-    ##                                          Value Std.Error  DF  t-value
-    ## measure.generalbiogeochemical cycles 1.1899056 0.2722141 109 4.371212
-    ## measure.generalprimary production    1.2018132 0.2742137 109 4.382761
-    ## measure.generalsecondary production  0.8796007 0.5652424 109 1.556148
-    ##                                      p-value
-    ## measure.generalbiogeochemical cycles  0.0000
-    ## measure.generalprimary production     0.0000
-    ## measure.generalsecondary production   0.1226
-    ##  Correlation: 
-    ##                                     msr.gc msr.gnrlpp
-    ## measure.generalprimary production   0.919            
-    ## measure.generalsecondary production 0.142  0.154     
-    ## 
-    ## Standardized Within-Group Residuals:
-    ##          Min           Q1          Med           Q3          Max 
-    ## -3.852163407 -0.267184690  0.004816829  0.653636640  8.735361768 
-    ## 
-    ## Number of Observations: 152
-    ## Number of Groups: 41
+# summary(glht(res.lme.measure, linfct=contrMat(c(
+#   "biogeochemical cycles"=1,
+#   "primary production"=1,
+#   "secondary production"=1), type="Tukey")), test=adjusted("none"))
 
-``` r
-summary(glht(res.lme.measure, linfct=contrMat(c(
-  "biogeochemical cycles"=1,
-  "primary production"=1,
-  "secondary production"=1), type="Tukey")), test=adjusted("none"))
-```
-
-    ## 
-    ##   Simultaneous Tests for General Linear Hypotheses
-    ## 
-    ## Multiple Comparisons of Means: Tukey Contrasts
-    ## 
-    ## 
-    ## Fit: lme.formula(fixed = abs(d) ~ measure.general - 1, data = dat, 
-    ##     random = ~1 | paper.ID, weights = varFixed(~d.sampling.variance), 
-    ##     control = lmeControl(sigma = 1))
-    ## 
-    ## Linear Hypotheses:
-    ##                                                   Estimate Std. Error
-    ## primary production - biogeochemical cycles == 0    0.01191    0.10976
-    ## secondary production - biogeochemical cycles == 0 -0.31030    0.59153
-    ## secondary production - primary production == 0    -0.32221    0.58892
-    ##                                                   z value Pr(>|z|)
-    ## primary production - biogeochemical cycles == 0     0.108    0.914
-    ## secondary production - biogeochemical cycles == 0  -0.525    0.600
-    ## secondary production - primary production == 0     -0.547    0.584
-    ## (Adjusted p values reported -- none method)
-
-``` r
 #this doesn't work because of singularity
 # res.lme.pathway.measure <- lme(log.d ~ pathway*measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
 # summary(res.lme.pathway.measure)
+```
+
+make graph of absolute value of effect size, to compare to results of regression
+================================================================================
+
+comment out 20181016
+====================
+
+``` r
+load("log_back_transform.Rdata")
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+
+plot <- ggplot(data = dat, aes(x = d, fill = pathway))+
+  geom_histogram()+
+  scale_x_log10()
+plot
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](PATE_files/figure-markdown_github/unnamed-chunk-19-1.png)
+
+``` r
+Msum <- dat %>%
+  group_by(pathway) %>%
+  summarize(mean = mean(d),
+            log.mean = mean(log(d)))
+Msum
+```
+
+    ## # A tibble: 3 x 3
+    ##   pathway                         mean log.mean
+    ##   <fct>                          <dbl>    <dbl>
+    ## 1 abund biomass to ecosystem fxn  1.65   -0.455
+    ## 2 morbidity to ecosystem fxn      8.22   -0.682
+    ## 3 unknown to ecosystem fxn        1.76   -0.429
+
+function to compute back-transformed values. source: Baskerville 1972
+=====================================================================
+
+``` r
+log_back_transform = function(stable){
+  stable$log_var_d = stable$Std.Error^2
+  names(stable)[names(stable)=="Std.Error"]= "log.se"
+  # stable$log_var_d_2 = stable$log_var_d^2
+  stable$`Effect size` = exp(stable$Value+0.5*stable$log_var_d^2)
+  stable$`Effect size` = round(stable$`Effect size`, digits = 3)
+  stable$var_d = exp(2*stable$log_var_d^2 + 2*stable$Value) - 
+    exp(stable$log_var_d^2 + 2*stable$Value)
+  stable$se = sqrt(stable$var_d)
+  stable$CI.upper = stable$`Effect size`+1.96*stable$se
+  stable$CI.lower = stable$`Effect size`-1.96*stable$se
+  return(stable)
+}
+save(log_back_transform, file = "log_back_transform.Rdata")
 ```
 
 use nlme and log of absolute value of d
@@ -3057,6 +4205,7 @@ use nlme and log of absolute value of d
 
 ``` r
 #using package lmerTest to get p values
+load("log_back_transform.Rdata")
 load("M.Rdata")
 M = subset(M, !is.na(d))
 M.tmp = subset(M, is.na(d.sampling.variance))
@@ -3067,48 +4216,56 @@ dat$d = dat$d+0.000001
 # dat$log.d = log(abs(dat$d))
 
 #construct model so that it goes through origin; use lmeControl so that exact weights are used
-res.lme.pathway <- lme(log(abs(d)) ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+res.lme.pathway <- lme(log(d) ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+anova(res.lme.pathway)
+```
+
+    ##         numDF denDF  F-value p-value
+    ## pathway     3   125 10.47043  <.0001
+
+``` r
 summary(res.lme.pathway)
 ```
 
     ## Linear mixed-effects model fit by REML
     ##  Data: dat 
     ##           AIC         BIC      logLik
-    ##   16752556445 16752556457 -8376278219
+    ##   16757739213 16757739225 -8378869602
     ## 
     ## Random effects:
     ##  Formula: ~1 | paper.ID
     ##         (Intercept) Residual
-    ## StdDev:    1.753234        1
+    ## StdDev:    1.939863        1
     ## 
     ## Variance function:
     ##  Structure: fixed weights
     ##  Formula: ~d.sampling.variance 
-    ## Fixed effects: log(abs(d)) ~ pathway - 1 
+    ## Fixed effects: log(d) ~ pathway - 1 
     ##                                           Value Std.Error  DF   t-value
-    ## pathwayabund biomass to ecosystem fxn -1.090736 0.3128055 109 -3.486946
-    ## pathwaymorbidity to ecosystem fxn     -1.657607 0.3229337 109 -5.132964
-    ## pathwayunknown to ecosystem fxn       -1.117282 0.3363819 109 -3.321468
+    ## pathwayabund biomass to ecosystem fxn -1.122551 0.3288191 125 -3.413885
+    ## pathwaymorbidity to ecosystem fxn     -1.663671 0.3371146 125 -4.935031
+    ## pathwayunknown to ecosystem fxn       -1.139228 0.3518686 125 -3.237652
     ##                                       p-value
-    ## pathwayabund biomass to ecosystem fxn  0.0007
+    ## pathwayabund biomass to ecosystem fxn  0.0009
     ## pathwaymorbidity to ecosystem fxn      0.0000
-    ## pathwayunknown to ecosystem fxn        0.0012
+    ## pathwayunknown to ecosystem fxn        0.0015
     ##  Correlation: 
     ##                                   ptbtef pthwymtef
-    ## pathwaymorbidity to ecosystem fxn 0.895           
-    ## pathwayunknown to ecosystem fxn   0.864  0.849    
+    ## pathwaymorbidity to ecosystem fxn 0.904           
+    ## pathwayunknown to ecosystem fxn   0.875  0.861    
     ## 
     ## Standardized Within-Group Residuals:
     ##           Min            Q1           Med            Q3           Max 
-    ## -3.318342e+03 -5.013362e-02  3.382617e-01  1.862919e+00  1.188927e+05 
+    ## -3.318702e+03 -4.252573e-02  3.195680e-01  1.478232e+00  1.188927e+05 
     ## 
-    ## Number of Observations: 152
-    ## Number of Groups: 41
+    ## Number of Observations: 171
+    ## Number of Groups: 44
 
 ``` r
 save(res.lme.pathway, file = "res.lme.pathway.Rdata")
 
 res.lme.pathway.r= residuals(res.lme.pathway)
+
 shapiro.test(res.lme.pathway.r)
 ```
 
@@ -3116,125 +4273,922 @@ shapiro.test(res.lme.pathway.r)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  res.lme.pathway.r
-    ## W = 0.71811, p-value = 9.77e-16
+    ## W = 0.74427, p-value = 6.122e-16
 
 ``` r
-#check which pathways are different from each other, if any
-summary(glht(res.lme.pathway, linfct=contrMat(c(
-  "abund biomass to ecosystem fxn"=1,
-  "morbidity to ecosystem fxn"=1,
-  "unknown to ecosystem fxn"=1), type="Tukey")), test=adjusted("none"))
+qqnorm(res.lme.pathway.r)
 ```
 
-    ## 
-    ##   Simultaneous Tests for General Linear Hypotheses
-    ## 
-    ## Multiple Comparisons of Means: Tukey Contrasts
-    ## 
-    ## 
-    ## Fit: lme.formula(fixed = log(abs(d)) ~ pathway - 1, data = dat, random = ~1 | 
-    ##     paper.ID, weights = varFixed(~d.sampling.variance), control = lmeControl(sigma = 1))
-    ## 
-    ## Linear Hypotheses:
-    ##                                                                  Estimate
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0 -0.56687
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0   -0.02655
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0        0.54033
-    ##                                                                  Std. Error
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0    0.14578
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0      0.17104
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0          0.18166
-    ##                                                                  z value
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0  -3.889
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0    -0.155
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0         2.974
-    ##                                                                  Pr(>|z|)
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0 0.000101
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0   0.876663
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0       0.002937
-    ##                                                                     
-    ## morbidity to ecosystem fxn - abund biomass to ecosystem fxn == 0 ***
-    ## unknown to ecosystem fxn - abund biomass to ecosystem fxn == 0      
-    ## unknown to ecosystem fxn - morbidity to ecosystem fxn == 0       ** 
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## (Adjusted p values reported -- none method)
+![](PATE_files/figure-markdown_github/nlme_log-1.png)
 
 ``` r
+##########pairwise comparison
+marginal = emmeans(res.lme.pathway, 
+                   ~ pathway)
+
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "pathway", ".group")]
+###summary table
+s = summary(res.lme.pathway)
+# anova(res.lme.pathway)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "pathway")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+```
+
+    ## [1] "abund biomass to ecosystem fxn" "morbidity to ecosystem fxn"    
+    ## [3] "unknown to ecosystem fxn"
+
+``` r
+stable$pathway = rnout
+
+#add variance as field
+  #standard error = square root of the estimated error variance
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("pathway", 
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+
+
+
+stable.m = merge(cld.table, stable, by = "pathway")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("pathway", 
+                   "DF",
+                   "t",
+                   "P",
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                  ".group",
+                  "order"
+)]
+
+star = rep("", dim(stable.m)[1])
+inds.P.05 = which(stable.m$P<0.05)
+star[inds.P.05]= "*"
+inds.P.01 = which(stable.m$P<0.01)
+star[inds.P.01]= "**"
+inds.P.001 = which(stable.m$P<0.001)
+star[inds.P.01]= "***"
+stable.m$star = star
+
+stable.m$text = paste0("", stable.m$star, "", stable.m$.group)
+
+
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="pathway"]= "Pathway"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Pathway=as.character(stable.m$Pathway)
+stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
+stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
+stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.pathway.csv", row.names = FALSE)
+
+offset.h = -1  # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Pathway, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+   geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
+                 hjust="left", vjust=offset.v)) +
+   xlim(0,0.6)+
+  ylab("Pathway")
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+  # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+  # scale_x_continuous(breaks = pretty_breaks())
+plot
+```
+
+![](PATE_files/figure-markdown_github/nlme_log-2.png)
+
+``` r
+##########
+```
+
+### measure model w/ log of d
+
+nlme
+====
+
+``` r
+load("M.Rdata")
+load("log_back_transform.Rdata")
+M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+
 #measure
-res.lme.measure <- lme(log(abs(d)) ~ measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+names(dat)[names(dat)=="measure.general"]="measure"
+res.lme.measure <- lme(log(abs(d)) ~ measure-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
 summary(res.lme.measure)
 ```
 
     ## Linear mixed-effects model fit by REML
     ##  Data: dat 
     ##           AIC         BIC      logLik
-    ##   16752556415 16752556427 -8376278204
+    ##   16757739208 16757739220 -8378869600
     ## 
     ## Random effects:
     ##  Formula: ~1 | paper.ID
     ##         (Intercept) Residual
-    ## StdDev:    1.810601        1
+    ## StdDev:    1.902283        1
     ## 
     ## Variance function:
     ##  Structure: fixed weights
     ##  Formula: ~d.sampling.variance 
-    ## Fixed effects: log(abs(d)) ~ measure.general - 1 
-    ##                                          Value Std.Error  DF   t-value
-    ## measure.generalbiogeochemical cycles -1.692852 0.3338767 109 -5.070290
-    ## measure.generalprimary production    -1.945397 0.3351013 109 -5.805401
-    ## measure.generalsecondary production   2.204321 0.6572368 109  3.353922
-    ##                                      p-value
-    ## measure.generalbiogeochemical cycles  0.0000
-    ## measure.generalprimary production     0.0000
-    ## measure.generalsecondary production   0.0011
+    ## Fixed effects: log(abs(d)) ~ measure - 1 
+    ##                                  Value Std.Error  DF   t-value p-value
+    ## measurebiogeochemical cycles -1.401301 0.3205152 125 -4.372027  0.0000
+    ## measureprimary production    -1.007475 0.3237531 125 -3.111862  0.0023
+    ## measuresecondary production  -1.609530 0.3361274 125 -4.788453  0.0000
     ##  Correlation: 
-    ##                                     msr.gc msr.gnrlpp
-    ## measure.generalprimary production   0.946            
-    ## measure.generalsecondary production 0.210  0.222     
+    ##                             msrbgc msrprp
+    ## measureprimary production   0.958        
+    ## measuresecondary production 0.922  0.899 
     ## 
     ## Standardized Within-Group Residuals:
     ##           Min            Q1           Med            Q3           Max 
-    ## -3.318342e+03 -7.257333e-02  3.637071e-01  1.799729e+00  1.188927e+05 
+    ## -3.318702e+03 -2.010394e-02  3.199136e-01  1.633622e+00  1.188927e+05 
     ## 
-    ## Number of Observations: 152
-    ## Number of Groups: 41
+    ## Number of Observations: 171
+    ## Number of Groups: 44
 
 ``` r
-summary(glht(res.lme.measure, linfct=contrMat(c(
-  "biogeochemical cycles"=1,
-  "primary production"=1,
-  "secondary production"=1), type="Tukey")), test=adjusted("none"))
+anova(res.lme.measure)
+```
+
+    ##         numDF denDF F-value p-value
+    ## measure     3   125 13.2148  <.0001
+
+``` r
+summary(res.lme.measure)
+```
+
+    ## Linear mixed-effects model fit by REML
+    ##  Data: dat 
+    ##           AIC         BIC      logLik
+    ##   16757739208 16757739220 -8378869600
+    ## 
+    ## Random effects:
+    ##  Formula: ~1 | paper.ID
+    ##         (Intercept) Residual
+    ## StdDev:    1.902283        1
+    ## 
+    ## Variance function:
+    ##  Structure: fixed weights
+    ##  Formula: ~d.sampling.variance 
+    ## Fixed effects: log(abs(d)) ~ measure - 1 
+    ##                                  Value Std.Error  DF   t-value p-value
+    ## measurebiogeochemical cycles -1.401301 0.3205152 125 -4.372027  0.0000
+    ## measureprimary production    -1.007475 0.3237531 125 -3.111862  0.0023
+    ## measuresecondary production  -1.609530 0.3361274 125 -4.788453  0.0000
+    ##  Correlation: 
+    ##                             msrbgc msrprp
+    ## measureprimary production   0.958        
+    ## measuresecondary production 0.922  0.899 
+    ## 
+    ## Standardized Within-Group Residuals:
+    ##           Min            Q1           Med            Q3           Max 
+    ## -3.318702e+03 -2.010394e-02  3.199136e-01  1.633622e+00  1.188927e+05 
+    ## 
+    ## Number of Observations: 171
+    ## Number of Groups: 44
+
+``` r
+save(res.lme.measure, file = "res.lme.measure.Rdata")
+
+res.lme.measure.r= residuals(res.lme.measure)
+
+shapiro.test(res.lme.measure.r)
 ```
 
     ## 
-    ##   Simultaneous Tests for General Linear Hypotheses
+    ##  Shapiro-Wilk normality test
     ## 
-    ## Multiple Comparisons of Means: Tukey Contrasts
-    ## 
-    ## 
-    ## Fit: lme.formula(fixed = log(abs(d)) ~ measure.general - 1, data = dat, 
-    ##     random = ~1 | paper.ID, weights = varFixed(~d.sampling.variance), 
-    ##     control = lmeControl(sigma = 1))
-    ## 
-    ## Linear Hypotheses:
-    ##                                                   Estimate Std. Error
-    ## primary production - biogeochemical cycles == 0    -0.2525     0.1104
-    ## secondary production - biogeochemical cycles == 0   3.8972     0.6719
-    ## secondary production - primary production == 0      4.1497     0.6683
-    ##                                                   z value Pr(>|z|)    
-    ## primary production - biogeochemical cycles == 0    -2.288   0.0221 *  
-    ## secondary production - biogeochemical cycles == 0   5.801 6.61e-09 ***
-    ## secondary production - primary production == 0      6.210 5.31e-10 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## (Adjusted p values reported -- none method)
+    ## data:  res.lme.measure.r
+    ## W = 0.73603, p-value = 3.393e-16
+
+``` r
+qqnorm(res.lme.measure.r)
+```
+
+![](PATE_files/figure-markdown_github/unnamed-chunk-21-1.png)
+
+``` r
+##########pairwise comparison
+marginal = emmeans(res.lme.measure, 
+                   ~ measure)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "measure", ".group")]
+###summary table
+s = summary(res.lme.measure)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "measure")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+```
+
+    ## [1] "biogeochemical cycles" "primary production"    "secondary production"
+
+``` r
+stable$measure = rnout
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+
+
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("measure", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "measure")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("measure", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="measure"]= "Measure"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Measure=as.character(stable.m$Measure)
+# stable.m$Measure[stable.m$Measure=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Measure[stable.m$Measure=="morbidity to ecosystem fxn"]="morbidity"
+# stable.m$Measure[stable.m$Measure=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.measure.csv", row.names = FALSE)
+
+offset.h = -6 # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Measure, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$`Pairwise comparison`,
+                hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("Measure")+
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+scale_x_continuous(breaks = pretty_breaks())
+plot
+```
+
+![](PATE_files/figure-markdown_github/unnamed-chunk-21-2.png)
 
 ``` r
 #this doesn't work because of singularity
 # res.lme.pathway.measure <- lme(log.d ~ pathway*measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
 # summary(res.lme.pathway.measure)
 ```
+
+terrestrial vs. aquatic
+-----------------------
+
+nlme
+====
+
+``` r
+load("M.Rdata")
+load("log_back_transform.Rdata")
+M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+
+#measure
+# names(dat)[names(dat)=="measure.general"]="measure"
+res.lme.measure <- lme(log(abs(d)) ~ System-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.measure)
+```
+
+    ## Linear mixed-effects model fit by REML
+    ##  Data: dat 
+    ##           AIC         BIC      logLik
+    ##   16757739246 16757739255 -8378869620
+    ## 
+    ## Random effects:
+    ##  Formula: ~1 | paper.ID
+    ##         (Intercept) Residual
+    ## StdDev:    1.893599        1
+    ## 
+    ## Variance function:
+    ##  Structure: fixed weights
+    ##  Formula: ~d.sampling.variance 
+    ## Fixed effects: log(abs(d)) ~ System - 1 
+    ##                       Value Std.Error DF   t-value p-value
+    ## Systemaquatic     -1.494322 0.4697733 42 -3.180943  0.0028
+    ## Systemterrestrial -1.138665 0.4283881 42 -2.658023  0.0111
+    ##  Correlation: 
+    ##                   Systmq
+    ## Systemterrestrial 0     
+    ## 
+    ## Standardized Within-Group Residuals:
+    ##           Min            Q1           Med            Q3           Max 
+    ## -3.318702e+03 -4.300681e-02  3.174436e-01  1.547566e+00  1.188927e+05 
+    ## 
+    ## Number of Observations: 171
+    ## Number of Groups: 44
+
+``` r
+anova(res.lme.measure)
+```
+
+    ##        numDF denDF  F-value p-value
+    ## System     2    42 8.591741   7e-04
+
+``` r
+summary(res.lme.measure)
+```
+
+    ## Linear mixed-effects model fit by REML
+    ##  Data: dat 
+    ##           AIC         BIC      logLik
+    ##   16757739246 16757739255 -8378869620
+    ## 
+    ## Random effects:
+    ##  Formula: ~1 | paper.ID
+    ##         (Intercept) Residual
+    ## StdDev:    1.893599        1
+    ## 
+    ## Variance function:
+    ##  Structure: fixed weights
+    ##  Formula: ~d.sampling.variance 
+    ## Fixed effects: log(abs(d)) ~ System - 1 
+    ##                       Value Std.Error DF   t-value p-value
+    ## Systemaquatic     -1.494322 0.4697733 42 -3.180943  0.0028
+    ## Systemterrestrial -1.138665 0.4283881 42 -2.658023  0.0111
+    ##  Correlation: 
+    ##                   Systmq
+    ## Systemterrestrial 0     
+    ## 
+    ## Standardized Within-Group Residuals:
+    ##           Min            Q1           Med            Q3           Max 
+    ## -3.318702e+03 -4.300681e-02  3.174436e-01  1.547566e+00  1.188927e+05 
+    ## 
+    ## Number of Observations: 171
+    ## Number of Groups: 44
+
+``` r
+# save(res.lme.measure, file = "res.lme.measure.Rdata")
+
+# res.lme.measure.r= residuals(res.lme.measure)
+# 
+# shapiro.test(res.lme.measure.r)
+# qqnorm(res.lme.measure.r)
+
+##########pairwise comparison
+marginal = emmeans(res.lme.measure, 
+                   ~ System)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "System", ".group")]
+###summary table
+s = summary(res.lme.measure)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "System")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+```
+
+    ## [1] "aquatic"     "terrestrial"
+
+``` r
+stable$System = rnout
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("System", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "System")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("System", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="measure"]= "System"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$System=as.character(stable.m$System)
+# stable.m$Measure[stable.m$Measure=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Measure[stable.m$Measure=="morbidity to ecosystem fxn"]="morbidity"
+# stable.m$Measure[stable.m$Measure=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.measure.csv", row.names = FALSE)
+
+offset.h = -6 # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(System, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$`Pairwise comparison`,
+                hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("System")+
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+scale_x_continuous(breaks = pretty_breaks())
+plot
+```
+
+![](PATE_files/figure-markdown_github/unnamed-chunk-22-1.png)
+
+``` r
+#this doesn't work because of singularity
+# res.lme.pathway.measure <- lme(log.d ~ pathway*measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+# summary(res.lme.pathway.measure)
+```
+
+Pathogen kingdom -- graph without CIs
+-------------------------------------
+
+nlme
+====
+
+``` r
+load("M.Rdata")
+load("log_back_transform.Rdata")
+M = subset(M, !is.na(d))
+# M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+dat$Pathogen.kingdom =factor(dat$Pathogen.kingdom)
+#measure
+res.lme.measure <- lme(log(abs(d)) ~ Pathogen.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.measure)
+```
+
+    ## Linear mixed-effects model fit by REML
+    ##  Data: dat 
+    ##           AIC         BIC      logLik
+    ##   16757739144 16757739166 -8378869565
+    ## 
+    ## Random effects:
+    ##  Formula: ~1 | paper.ID
+    ##         (Intercept) Residual
+    ## StdDev:    1.929872        1
+    ## 
+    ## Variance function:
+    ##  Structure: fixed weights
+    ##  Formula: ~d.sampling.variance 
+    ## Fixed effects: log(abs(d)) ~ Pathogen.kingdom - 1 
+    ##                                Value Std.Error DF   t-value p-value
+    ## Pathogen.kingdomanimal    -2.0947874 0.6118053 38 -3.423945  0.0015
+    ## Pathogen.kingdombacteria  -0.2240865 2.1081521 38 -0.106295  0.9159
+    ## Pathogen.kingdomeukaryote  0.8610414 1.9446010 38  0.442786  0.6604
+    ## Pathogen.kingdomfungus    -1.1327347 0.4968580 38 -2.279796  0.0283
+    ## Pathogen.kingdomplant     -0.6038066 0.7638024 38 -0.790527  0.4341
+    ## Pathogen.kingdomvirus     -2.0210375 1.1823748 38 -1.709304  0.0956
+    ##  Correlation: 
+    ##                           Pthgn.kngdmn Pthgn.kngdmb Pthgn.kngdmk
+    ## Pathogen.kingdombacteria  0                                     
+    ## Pathogen.kingdomeukaryote 0            0                        
+    ## Pathogen.kingdomfungus    0            0            0           
+    ## Pathogen.kingdomplant     0            0            0           
+    ## Pathogen.kingdomvirus     0            0            0           
+    ##                           Pthgn.kngdmf Pthgn.kngdmp
+    ## Pathogen.kingdombacteria                           
+    ## Pathogen.kingdomeukaryote                          
+    ## Pathogen.kingdomfungus                             
+    ## Pathogen.kingdomplant     0                        
+    ## Pathogen.kingdomvirus     0            0           
+    ## 
+    ## Standardized Within-Group Residuals:
+    ##           Min            Q1           Med            Q3           Max 
+    ## -3.318702e+03 -4.702272e-02  3.180648e-01  1.540435e+00  1.188927e+05 
+    ## 
+    ## Number of Observations: 171
+    ## Number of Groups: 44
+
+``` r
+anova(res.lme.measure)
+```
+
+    ##                  numDF denDF  F-value p-value
+    ## Pathogen.kingdom     6    38 3.445812  0.0081
+
+``` r
+summary(res.lme.measure)
+```
+
+    ## Linear mixed-effects model fit by REML
+    ##  Data: dat 
+    ##           AIC         BIC      logLik
+    ##   16757739144 16757739166 -8378869565
+    ## 
+    ## Random effects:
+    ##  Formula: ~1 | paper.ID
+    ##         (Intercept) Residual
+    ## StdDev:    1.929872        1
+    ## 
+    ## Variance function:
+    ##  Structure: fixed weights
+    ##  Formula: ~d.sampling.variance 
+    ## Fixed effects: log(abs(d)) ~ Pathogen.kingdom - 1 
+    ##                                Value Std.Error DF   t-value p-value
+    ## Pathogen.kingdomanimal    -2.0947874 0.6118053 38 -3.423945  0.0015
+    ## Pathogen.kingdombacteria  -0.2240865 2.1081521 38 -0.106295  0.9159
+    ## Pathogen.kingdomeukaryote  0.8610414 1.9446010 38  0.442786  0.6604
+    ## Pathogen.kingdomfungus    -1.1327347 0.4968580 38 -2.279796  0.0283
+    ## Pathogen.kingdomplant     -0.6038066 0.7638024 38 -0.790527  0.4341
+    ## Pathogen.kingdomvirus     -2.0210375 1.1823748 38 -1.709304  0.0956
+    ##  Correlation: 
+    ##                           Pthgn.kngdmn Pthgn.kngdmb Pthgn.kngdmk
+    ## Pathogen.kingdombacteria  0                                     
+    ## Pathogen.kingdomeukaryote 0            0                        
+    ## Pathogen.kingdomfungus    0            0            0           
+    ## Pathogen.kingdomplant     0            0            0           
+    ## Pathogen.kingdomvirus     0            0            0           
+    ##                           Pthgn.kngdmf Pthgn.kngdmp
+    ## Pathogen.kingdombacteria                           
+    ## Pathogen.kingdomeukaryote                          
+    ## Pathogen.kingdomfungus                             
+    ## Pathogen.kingdomplant     0                        
+    ## Pathogen.kingdomvirus     0            0           
+    ## 
+    ## Standardized Within-Group Residuals:
+    ##           Min            Q1           Med            Q3           Max 
+    ## -3.318702e+03 -4.702272e-02  3.180648e-01  1.540435e+00  1.188927e+05 
+    ## 
+    ## Number of Observations: 171
+    ## Number of Groups: 44
+
+``` r
+# save(res.lme.measure, file = "res.lme.measure.Rdata")
+
+# res.lme.measure.r= residuals(res.lme.measure)
+# 
+# shapiro.test(res.lme.measure.r)
+# qqnorm(res.lme.measure.r)
+
+##########pairwise comparison
+marginal = emmeans(res.lme.measure, 
+                   ~ Pathogen.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Pathogen.kingdom", ".group")]
+###summary table
+s = summary(res.lme.measure)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Pathogen.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+```
+
+    ## [1] "animal"    "bacteria"  "eukaryote" "fungus"    "plant"     "virus"
+
+``` r
+stable$Pathogen.kingdom = rnout
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Pathogen.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "Pathogen.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Pathogen.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="measure"]= "Pathogen.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Pathogen.kingdom=as.character(stable.m$Pathogen.kingdom)
+# stable.m$Measure[stable.m$Measure=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Measure[stable.m$Measure=="morbidity to ecosystem fxn"]="morbidity"
+# stable.m$Measure[stable.m$Measure=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.measure.csv", row.names = FALSE)
+
+offset.h = -6 # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Pathogen.kingdom, order), x = `Effect size`))+
+  # geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+  #                height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$`Pairwise comparison`,
+                hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("Pathogen kingdom")+
+  scale_x_log10()
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+  # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+  # scale_x_continuous(breaks = pretty_breaks())
+plot
+```
+
+![](PATE_files/figure-markdown_github/unnamed-chunk-23-1.png)
+
+Host kingdom -- graph without CIs
+---------------------------------
+
+nlme
+====
+
+``` r
+load("M.Rdata")
+load("log_back_transform.Rdata")
+M = subset(M, !is.na(d))
+# M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+dat$Host.kingdom =factor(dat$Host.kingdom)
+#measure
+res.lme.measure <- lme(log(abs(d)) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.measure)
+```
+
+    ## Linear mixed-effects model fit by REML
+    ##  Data: dat 
+    ##           AIC         BIC      logLik
+    ##   16757739166 16757739184 -8378869577
+    ## 
+    ## Random effects:
+    ##  Formula: ~1 | paper.ID
+    ##         (Intercept) Residual
+    ## StdDev:    1.861482        1
+    ## 
+    ## Variance function:
+    ##  Structure: fixed weights
+    ##  Formula: ~d.sampling.variance 
+    ## Fixed effects: log(abs(d)) ~ Host.kingdom - 1 
+    ##                             Value Std.Error DF   t-value p-value
+    ## Host.kingdomanimal     -1.9652570  0.493686 39 -3.980784  0.0003
+    ## Host.kingdombacteria   -2.7625595  1.473762 39 -1.874495  0.0684
+    ## Host.kingdomeukaryote   0.5807746  1.666434 39  0.348514  0.7293
+    ## Host.kingdomplant      -0.8086506  0.432251 39 -1.870787  0.0689
+    ## Host.kingdomprokaryote  1.0906384  6.994823 39  0.155921  0.8769
+    ##  Correlation: 
+    ##                        Hst.kngdmn Hst.kngdmb Hst.kngdmk Hst.kngdmpl
+    ## Host.kingdombacteria   0                                           
+    ## Host.kingdomeukaryote  0          0                                
+    ## Host.kingdomplant      0          0          0                     
+    ## Host.kingdomprokaryote 0          0          0          0          
+    ## 
+    ## Standardized Within-Group Residuals:
+    ##           Min            Q1           Med            Q3           Max 
+    ## -3.318702e+03 -5.713741e-02  3.190347e-01  1.543266e+00  1.188927e+05 
+    ## 
+    ## Number of Observations: 171
+    ## Number of Groups: 44
+
+``` r
+anova(res.lme.measure)
+```
+
+    ##              numDF denDF  F-value p-value
+    ## Host.kingdom     5    39 4.601198  0.0021
+
+``` r
+summary(res.lme.measure)
+```
+
+    ## Linear mixed-effects model fit by REML
+    ##  Data: dat 
+    ##           AIC         BIC      logLik
+    ##   16757739166 16757739184 -8378869577
+    ## 
+    ## Random effects:
+    ##  Formula: ~1 | paper.ID
+    ##         (Intercept) Residual
+    ## StdDev:    1.861482        1
+    ## 
+    ## Variance function:
+    ##  Structure: fixed weights
+    ##  Formula: ~d.sampling.variance 
+    ## Fixed effects: log(abs(d)) ~ Host.kingdom - 1 
+    ##                             Value Std.Error DF   t-value p-value
+    ## Host.kingdomanimal     -1.9652570  0.493686 39 -3.980784  0.0003
+    ## Host.kingdombacteria   -2.7625595  1.473762 39 -1.874495  0.0684
+    ## Host.kingdomeukaryote   0.5807746  1.666434 39  0.348514  0.7293
+    ## Host.kingdomplant      -0.8086506  0.432251 39 -1.870787  0.0689
+    ## Host.kingdomprokaryote  1.0906384  6.994823 39  0.155921  0.8769
+    ##  Correlation: 
+    ##                        Hst.kngdmn Hst.kngdmb Hst.kngdmk Hst.kngdmpl
+    ## Host.kingdombacteria   0                                           
+    ## Host.kingdomeukaryote  0          0                                
+    ## Host.kingdomplant      0          0          0                     
+    ## Host.kingdomprokaryote 0          0          0          0          
+    ## 
+    ## Standardized Within-Group Residuals:
+    ##           Min            Q1           Med            Q3           Max 
+    ## -3.318702e+03 -5.713741e-02  3.190347e-01  1.543266e+00  1.188927e+05 
+    ## 
+    ## Number of Observations: 171
+    ## Number of Groups: 44
+
+``` r
+# save(res.lme.measure, file = "res.lme.measure.Rdata")
+
+# res.lme.measure.r= residuals(res.lme.measure)
+# 
+# shapiro.test(res.lme.measure.r)
+# qqnorm(res.lme.measure.r)
+
+##########pairwise comparison
+marginal = emmeans(res.lme.measure, 
+                   ~ Host.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Host.kingdom", ".group")]
+###summary table
+s = summary(res.lme.measure)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Host.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+```
+
+    ## [1] "animal"     "bacteria"   "eukaryote"  "plant"      "prokaryote"
+
+``` r
+stable$Host.kingdom = rnout
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Host.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "Host.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Host.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="measure"]= "Host.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Host.kingdom=as.character(stable.m$Host.kingdom)
+# stable.m$Measure[stable.m$Measure=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Measure[stable.m$Measure=="morbidity to ecosystem fxn"]="morbidity"
+# stable.m$Measure[stable.m$Measure=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.measure.csv", row.names = FALSE)
+
+offset.h = -6 # offsets for mean letters
+offset.v = 0.5
+# xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Host.kingdom, order), x = `Effect size`))+
+  # geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+  #                height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$`Pairwise comparison`,
+                hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("Host kingdom")+
+  scale_x_log10()
+# scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+# scale_x_continuous(breaks = pretty_breaks())
+plot
+```
+
+![](PATE_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 use robustlmm::rlmer and log of absolute value of d -- doesn't work with weights, so not appropriate for meta-analysis
 ----------------------------------------------------------------------------------------------------------------------
@@ -3285,19 +5239,19 @@ summary(m.g.int)
     ## 
     ## Deviance Residuals: 
     ##    Min      1Q  Median      3Q     Max  
-    ## -49455     307    1375    2043  229432  
+    ## -32741     361    1314    2041  230932  
     ## 
     ## Coefficients:
     ##             Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)   312640    1240959   0.252    0.801
+    ## (Intercept)   316148     205338    1.54    0.126
     ## 
-    ## (Dispersion parameter for Gamma family taken to be 3.601921e+13)
+    ## (Dispersion parameter for Gamma family taken to be 964419846897)
     ## 
-    ##     Null deviance: 1.4038e+11  on 151  degrees of freedom
-    ## Residual deviance: 1.4038e+11  on 151  degrees of freedom
-    ## AIC: -5.7861e+13
+    ##     Null deviance: 8.9361e+10  on 170  degrees of freedom
+    ## Residual deviance: 8.9361e+10  on 170  degrees of freedom
+    ## AIC: -5.8902e+13
     ## 
-    ## Number of Fisher Scoring iterations: 17
+    ## Number of Fisher Scoring iterations: 12
 
 ``` r
 #pathway
@@ -3314,25 +5268,25 @@ summary(m.g.fixed)
     ## 
     ## Deviance Residuals: 
     ##    Min      1Q  Median      3Q     Max  
-    ## -32114       0       1     123  230989  
+    ## -32173       1      17     372  230983  
     ## 
     ## Coefficients:
     ##                                        Estimate Std. Error t value
-    ## pathwayabund biomass to ecosystem fxn 1.930e+00  2.203e+03   0.001
-    ## pathwaymorbidity to ecosystem fxn     3.163e+05  9.617e+04   3.289
-    ## pathwayunknown to ecosystem fxn       9.948e-01  3.932e+04   0.000
+    ## pathwayabund biomass to ecosystem fxn 6.242e+01  8.118e+04   0.001
+    ## pathwaymorbidity to ecosystem fxn     3.163e+05  1.097e+05   2.884
+    ## pathwayunknown to ecosystem fxn       9.948e-01  4.484e+04   0.000
     ##                                       Pr(>|t|)   
-    ## pathwayabund biomass to ecosystem fxn  0.99930   
-    ## pathwaymorbidity to ecosystem fxn      0.00126 **
+    ## pathwayabund biomass to ecosystem fxn  0.99939   
+    ## pathwaymorbidity to ecosystem fxn      0.00444 **
     ## pathwayunknown to ecosystem fxn        0.99998   
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## (Dispersion parameter for Gamma family taken to be 211357055836)
+    ## (Dispersion parameter for Gamma family taken to be 274802092815)
     ## 
-    ##     Null deviance:        NaN  on 152  degrees of freedom
-    ## Residual deviance: 8.7452e+10  on 149  degrees of freedom
-    ## AIC: -5.8952e+13
+    ##     Null deviance:        NaN  on 171  degrees of freedom
+    ## Residual deviance: 8.7631e+10  on 168  degrees of freedom
+    ## AIC: -5.8947e+13
     ## 
     ## Number of Fisher Scoring iterations: 10
 
@@ -3341,9 +5295,9 @@ model.sel(m.g.int, m.g.fixed)
 ```
 
     ## Model selection table 
-    ##           (Intrc) pthwy df       logLik          AICc      delta weight
-    ## m.g.fixed             +  4 2.947588e+13 -5.895175e+13 0.0000e+00      1
-    ## m.g.int    312600        2 2.893048e+13 -5.786095e+13 1.0908e+12      0
+    ##           (Intrc) pthwy df       logLik          AICc       delta weight
+    ## m.g.fixed             +  4 2.947352e+13 -5.894704e+13           0      1
+    ## m.g.int    316100        2 2.945104e+13 -5.890208e+13 44960352552      0
     ## Models ranked by AICc(x)
 
 ``` r
@@ -3362,21 +5316,27 @@ summary(m.g.measure)
     ## 
     ## Deviance Residuals: 
     ##    Min      1Q  Median      3Q     Max  
-    ## -49256      15     254    1704  229450  
+    ## -32519      15     273    1529  230952  
     ## 
     ## Coefficients:
     ##                                       Estimate Std. Error t value Pr(>|t|)
-    ## measure.generalbiogeochemical cycles 3.127e+05  1.246e+06   0.251    0.802
-    ## measure.generalprimary production    3.740e+01  1.238e+06   0.000    1.000
-    ## measure.generalsecondary production  2.311e+01  3.072e+06   0.000    1.000
+    ## measure.generalbiogeochemical cycles 316195.13  179051.34   1.766   0.0792
+    ## measure.generalprimary production        36.35  170982.36   0.000   0.9998
+    ## measure.generalsecondary production      14.00  252947.07   0.000   1.0000
+    ##                                       
+    ## measure.generalbiogeochemical cycles .
+    ## measure.generalprimary production     
+    ## measure.generalsecondary production   
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## (Dispersion parameter for Gamma family taken to be 3.628126e+13)
+    ## (Dispersion parameter for Gamma family taken to be 733081642430)
     ## 
-    ##     Null deviance:        NaN  on 152  degrees of freedom
-    ## Residual deviance: 1.3977e+11  on 149  degrees of freedom
-    ## AIC: -5.7871e+13
+    ##     Null deviance:        NaN  on 171  degrees of freedom
+    ## Residual deviance: 8.8683e+10  on 168  degrees of freedom
+    ## AIC: -5.892e+13
     ## 
-    ## Number of Fisher Scoring iterations: 17
+    ## Number of Fisher Scoring iterations: 12
 
 bootstrap with our data
 -----------------------
@@ -3534,9 +5494,9 @@ m.sum
 ```
 
     ##                                category p_05         mean
-    ## 1 pathwayabund biomass to ecosystem fxn   40 9.880525e+00
-    ## 2     pathwaymorbidity to ecosystem fxn   65 1.897697e+05
-    ## 3       pathwayunknown to ecosystem fxn    5 1.024801e+00
+    ## 1 pathwayabund biomass to ecosystem fxn   30 5.573471e+01
+    ## 2     pathwaymorbidity to ecosystem fxn   70 2.150648e+05
+    ## 3       pathwayunknown to ecosystem fxn    1 1.071217e+00
 
 ### bootstrap with fake data (gamma-distributed random numbers), preserving number of observations per study
 
@@ -3692,11 +5652,14 @@ m.sum
     ## # A tibble: 3 x 3
     ##   category                               p_05  mean
     ##   <chr>                                 <int> <dbl>
-    ## 1 pathwayabund biomass to ecosystem fxn    40 0.609
-    ## 2 pathwaymorbidity to ecosystem fxn        88 0.867
-    ## 3 pathwayunknown to ecosystem fxn          18 0.466
+    ## 1 pathwayabund biomass to ecosystem fxn    37 0.724
+    ## 2 pathwaymorbidity to ecosystem fxn        97 0.408
+    ## 3 pathwayunknown to ecosystem fxn          29 0.438
 
 ### try using Gamma distribution with lme4. note that lme4 does not have option of specifying that weights are exact
+
+as of 2011 gamma didn't work in lme4: <https://stat.ethz.ch/pipermail/r-sig-mixed-models/2011q1/015422.html>
+============================================================================================================
 
 ``` r
 load("M.Rdata")
@@ -3821,10 +5784,9 @@ dat<-rWEI(100, mu=10, sigma=2)
 gamlss(dat~1, family=WEI)
 ```
 
-    ## GAMLSS-RS iteration 1: Global Deviance = 581.5424 
-    ## GAMLSS-RS iteration 2: Global Deviance = 581.3775 
-    ## GAMLSS-RS iteration 3: Global Deviance = 581.376 
-    ## GAMLSS-RS iteration 4: Global Deviance = 581.376
+    ## GAMLSS-RS iteration 1: Global Deviance = 585.4741 
+    ## GAMLSS-RS iteration 2: Global Deviance = 585.4477 
+    ## GAMLSS-RS iteration 3: Global Deviance = 585.4475
 
     ## 
     ## Family:  c("WEI", "Weibull") 
@@ -3834,15 +5796,15 @@ gamlss(dat~1, family=WEI)
     ## 
     ## Mu Coefficients:
     ## (Intercept)  
-    ##        2.34  
+    ##       2.317  
     ## Sigma Coefficients:
     ## (Intercept)  
-    ##      0.7201  
+    ##      0.6856  
     ## 
     ##  Degrees of Freedom for the fit: 2 Residual Deg. of Freedom   98 
-    ## Global Deviance:     581.376 
-    ##             AIC:     585.376 
-    ##             SBC:     590.586
+    ## Global Deviance:     585.447 
+    ##             AIC:     589.447 
+    ##             SBC:     594.658
 
 ``` r
 #this throws an error "response variable out of range"
@@ -4126,28 +6088,28 @@ PH = PH[!duplicated(PH), ]
 dim(PH)
 ```
 
-    ## [1] 130   4
+    ## [1] 131   4
 
 ``` r
 PH = subset(PH, Pathogen.kingdom !="multiple")
 dim(PH)[1]
 ```
 
-    ## [1] 128
+    ## [1] 129
 
 ``` r
 PH = subset(PH, Host.kingdom !="multiple")
 dim(PH)
 ```
 
-    ## [1] 127   4
+    ## [1] 128   4
 
 ``` r
 PH = subset(PH, Pathogen.kingdom !="not reported")
 dim(PH)[1]
 ```
 
-    ## [1] 124
+    ## [1] 125
 
 ``` r
 #make table of counts of each combination of two variables
@@ -4164,7 +6126,7 @@ tbl
 
     ##             Pathogen.kingdom
     ## Host.kingdom animal bacteria eukaryote fungus plant virus
-    ##   animal         27        4         2     13     0     0
+    ##   animal         28        4         2     13     0     0
     ##   bacteria        0        0         0      0     0     5
     ##   eukaryote       0        0         1      3     0     2
     ##   plant           9        1         0     27    25     2
@@ -4196,7 +6158,7 @@ dev.off()#need to do this to finish the plot
     ##  replicates)
     ## 
     ## data:  tbl
-    ## X-squared = 140.85, df = NA, p-value = 0.0004998
+    ## X-squared = 142.7, df = NA, p-value = 0.0004998
 
 ``` r
 #(X <- chisq.test(tbl))
@@ -4215,7 +6177,7 @@ print("percent of hosts")
 100*tbl.host$frac
 ```
 
-    ## [1] 37.1  4.0  4.8 51.6  2.4
+    ## [1] 37.6  4.0  4.8 51.2  2.4
 
 ``` r
 tbl.p = table(PH$Pathogen.kingdom)
@@ -4231,12 +6193,12 @@ tbl.p
 ```
 
     ##        Var1 Freq  frac
-    ## 1    animal   36 0.290
+    ## 1    animal   37 0.296
     ## 2  bacteria    5 0.040
     ## 3 eukaryote    3 0.024
-    ## 4    fungus   43 0.347
-    ## 5     plant   25 0.202
-    ## 6     virus   12 0.097
+    ## 4    fungus   43 0.344
+    ## 5     plant   25 0.200
+    ## 6     virus   12 0.096
 
 ``` r
 #balloonplot(t(tbl))
@@ -4259,7 +6221,7 @@ plot<- ggplot(data = PH, mapping = aes(x = Pathogen.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ``` r
 ggsave(plot = plot, filename = paste0("Figure.A.1", 
@@ -4344,11 +6306,11 @@ tbl.p
 ```
 
     ##       Var1 Freq  frac
-    ## 1   animal   24 0.393
-    ## 2 bacteria    4 0.066
-    ## 3     euk.    3 0.049
-    ## 4   fungus   18 0.295
-    ## 5    virus   12 0.197
+    ## 1   animal   25 0.403
+    ## 2 bacteria    4 0.065
+    ## 3     euk.    3 0.048
+    ## 4   fungus   18 0.290
+    ## 5    virus   12 0.194
 
 ``` r
 require(cowplot)
@@ -4506,12 +6468,12 @@ tbl
 ```
 
     ##     Var1 Freq  frac
-    ## 1 animal   13 0.361
-    ## 2  bact.    2 0.056
-    ## 3   euk.    2 0.056
-    ## 4  fung.   11 0.306
-    ## 5  plant    5 0.139
-    ## 6  virus    3 0.083
+    ## 1 animal   14 0.378
+    ## 2  bact.    2 0.054
+    ## 3   euk.    2 0.054
+    ## 4  fung.   11 0.297
+    ## 5  plant    5 0.135
+    ## 6  virus    3 0.081
 
 ``` r
 #morbid -- host 
@@ -4523,10 +6485,10 @@ tbl
 ```
 
     ##        Var1 Freq  frac
-    ## 1    animal   16 0.444
-    ## 2  bacteria    1 0.028
-    ## 3 eukaryote    3 0.083
-    ## 4     plant   16 0.444
+    ## 1    animal   17 0.459
+    ## 2  bacteria    1 0.027
+    ## 3 eukaryote    3 0.081
+    ## 4     plant   16 0.432
 
 ``` r
 #PP -- pathogen 
@@ -4568,7 +6530,7 @@ plot<- ggplot(data = df, mapping = aes(x = Pathogen.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ``` r
 save_plot( "Figure.A.3.pathogen.pathway.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
@@ -4584,7 +6546,7 @@ plot<- ggplot(data = df, mapping = aes(x = Host.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-31-2.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-34-2.png)
 
 ``` r
 save_plot( "Figure.A.4.host.pathway.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
@@ -4688,10 +6650,10 @@ tbl
 ```
 
     ##     Var1 Freq  frac
-    ## 1 animal   19 0.500
-    ## 2  bact.    3 0.079
-    ## 3 fungus   12 0.316
-    ## 4  plant    3 0.079
+    ## 1 animal   20 0.513
+    ## 2  bact.    3 0.077
+    ## 3 fungus   12 0.308
+    ## 4  plant    3 0.077
     ## 5  virus    1 0.026
 
 ``` r
@@ -4737,8 +6699,8 @@ tbl
 ```
 
     ##     Var1 Freq  frac
-    ## 1 animal   30 0.789
-    ## 2  plant    8 0.211
+    ## 1 animal   31 0.795
+    ## 2  plant    8 0.205
 
 ``` r
 df_check = subset(M, Host.kingdom == "plant" & measure.general == "secondary production")
@@ -4758,7 +6720,7 @@ df_check$measure.specific....outcome.variable
     ## [11] transfer of isotopically labeled biomass (13C)                                  
     ## [12] transfer of isotopically labeled biomass (13N)                                  
     ## [13] sporulation rate (conidia mg-1 d-1)                                             
-    ## 1118 Levels:  ... zooplankton
+    ## 1122 Levels:  ... zooplankton
 
 ``` r
 #biogeoche -- host 
@@ -4786,7 +6748,7 @@ plot<- ggplot(data = df, mapping = aes(x = Pathogen.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ``` r
 save_plot( "Figure.A.5.pathogen.measure.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
@@ -4801,7 +6763,7 @@ plot<- ggplot(data = df, mapping = aes(x = Host.kingdom))+
 plot
 ```
 
-![](PATE_files/figure-markdown_github/unnamed-chunk-32-2.png)
+![](PATE_files/figure-markdown_github/unnamed-chunk-35-2.png)
 
 ``` r
 save_plot( "Figure.A.6.pathogen.measure.jpg", plot, nrow = 1, dpi = 600, base_height = 6)

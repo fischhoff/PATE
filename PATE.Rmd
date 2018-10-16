@@ -4,7 +4,8 @@ author: "Ilya"
 date: "8/17/2018"
 output: github_document
 ---
-
+#To do: check whether to use variance or transform to log?
+###To do: change to absolute value of d throughout, prior to averaging across records within a variable-- DONE
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -19,7 +20,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp", "lme4", "lmerTest", "nlme", "gamlss.dist", "gamlss", "dplyr", "tibble", "robustlmm")
+neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp", "lme4", "lmerTest", "nlme", "gamlss.dist", "gamlss", "dplyr", "tibble", "robustlmm", "emmeans", "scales", "MuMIn", "MASS")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -312,7 +313,7 @@ one.per.var = function(M.y){
           if (dim(v.tmp)[1]>1){
             #if more than one record for a variable, find pooled estimate across all records     
             print("pooled estimate")
-            m = rma(yi = v.tmp$d,
+            m = rma(yi = abs(v.tmp$d),
                        vi = v.tmp$d.sampling.variance,
                        measure = "MN")  
             #print(m)
@@ -341,6 +342,7 @@ save(one.per.var, file = "one.per.var.Rdata")
 
 ```
 
+
 ###write function to get standard error based on p value and effect size
 ```{r}
 se_from_p <- function(effect, p){
@@ -364,12 +366,12 @@ save(se.calc.from.r.n,file="se.calc.from.r.n.Rdata")
 ###function to calculate standardized mean difference (d) from regression coefficient (log odds ratio) and SE of coefficient
 ```{r}
 or_to_d <- function(df){
-  log.odds.ratio = df$regression.coefficient
-  log.odds.se = df$regression.coefficient.SE
-  log.odds.variance = log.odds.se^2
+  r = df$regression.coefficient
+  r.se = df$regression.coefficient.SE
+  r.variance = r.se^2
   #https://www.meta-analysis.com/downloads/Meta-analysis%20Converting%20among%20effect%20sizes.pdf
-  df$d = log.odds.ratio*(sqrt(3)/pi)
-  df$d.sampling.variance=log.odds.variance*(3/pi^2)
+  df$d = r*(sqrt(3)/pi)
+  df$d.sampling.variance=r.variance*(3/pi^2)
   return(df)
 }
 save(or_to_d, file = "or_to_d.Rdata")
@@ -400,7 +402,7 @@ save(r_to_d, file = "r_to_d.Rdata")
 load("M.Rdata")
 
 M$P = as.character(M$P)
-P = as.numeric(M$P)
+P = as.numeric(M$P)#this should convert some to NA
 inds.na = which(is.na(P))
 is.not.empty = which(M$P !="")
 inds.na = intersect(inds.na, is.not.empty)
@@ -418,13 +420,15 @@ save(M, file = "M.Rdata")
 
 
 ###mean_variance
+###include pre- vs. post (e.g. Colon-Gaud_1263 2010)
 ###exclude data points with standard deviation equal to zero
 ###includes parasite/pathogen removal (as control)
 ###includes less vs. more virulent form of disease
 ###includes only "control" treatments (invaded vs. uninvaded), in cases where host abundance was manipulated at local scale on top of effect of pathogen on host abundance (Connelly et al._2093)
-
 ```{r mean_variance}
 load("M.Rdata")
+M$d.absolute = 0#is d absolute value
+
 load("one.per.var.Rdata")
 
 # sd_adjust = 0.0001
@@ -476,10 +480,6 @@ for (a in 1:dim(M.y)[1]){
   m2i = M.y$infected.mean[a]
   sd1i = M.y$control_sd[a]
   sd2i = M.y$infected_sd[a]
-  # if (sd1i == 0 | sd2i == 0){
-  #   sd1i = sd1i+sd_adjust
-  #   sd2i = sd2i+sd_adjust
-  # }
   n1i = M.y$sample.size.control[a]
   n2i = M.y$sample.size.infected[a]
   m = escalc(measure = "SMD",
@@ -496,6 +496,9 @@ for (a in 1:dim(M.y)[1]){
   M.y$d.sampling.variance[a] = m$vi[1]
 }
 
+#change d to absolute value of d
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
 ustudy = unique(M.y$paper.ID)
 #for each study
 out = one.per.var(M.y)
@@ -528,7 +531,7 @@ save(M, file = "M.Rdata")
 load("M.Rdata")
 load("se_from_p.Rdata")
 load("one.per.var.Rdata")
-#d = t*sqrt((nt+nc)/nt*ntc)#formula from p. 200 of Koricheva et al. 2013
+#d = t*sqrt((nt+nc)/nt*nc)#formula from p. 200 of Koricheva et al. 2013
 M.y = subset(M, data.to.use == "t and sample sizes and p")
 M.n = subset(M, data.to.use != "t and sample sizes and p")
 M.y$P=as.character(M.y$P)
@@ -553,6 +556,10 @@ if (dimM==unique_vars){
     }
   }
 }
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 M.y.2 = one.per.var(M.y)
 M.y.2$d
 M.y.2$d.sampling.variance
@@ -562,9 +569,8 @@ M = rbind(M.n, M.y.2)
 save(M, file = "M.Rdata")
 ```
 
-
 ###R2 and direction and sample size
-```{r}
+```{r r2}
 load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
 load("r_to_d.Rdata")#function to get d, var.d from r
 load("one.per.var.Rdata")
@@ -585,6 +591,10 @@ for (c in 1:lev){
       M.y$correlation.coefficient.se[c] = se.calc.from.r.n(ri, ni)#get SE
       M.y[c,]=r_to_d(M.y[c,])
 }
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 print("d")
 M.y$d
 print("variance")
@@ -598,10 +608,8 @@ save(M, file = "M.Rdata")
 
 ```
 
-
 ###correlation coefficient and sample size and P
-###use P to calculate SE
-```{r}
+```{r correlation_coefficient}
 load("se.calc.from.r.n.Rdata")#fxn to get SE from r and n
 #load("se_from_p.Rdata")#fxn to get SE from P
 load("r_to_d.Rdata")#function to get d, var.d from r
@@ -624,6 +632,9 @@ for (c in 1:lev){
       M.y[c,]=r_to_d(M.y[c,])
 }
 
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
 
 #for each study
 out = one.per.var(M.y)
@@ -637,9 +648,8 @@ save(M, file = "M.Rdata")
 ```
 
 ###effect and raw predictor
-###perform linear model between predictor and effect. model coefficient and standard errors are log odds and log standard error for the effect of interest. convert these values to d, variance in d  
 #note: have not attempted to fix so that negative effects of PP have negative effect size
-```{r}
+```{r effect_raw_predictor}
 load("M.Rdata")
 M.y = subset(M, data.to.use == "effect and raw predictor")
 M.y$predictor.value=as.character(M.y$predictor.value)
@@ -674,12 +684,20 @@ one.per.var.regression = function(M.y){
           v.tmp = subset(m.tmp, measure.specific....outcome.variable == uvar[e])
             #if more than one record for a variable, find pooled estimate across all records
             #print(v.tmp$d)
-            m = lm(infected.mean ~ predictor.value,
+            m = stats::lm(infected.mean ~ predictor.value,
                        data = v.tmp,
                    na.action = na.omit)
             #print(m)
-            log.odds.ratio = m$coefficients[1]
-            log.odds.se = coef(summary(m))[2,"Std. Error"]
+            ##############
+            # s = data.frame(m$coefficients)
+            # row.ind = which(row.names(s)=="predictor.value")
+            # col.ind.estimate = which(names(s)=="Estimate")
+            # col.ind.se = which(names(s)=="Std..Error")
+            # log.odds.ratio = s[row.ind,col.ind.estimate]
+            # log.odds.se = s[row.ind,col.ind.se]
+            ind = which(row.names(coef(summary(m)))=="predictor.value")
+            log.odds.ratio = coef(summary(m))[ind,"Estimate"]
+            log.odds.se = coef(summary(m))[ind,"Std. Error"]
             log.odds.variance = log.odds.se^2
             #https://www.meta-analysis.com/downloads/Meta-analysis%20Converting%20among%20effect%20sizes.pdf
             v.tmp$d = log.odds.ratio*(sqrt(3)/pi)
@@ -705,8 +723,14 @@ one.per.var.regression = function(M.y){
   return(v.tmp)
 }#end function
 
-out = one.per.var.regression(M.y)
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
+out = one.per.var.regression(M.y)#this function is in the same chunk
 out
+print(out$d)
+print(out$d.sampling.variance)
 M = rbind(M.n, out)
 save(M, file = "M.Rdata")
 ```
@@ -714,21 +738,10 @@ save(M, file = "M.Rdata")
 ##one-way ANOVA: calculate effect sizes from F and sample size
 ##determined we cannot infer positive or negative in effect size if study does not report direction or means, for non-significant results, because F value is always positive.  
 #where sample size not reported, assumed equal sample size for infected vs. control, used df = n-k (k = number of groups = 2) to determine sample size total. 
-```{r}
+```{r one_way_ANOVA}
 load("M.Rdata")
-M$d.absolute = 0#is d absolute value
 M.y = subset(M, data.to.use == "one-way ANVOA F _ degrees freedom")
 M.n = subset(M, data.to.use != "one-way ANVOA F _ degrees freedom")
-# P = as.numeric(M.y$P)
-# inds.na = which(is.na(P))
-# M.y$P = as.character(M.y$P)
-# a = 1
-# for (a in 1:length(inds.na)){
-#   M.y$P[inds.na[a]]=strsplit(M.y$P[inds.na[a]],"<")[[1]][2]
-#   print(M.y$P[inds.na[a]])
-# }
-# M.y$P = as.numeric(M.y$P)
-#infer sample size based on df for records without sample size
 na.inds = which(is.na(M.y$sample.size.control))
 M.y$sample.size.control[na.inds]=(M.y$df[na.inds]+2)/2
 M.y$sample.size.infected[na.inds]=(M.y$df[na.inds]+2)/2
@@ -773,6 +786,10 @@ for (c in 1:lev){
       M.y$d.absolute[c]=1
 
 }
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 print("d")
 print("variance")
 M.y$d.sampling.variance
@@ -787,7 +804,7 @@ save(M, file = "M.Rdata")
 
 ###regression coefficient and SE
 ##coefficient is equal to log odds ratio. convert log odds ratio to d
-```{r}
+```{r regression coefficient and SE}
 load("M.Rdata")
 load("or_to_d.Rdata")
 load("one.per.var.Rdata")
@@ -797,6 +814,11 @@ M.n = subset(M, data.to.use != "regression coefficient and SE")
 for (a in 1:dim(M.y)[1]){
   M.y[a,]=or_to_d(M.y[a,])
 }
+
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 M.y = one.per.var(M.y)#in case there are duplicates
 print(M.y$d)
 print(M.y$d.sampling.variance)
@@ -814,8 +836,6 @@ load("one.per.var.Rdata")
 M.y = subset(M, data.to.use == "Mann-Whitney U and sample sizes")
 M.n = subset(M, data.to.use != "Mann-Whitney U and sample sizes")
 
-#C.tmp$z = -0.862 + sqrt(0.743 - 2.404*log(C.tmp$p.value))
-#SE.case = C.tmp$case_events/C.tmp$z
 for (a in 1:dim(M.y)[1]){
   M.y$sample.size.total[a] = M.y$sample.size.control[a]
   M.y$correlation.coefficient[a] = abs((1 - 2*M.y$U[a])/(M.y$sample.size.control[a]*M.y$sample.size.infected[a]))
@@ -825,6 +845,11 @@ for (a in 1:dim(M.y)[1]){
 
   M.y[a,]=r_to_d(M.y[a,])
 }
+
+#change d to absolute value
+M.y$d = abs(M.y$d)
+M.y$d.absolute=1
+
 M.y = one.per.var(M.y)#in case there are duplicates
 print(M.y$d)
 print(M.y$d.sampling.variance)
@@ -863,10 +888,13 @@ xtabs(~paper.ID, data = M)
 ```
 
 ##meta-analysis
-#check whether absoluate value of d is normally distributed, and whether log of abs(d) is normal
+###check whether absoluate value of d is normally distributed, and whether log of abs(d) is normal
 ```{r distributions}
 load("M.Rdata")
 M = subset(M, pathway != "PP to ecosystem fxn")
+M = subset(M ,!is.na(d))
+tmp = subset(M, paper.ID == "82")
+tmp$d
 dat = M
 dat$d = dat$d+0.000001#add small number so that can take log and it be definite
 #check normality of d
@@ -879,21 +907,172 @@ shapiro.test(log(abs(dat$d)))
 
 qqnorm(log(abs(dat$d)))
 
+
+```
+
+###compare_pathways: compare mean values of d by pathway, using one measure per paper.ID
+```{r compare_pathways}
+load("M.Rdata")
+M = subset(M, pathway != "PP to ecosystem fxn")
+M = subset(M ,!is.na(d))
+tmp = subset(M, paper.ID == "82")
+tmp$d
+dat = M
+#get mean by paper, pathway
+dat1 <- dat %>%
+  group_by(paper.ID,pathway) %>%
+  summarize(mean_d_per_study = mean(d))
+
+#now get mean by pathway
+dat2 <- dat1 %>%
+  group_by(pathway) %>%
+  summarize(mean_d = mean(mean_d_per_study))
+dat2
 #make histogram for absolute value of d
-ggplot(dat, aes(abs(d), fill = pathway) )+
+ggplot(dat1, aes(mean_d_per_study, fill = pathway) )+
   geom_histogram()
 
-#make histogram for log of absolute value of d
-ggplot(dat, aes(log(abs(d)), fill = pathway)) +
-  geom_histogram()
+
+```
+
+###one.per.study.by.var: write function to get pooled value by variable within each study
+```{r one.per.study.by.var}
+
+one.per.study.by.var = function(M.y, var_name){
+  ustudy = unique(M.y$paper.ID)
+  out = NULL
+  var_col_ind = which(names(M.y) == var_name)
+  for (b in 1:length(ustudy)){
+  print("b")
+  print(b)
+  print(ustudy[b])
+  s.tmp = subset(M.y, paper.ID == ustudy[b])
+
+  uvar = unique(s.tmp[,var_col_ind])
+#for each variable in study
+    for (c in 1:length(uvar)){
+      inds = which(s.tmp[,var_col_ind]==uvar[c])
+      v.tmp = s.tmp[inds,]
+      print("c")
+      print(c)
+          if (dim(v.tmp)[1]>1){
+            #if more than one record for a variable, find pooled estimate across all records     
+            print("pooled estimate")
+            m = rma(yi = abs(v.tmp$d),
+                       vi = v.tmp$d.sampling.variance,
+                       measure = "MN")  
+            #print(m)
+            v.tmp$d = m$yi[1]
+            v.tmp$d.sampling.variance = m$vi[1]
+            v.tmp = v.tmp[1,]
+            
+            out = rbind(out, v.tmp)
+          }#end if statement
+          else {#else use value already gotten
+            out = rbind(out, v.tmp)
+          }#end else
+   }#end pathway
+  }#end study
+  return(out)
+}#end function
+
+save(one.per.study.by.var, file = "one.per.study.by.var.Rdata")
+
 
 ```
 
 
-##use nlme and absolute value of d
-##http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
+
+####get pooled value by paper.ID and pathway
+```{r pooled_pathway}
+load("one.per.study.by.var.Rdata")
+load("M.Rdata")
+M = subset(M, !is.na(d))
+
+M1 = one.per.study.by.var(M, "pathway")
+#for each pathway
+#for each paper.ID
+dim(M1)
+table(M1$pathway)
+save(M1, file = "M1.Rdata")
+shapiro.test(M1$d)
+# shapiro.test(log(M1$d))
+M1$d = M1$d+0.000001#add small number to all so that log can be used (though not using log in this chunk)
+shapiro.test(log(M1$d))
+
+M1 = subset(M1, pathway != "PP to ecosystem fxn")
+M1_sum <- M1 %>%
+  group_by(pathway) %>%
+  summarize(mean_d = mean(d),
+            mean_variance = mean(d.sampling.variance),
+            median_variance = median(d.sampling.variance))
+M1_sum
+#compare relation between d and d.sampling variance for abundance and morbidity; look pretty similar
+M1 = subset(M1, pathway != "unknown to ecosystem fxn")
+plot <- ggplot(data = M1, aes(x = d, y = d.sampling.variance, color = pathway))+
+  geom_point()+
+  geom_smooth()+
+  scale_y_log10()+
+  scale_x_log10()
+plot
+```
+
+###fixed effects model -- compare fits of normal, log-normal, and
+###gamma distributed intercept-only models 
+```{r fixed_pathway}
+load("M1.Rdata")
+M = M1
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001#add small number to all so that log can be used (though not using log in this chunk)
+
+# res.lm.pathway.log <- glm(d ~ pathway-1, weights = 1/d.sampling.variance, data=dat, family = gaussian ( link="log"))
+# summary(res.lm.pathway.log)
+# # 
+# res.lm.pathway <- lm(d ~ pathway-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.pathway)
+
+# m.g <- glm(d ~pathway-1, weights = 1/d.sampling.variance, data=dat,
+#                  family = Gamma
+#                  )
+# summary(m.g)
+
+# model.sel(res.lm.pathway.log, res.lm.pathway, m.g)
+
+#m.g.predict = predict(m.g, newdata = dat) 
+
+#seems more generally useful to find out which intercept-only model is best, rather than which pathway model
+m.normal <- lm(d ~ 1, weights = 1/d.sampling.variance, data=dat)
+summary(m.normal)
+
+#keep d as is, make link log 
+#http://pj.freefaculty.org/guides/stat/Regression-GLM/Gamma/GammaGLM-01.pdf
+m.log.normal <- glm(d ~ 1, weights = 1/d.sampling.variance, data=dat, 
+                    family = gaussian ( link="log"))
+summary(m.log.normal)
+
+#use log of d
+m.log <- lm(log(d) ~ 1, weights = 1/d.sampling.variance, data=dat)
+#note link equals identity
+m.g <- glm(d ~1, weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma(link = identity)
+                 )
+
+#use model.sel to compare fits of models
+model.sel(m.log.normal, m.g, m.normal, m.log)
+
+#this below (using rma from function metafor) doesn't work because of error, which could only be resolved by reclassifying variables or excluding high/low variance points:
+# Error in rma(log(abs(d)) ~ pathway - 1, vi = d.sampling.variance, data = dat) : 
+#   Ratio of largest to smallest sampling variance extremely large. Cannot obtain stable results.
+# m.pathway = rma(log(abs(d)) ~ pathway -1,
+#              vi = d.sampling.variance,
+#              data = dat)
+
+```
+
+###mixed effects model -- compare fits of normal vs. log-normal vs. log using AICc
+##comment out
 ```{r}
-#using package lmerTest to get p values
 load("M.Rdata")
 M = subset(M, !is.na(d))
 M.tmp = subset(M, is.na(d.sampling.variance))
@@ -901,10 +1080,197 @@ M = subset(M, pathway != "PP to ecosystem fxn")
 dat = M
 dat$d = dat$d+0.000001
 
-# dat$log.d = log(abs(dat$d))
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+m.log <- lme(log(d) ~ 1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+m.normal <- lme(d ~ 1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# m.log.normal.glmm <- glmmPQL(d ~ 1, ~1 | paper.ID, family = gaussian(link = "log"),
+#     weights = 1/d.sampling.variance, data = dat, verbose = FALSE)
+
+m.log.normal.lmer <- glmer(d ~ 1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat, family =gaussian(link = "log") )
+
+# model.sel(m.log,m.normal, m.log.normal.glmm, m.log.normal.lmer )
+# model.sel(m.log,m.normal, m.log.normal.lmer )
+model.sel(m.normal, m.log)
+
+m.normal.p <- lme(d ~ pathway - 1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+marginal = emmeans(m.normal.p,
+                   ~ pathway)
+marginal
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "pathway", ".group")]
+
+
+##measure
+m.normal.m <- lme(d ~ measure.general - 1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+summary(m.normal.m)
+marginal = emmeans(m.normal.m,
+                   ~ measure.general)
+marginal
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "measure.general", ".group")]
+
+
+
+
+
+# m.log.normal.lmer.p <- glmer(d ~ pathway - 1 + (1 | paper.ID), weights = 1/d.sampling.variance, data=dat, family =gaussian(link = "log") )
+# summary(m.log.normal.lmer.p)
+# 
+# marginal = emmeans(m.log.normal.lmer.p, 
+#                    ~ pathway)
+# marginal
+# #"Results are given on the inverse (not the response) scale."
+# #https://cran.r-project.org/web/packages/emmeans/vignettes/FAQs.html
+# #Why do I get Inf for the degrees of freedom?
+# # This is simply the way that emmeans labels asymptotic results (that is, estimates that are tested against the standard normal distribution – z tests – rather than the t distribution). Note that obtaining quantiles or probabilities from the t distribution with infinite degrees of freedom is the same as obtaining the corresponding values from the standard normal. For example:
+# 
+
+```
+
+
+
+###use gamma distributed model (best fitting according to AICc comparison)
+#predict d based on pathway
+#comment out
+```{r}
+load("M1.Rdata")
+M = M1
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001#add small number to all so that log can be used (though not using log in this 
+
+m.g <- glm(d ~pathway-1, weights = 1/d.sampling.variance, data=dat,
+                 family = Gamma(link = identity)
+                 )
+summary(m.g)
+
+##We include the weights to make it a meta-analysis. Without incorporating the weights, morbidity is highest. 
+m.g.noweights <- glm(d ~pathway-1, data=dat,
+                 family = Gamma(link = identity)
+                 )
+summary(m.g.noweights)
+
+#back to m.g
+marginal = emmeans(m.g, 
+                   ~ pathway)
+marginal
+#"Results are given on the inverse (not the response) scale."
+#https://cran.r-project.org/web/packages/emmeans/vignettes/FAQs.html
+#Why do I get Inf for the degrees of freedom?
+# This is simply the way that emmeans labels asymptotic results (that is, estimates that are tested against the standard normal distribution – z tests – rather than the t distribution). Note that obtaining quantiles or probabilities from the t distribution with infinite degrees of freedom is the same as obtaining the corresponding values from the standard normal. For example:
+
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "pathway", ".group")]
+###summary table
+s = summary(m.g)
+# anova(res.lme.pathway)
+
+stable = s$coefficients
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "pathway")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$pathway = rnout
+
+#add variance as field
+  #standard error = square root of the estimated error variance
+
+# stable$CI.upper = stable$Estimate+1.96*stable$Std..Error
+# stable$CI.lower = stable$Estimate-1.96*stable$Std..Error
+# stable$`Effect size` = stable$Estimate
+# stable$t = round(stable$t.value, digits = 3)
+# stable$P = round(stable$Pr...value.., digits =4)
+# stable = stable[,c("pathway", 
+#                   "Effect size",
+#                   "CI.upper",
+#                   "CI.lower",
+#                    "DF",
+#                    "t",
+#                    "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+# 
+# stable.m = merge(cld.table, stable, by = "pathway")
+# stable.m = stable.m[order(stable.m$order),]
+# stable.m = stable.m[,c("pathway", 
+#                    "DF",
+#                    "t",
+#                    "P",
+#                   "Effect size",
+#                   "CI.upper",
+#                   "CI.lower",
+#                   ".group",
+#                   "order"
+# )]
+# names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+# names(stable.m)[names(stable.m)=="pathway"]= "Pathway"
+# names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+# names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+# stable.m$Pathway=as.character(stable.m$Pathway)
+# stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
+# stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+# 
+# namesok = setdiff(names(stable.m), "order")
+# stable.table = stable.m[,namesok]
+# write.csv(stable.table, "Table.pathway.csv", row.names = FALSE)
+# 
+# offset.h = -8.1  # offsets for mean letters
+# offset.v = 0.5
+# xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+# #sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+# plot <- ggplot(data = stable.m, aes(y = reorder(Pathway, order), x = `Effect size`))+
+#   geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+#                  height = 0)+
+#   geom_point()+
+#    geom_text(aes(label=stable.m$`Pairwise comparison`,
+#                  hjust=offset.h, vjust=offset.v)) +
+#   # xlim(0,7)+
+#   ylab("Pathway")+
+#   # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+#   # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+#   scale_x_continuous(breaks = pretty_breaks())
+# plot
+
+
+
+```
+
+
+
+
+##use nlme and absolute value of d
+##http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
+#comment out 20181016
+```{r}
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001#add small number to all so that log can be used (though not using log in this chunk)
 
 #construct model so that it goes through origin; use lmeControl so that exact weights are used
 res.lme.pathway <- lme(abs(d) ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# res.lme.pathway <- lme(d ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), data=dat)
+
 summary(res.lme.pathway)
 save(res.lme.pathway, file = "res.lme.pathway.Rdata")
 
@@ -916,15 +1282,98 @@ summary(glht(res.lme.pathway, linfct=contrMat(c(
   "morbidity to ecosystem fxn"=1,
   "unknown to ecosystem fxn"=1), type="Tukey")), test=adjusted("none"))
 
+marginal = emmeans(res.lme.pathway, 
+                   ~ pathway)
+
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "pathway", ".group")]
+###summary table
+s = summary(res.lme.pathway)
+# anova(res.lme.pathway)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "pathway")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$pathway = rnout
+
+#add variance as field
+  #standard error = square root of the estimated error variance
+
+stable$CI.upper = stable$Value+1.96*stable$Std.Error
+stable$CI.lower = stable$Value-1.96*stable$Std.Error
+stable$`Effect size` = stable$Value
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("pathway", 
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "pathway")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("pathway", 
+                   "DF",
+                   "t",
+                   "P",
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                  ".group",
+                  "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="pathway"]= "Pathway"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Pathway=as.character(stable.m$Pathway)
+stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
+stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
+stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.pathway.csv", row.names = FALSE)
+
+offset.h = -8.1  # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Pathway, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+   geom_text(aes(label=stable.m$`Pairwise comparison`,
+                 hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("Pathway")+
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+  # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+  scale_x_continuous(breaks = pretty_breaks())
+plot
+
+
+
+
 #measure
-res.lme.measure <- lme(abs(d) ~ measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
-summary(res.lme.measure)
 
-summary(glht(res.lme.measure, linfct=contrMat(c(
-  "biogeochemical cycles"=1,
-  "primary production"=1,
-  "secondary production"=1), type="Tukey")), test=adjusted("none"))
-
+# summary(glht(res.lme.measure, linfct=contrMat(c(
+#   "biogeochemical cycles"=1,
+#   "primary production"=1,
+#   "secondary production"=1), type="Tukey")), test=adjusted("none"))
 
 #this doesn't work because of singularity
 # res.lme.pathway.measure <- lme(log.d ~ pathway*measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
@@ -932,11 +1381,53 @@ summary(glht(res.lme.measure, linfct=contrMat(c(
 
 ```
 
+#make graph of absolute value of effect size, to compare to results of regression
+#comment out 20181016
+```{r}
+load("log_back_transform.Rdata")
+load("M.Rdata")
+M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+
+plot <- ggplot(data = dat, aes(x = d, fill = pathway))+
+  geom_histogram()+
+  scale_x_log10()
+plot
+
+Msum <- dat %>%
+  group_by(pathway) %>%
+  summarize(mean = mean(d),
+            log.mean = mean(log(d)))
+Msum
+
+```
+
+#function to compute back-transformed values. source: Baskerville 1972
+```{r}
+log_back_transform = function(stable){
+  stable$log_var_d = stable$Std.Error^2
+  names(stable)[names(stable)=="Std.Error"]= "log.se"
+  # stable$log_var_d_2 = stable$log_var_d^2
+  stable$`Effect size` = exp(stable$Value+0.5*stable$log_var_d^2)
+  stable$`Effect size` = round(stable$`Effect size`, digits = 3)
+  stable$var_d = exp(2*stable$log_var_d^2 + 2*stable$Value) - 
+    exp(stable$log_var_d^2 + 2*stable$Value)
+  stable$se = sqrt(stable$var_d)
+  stable$CI.upper = stable$`Effect size`+1.96*stable$se
+  stable$CI.lower = stable$`Effect size`-1.96*stable$se
+  return(stable)
+}
+save(log_back_transform, file = "log_back_transform.Rdata")
+```
 
 ##use nlme and log of absolute value of d
 ##http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
 ```{r nlme_log}
 #using package lmerTest to get p values
+load("log_back_transform.Rdata")
 load("M.Rdata")
 M = subset(M, !is.na(d))
 M.tmp = subset(M, is.na(d.sampling.variance))
@@ -947,33 +1438,550 @@ dat$d = dat$d+0.000001
 # dat$log.d = log(abs(dat$d))
 
 #construct model so that it goes through origin; use lmeControl so that exact weights are used
-res.lme.pathway <- lme(log(abs(d)) ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+res.lme.pathway <- lme(log(d) ~ pathway-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+anova(res.lme.pathway)
 summary(res.lme.pathway)
 save(res.lme.pathway, file = "res.lme.pathway.Rdata")
 
 res.lme.pathway.r= residuals(res.lme.pathway)
+
 shapiro.test(res.lme.pathway.r)
-#check which pathways are different from each other, if any
-summary(glht(res.lme.pathway, linfct=contrMat(c(
-  "abund biomass to ecosystem fxn"=1,
-  "morbidity to ecosystem fxn"=1,
-  "unknown to ecosystem fxn"=1), type="Tukey")), test=adjusted("none"))
+qqnorm(res.lme.pathway.r)
+
+##########pairwise comparison
+marginal = emmeans(res.lme.pathway, 
+                   ~ pathway)
+
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "pathway", ".group")]
+###summary table
+s = summary(res.lme.pathway)
+# anova(res.lme.pathway)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "pathway")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$pathway = rnout
+
+#add variance as field
+  #standard error = square root of the estimated error variance
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("pathway", 
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+
+
+
+stable.m = merge(cld.table, stable, by = "pathway")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("pathway", 
+                   "DF",
+                   "t",
+                   "P",
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                  ".group",
+                  "order"
+)]
+
+star = rep("", dim(stable.m)[1])
+inds.P.05 = which(stable.m$P<0.05)
+star[inds.P.05]= "*"
+inds.P.01 = which(stable.m$P<0.01)
+star[inds.P.01]= "**"
+inds.P.001 = which(stable.m$P<0.001)
+star[inds.P.01]= "***"
+stable.m$star = star
+
+stable.m$text = paste0("", stable.m$star, "", stable.m$.group)
+
+
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="pathway"]= "Pathway"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Pathway=as.character(stable.m$Pathway)
+stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
+stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
+stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.pathway.csv", row.names = FALSE)
+
+offset.h = -1  # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Pathway, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+   geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
+                 hjust="left", vjust=offset.v)) +
+   xlim(0,0.6)+
+  ylab("Pathway")
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+  # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+  # scale_x_continuous(breaks = pretty_breaks())
+plot
+
+
+##########
+```
+
+###measure model w/ log of d
+#nlme
+```{r}
+load("M.Rdata")
+load("log_back_transform.Rdata")
+M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
 
 #measure
-res.lme.measure <- lme(log(abs(d)) ~ measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+names(dat)[names(dat)=="measure.general"]="measure"
+res.lme.measure <- lme(log(abs(d)) ~ measure-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
 summary(res.lme.measure)
 
-summary(glht(res.lme.measure, linfct=contrMat(c(
-  "biogeochemical cycles"=1,
-  "primary production"=1,
-  "secondary production"=1), type="Tukey")), test=adjusted("none"))
+anova(res.lme.measure)
+summary(res.lme.measure)
+save(res.lme.measure, file = "res.lme.measure.Rdata")
 
+res.lme.measure.r= residuals(res.lme.measure)
+
+shapiro.test(res.lme.measure.r)
+qqnorm(res.lme.measure.r)
+
+##########pairwise comparison
+marginal = emmeans(res.lme.measure, 
+                   ~ measure)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "measure", ".group")]
+###summary table
+s = summary(res.lme.measure)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "measure")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$measure = rnout
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+
+
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("measure", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "measure")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("measure", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="measure"]= "Measure"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Measure=as.character(stable.m$Measure)
+# stable.m$Measure[stable.m$Measure=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Measure[stable.m$Measure=="morbidity to ecosystem fxn"]="morbidity"
+# stable.m$Measure[stable.m$Measure=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.measure.csv", row.names = FALSE)
+
+offset.h = -6 # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Measure, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$`Pairwise comparison`,
+                hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("Measure")+
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+scale_x_continuous(breaks = pretty_breaks())
+plot
 
 #this doesn't work because of singularity
 # res.lme.pathway.measure <- lme(log.d ~ pathway*measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
 # summary(res.lme.pathway.measure)
 
 ```
+
+##terrestrial vs. aquatic
+#nlme
+```{r}
+load("M.Rdata")
+load("log_back_transform.Rdata")
+M = subset(M, !is.na(d))
+M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+
+#measure
+# names(dat)[names(dat)=="measure.general"]="measure"
+res.lme.measure <- lme(log(abs(d)) ~ System-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.measure)
+
+anova(res.lme.measure)
+summary(res.lme.measure)
+# save(res.lme.measure, file = "res.lme.measure.Rdata")
+
+# res.lme.measure.r= residuals(res.lme.measure)
+# 
+# shapiro.test(res.lme.measure.r)
+# qqnorm(res.lme.measure.r)
+
+##########pairwise comparison
+marginal = emmeans(res.lme.measure, 
+                   ~ System)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "System", ".group")]
+###summary table
+s = summary(res.lme.measure)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "System")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$System = rnout
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("System", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "System")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("System", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="measure"]= "System"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$System=as.character(stable.m$System)
+# stable.m$Measure[stable.m$Measure=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Measure[stable.m$Measure=="morbidity to ecosystem fxn"]="morbidity"
+# stable.m$Measure[stable.m$Measure=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.measure.csv", row.names = FALSE)
+
+offset.h = -6 # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(System, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$`Pairwise comparison`,
+                hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("System")+
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+scale_x_continuous(breaks = pretty_breaks())
+plot
+
+#this doesn't work because of singularity
+# res.lme.pathway.measure <- lme(log.d ~ pathway*measure.general-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+# summary(res.lme.pathway.measure)
+
+```
+
+
+##Pathogen kingdom -- graph without CIs
+#nlme
+```{r}
+load("M.Rdata")
+load("log_back_transform.Rdata")
+M = subset(M, !is.na(d))
+# M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+dat$Pathogen.kingdom =factor(dat$Pathogen.kingdom)
+#measure
+res.lme.measure <- lme(log(abs(d)) ~ Pathogen.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.measure)
+
+anova(res.lme.measure)
+summary(res.lme.measure)
+# save(res.lme.measure, file = "res.lme.measure.Rdata")
+
+# res.lme.measure.r= residuals(res.lme.measure)
+# 
+# shapiro.test(res.lme.measure.r)
+# qqnorm(res.lme.measure.r)
+
+##########pairwise comparison
+marginal = emmeans(res.lme.measure, 
+                   ~ Pathogen.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Pathogen.kingdom", ".group")]
+###summary table
+s = summary(res.lme.measure)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Pathogen.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$Pathogen.kingdom = rnout
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Pathogen.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "Pathogen.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Pathogen.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="measure"]= "Pathogen.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Pathogen.kingdom=as.character(stable.m$Pathogen.kingdom)
+# stable.m$Measure[stable.m$Measure=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Measure[stable.m$Measure=="morbidity to ecosystem fxn"]="morbidity"
+# stable.m$Measure[stable.m$Measure=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.measure.csv", row.names = FALSE)
+
+offset.h = -6 # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Pathogen.kingdom, order), x = `Effect size`))+
+  # geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+  #                height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$`Pairwise comparison`,
+                hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("Pathogen kingdom")+
+  scale_x_log10()
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+  # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+  # scale_x_continuous(breaks = pretty_breaks())
+plot
+
+```
+
+
+##Host kingdom -- graph without CIs
+#nlme
+```{r}
+load("M.Rdata")
+load("log_back_transform.Rdata")
+M = subset(M, !is.na(d))
+# M.tmp = subset(M, is.na(d.sampling.variance))
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+dat$d = dat$d+0.000001
+dat$Host.kingdom =factor(dat$Host.kingdom)
+#measure
+res.lme.measure <- lme(log(abs(d)) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.measure)
+
+anova(res.lme.measure)
+summary(res.lme.measure)
+# save(res.lme.measure, file = "res.lme.measure.Rdata")
+
+# res.lme.measure.r= residuals(res.lme.measure)
+# 
+# shapiro.test(res.lme.measure.r)
+# qqnorm(res.lme.measure.r)
+
+##########pairwise comparison
+marginal = emmeans(res.lme.measure, 
+                   ~ Host.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Host.kingdom", ".group")]
+###summary table
+s = summary(res.lme.measure)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Host.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$Host.kingdom = rnout
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Host.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+stable$P[stable$P == 0]= "<0.0001"
+
+stable.m = merge(cld.table, stable, by = "Host.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Host.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order"
+)]
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="measure"]= "Host.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+stable.m$Host.kingdom=as.character(stable.m$Host.kingdom)
+# stable.m$Measure[stable.m$Measure=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Measure[stable.m$Measure=="morbidity to ecosystem fxn"]="morbidity"
+# stable.m$Measure[stable.m$Measure=="unknown to ecosystem fxn"]="unknown"
+
+namesok = setdiff(names(stable.m), "order")
+stable.table = stable.m[,namesok]
+write.csv(stable.table, "Table.measure.csv", row.names = FALSE)
+
+offset.h = -6 # offsets for mean letters
+offset.v = 0.5
+# xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Host.kingdom, order), x = `Effect size`))+
+  # geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+  #                height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$`Pairwise comparison`,
+                hjust=offset.h, vjust=offset.v)) +
+  # xlim(0,7)+
+  ylab("Host kingdom")+
+  scale_x_log10()
+# scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+# scale_x_continuous(breaks = pretty_breaks())
+plot
+
+```
+
+
 
 ##use robustlmm::rlmer and log of absolute value of d -- doesn't work with weights, so not appropriate for meta-analysis
 ##http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
@@ -1127,6 +2135,7 @@ m.sum
 
 
 ###try using Gamma distribution with lme4. note that lme4 does not have option of specifying that weights are exact
+#as of 2011 gamma didn't work in lme4: https://stat.ethz.ch/pipermail/r-sig-mixed-models/2011q1/015422.html
 ```{r}
 load("M.Rdata")
 # install.packages("R2admb")
