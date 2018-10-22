@@ -20,7 +20,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp", "lme4", "lmerTest", "nlme", "gamlss.dist", "gamlss", "dplyr", "tibble", "robustlmm", "emmeans", "scales", "MuMIn", "MASS")
+neededPackages <- c("dplyr", "ggplot2", "MASS", "gplots", "vcd", "metafor", "multcomp", "lme4", "lmerTest", "nlme", "gamlss.dist", "gamlss", "dplyr", "tibble", "robustlmm", "emmeans", "scales", "MuMIn", "MASS", "googleVis")
 for (package in neededPackages){pkgTest(package)}
 
 ```
@@ -427,7 +427,7 @@ save(M, file = "M.Rdata")
 ```{r mean_variance}
 load("M.Rdata")
 M$d.absolute = 0#is d absolute value
-
+# M = subset(M, paper.ID == 328)
 load("one.per.var.Rdata")
 
 # sd_adjust = 0.0001
@@ -464,6 +464,7 @@ for (a in 1:dim(M.y)[1]){
     M.y$infected_sd[a]=M.y$infected.variance[a]*sqrt(M.y$sample.size.infected[a])
   }
   if (var_measure == "CV"){
+    print("CV")
     M.y$control_sd[a] = M.y$control.variance[a]*M.y$control.mean[a]/100
     M.y$infected_sd[a] = M.y$infected.variance[a]*M.y$infected.mean[a]/100
   }
@@ -872,6 +873,14 @@ xtabs(~paper.ID, data = M)
 
 ```
 
+#check odd entries
+```{r}
+load("M.Rdata")
+euk = subset(M, Pathogen.kingdom == "eukaryote")
+euk$d
+euk$d.sampling.variance
+```
+
 ##meta-analysis
 ###check whether absoluate value of d is normally distributed, and whether log of abs(d) is normal
 ```{r distributions}
@@ -966,6 +975,73 @@ save(one.per.study.by.var, file = "one.per.study.by.var.Rdata")
 
 ```
 
+###one.per.study.by.var.lm: write function to get pooled value by variable within each study with lm
+```{r one.per.study.by.var.lm}
+
+one.per.study.by.var.lm = function(M.y, var_name){
+  ustudy = unique(M.y$paper.ID)
+  out = NULL
+  var_col_ind = which(names(M.y) == var_name)
+  for (b in 1:length(ustudy)){
+  # print("b")
+  # print(b)
+  print(ustudy[b])
+  s.tmp = subset(M.y, paper.ID == ustudy[b])
+
+  uvar = unique(s.tmp[,var_col_ind])
+#for each variable in study
+    for (c in 1:length(uvar)){
+      inds = which(s.tmp[,var_col_ind]==uvar[c])
+      v.tmp = s.tmp[inds,]
+      # print("c")
+      # print(c)
+          if (dim(v.tmp)[1]>1){
+            #if more than one record for a variable, find pooled estimate across all records     
+            print("pooled estimate")
+            m = lm(d ~1, weights = 1/d.sampling.variance, data = v.tmp)  
+            m = summary(m)
+            m = data.frame(m$coefficients)
+            #print(m)
+            v.tmp$d = m$Estimate[1]
+            print(v.tmp$d)
+            v.tmp$d.sampling.variance = m$Std..Error[1]
+            v.tmp = v.tmp[1,]
+            
+            out = rbind(out, v.tmp)
+          }#end if statement
+          else {#else use value already gotten
+            out = rbind(out, v.tmp)
+          }#end else
+   }#end pathway
+  }#end study
+  return(out)
+}#end function
+
+save(one.per.study.by.var.lm, file = "one.per.study.by.var.lm.Rdata")
+
+
+```
+
+#function to compute back-transformed values. source: Baskerville 1972
+```{r}
+log_back_transform = function(stable){
+  stable$log_var_d = stable$Std.Error^2
+  names(stable)[names(stable)=="Std.Error"]= "log.se"
+  # stable$log_var_d_2 = stable$log_var_d^2
+  stable$`Effect size` = exp(stable$Value+0.5*stable$log_var_d^2)
+  stable$`Effect size` = round(stable$`Effect size`, digits = 3)
+  stable$var_d = exp(2*stable$log_var_d^2 + 2*stable$Value) - 
+    exp(stable$log_var_d^2 + 2*stable$Value)
+  stable$se = sqrt(stable$var_d)
+  stable$CI.upper = stable$`Effect size`+1.96*stable$se
+  stable$CI.lower = stable$`Effect size`-1.96*stable$se
+  return(stable)
+}
+save(log_back_transform, file = "log_back_transform.Rdata")
+```
+
+
+
 ####get pooled value by paper.ID and pathway
 ```{r pooled_pathway}
 load("one.per.study.by.var.Rdata")
@@ -1000,23 +1076,180 @@ plot <- ggplot(data = M1, aes(x = d, y = d.sampling.variance, color = pathway))+
 plot
 ```
 
-#function to compute back-transformed values. source: Baskerville 1972
-```{r}
-log_back_transform = function(stable){
-  stable$log_var_d = stable$Std.Error^2
-  names(stable)[names(stable)=="Std.Error"]= "log.se"
-  # stable$log_var_d_2 = stable$log_var_d^2
-  stable$`Effect size` = exp(stable$Value+0.5*stable$log_var_d^2)
-  stable$`Effect size` = round(stable$`Effect size`, digits = 3)
-  stable$var_d = exp(2*stable$log_var_d^2 + 2*stable$Value) - 
-    exp(stable$log_var_d^2 + 2*stable$Value)
-  stable$se = sqrt(stable$var_d)
-  stable$CI.upper = stable$`Effect size`+1.96*stable$se
-  stable$CI.lower = stable$`Effect size`-1.96*stable$se
-  return(stable)
+
+####get pooled value by paper.ID and pathogen and plot results of fixed effects model
+```{r pooled_pathogen}
+load("one.per.study.by.var.lm.Rdata")
+load("M.Rdata")
+M = subset(M, !is.na(d))
+variable = "Pathogen.kingdom"
+M1 = one.per.study.by.var.lm(M, "Pathogen.kingdom")
+#for each pathway
+#for each paper.ID
+dim(M1)
+M1P = M1
+table(M1$Pathogen.kingdom)
+save(M1P, file = "M1P.Rdata")
+shapiro.test(M1$d)
+# shapiro.test(log(M1$d))
+M1$d = M1$d+0.000001#add small number to all so that log can be used (though not using log in this chunk)
+shapiro.test(log(M1$d))
+
+M1 = subset(M1, pathway != "PP to ecosystem fxn")
+M1_sum <- M1 %>%
+  group_by(Pathogen.kingdom) %>%
+  summarize(mean_d = mean(d),
+            mean_variance = mean(d.sampling.variance),
+            median_variance = median(d.sampling.variance))
+M1_sum
+#compare relation between d and d.sampling variance for abundance and morbidity; look pretty similar
+# M1 = subset(M1, pathway != "unknown to ecosystem fxn")
+# plot <- ggplot(data = M1, aes(x = d, y = d.sampling.variance, color = pathway))+
+#   geom_point()+
+#   geom_smooth()+
+#   scale_y_log10()+
+#   scale_x_log10()
+# plot
+M1_sum = data.frame(M1_sum)
+plot <- ggplot(data = M1_sum, aes(x = mean_d, y = Pathogen.kingdom))+
+  geom_point()+
+  geom_errorbarh(aes(xmax = mean_d+mean_variance, xmin = mean_d-mean_variance), height = 0)
+
+
+  # geom_smooth()+
+  # scale_y_log10()+
+  # scale_x_log10()
+plot
+
+#now fixed effects model
+##get the number of observations of each pathway
+dat_sum <- M1 %>% 
+  group_by(Pathogen.kingdom) %>%
+  summarize(count_records = n(),
+            count_studies = length(unique(paper.ID)) )
+
+m.lm <- lm(log(d) ~ Pathogen.kingdom-1, weights = 1/d.sampling.variance, data = M1)
+summary(m.lm)
+res.lme.pathway = m.lm
+marginal = emmeans(res.lme.pathway, 
+                   ~ Pathogen.kingdom)
+
+cld.table = CLD(marginal,
+  alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Pathogen.kingdom", ".group")]
+###summary table
+s = summary(res.lme.pathway)
+# anova(res.lme.pathway)
+
+stable = s$coefficients
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Pathogen.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
 }
-save(log_back_transform, file = "log_back_transform.Rdata")
+rnout
+stable$Pathogen.kingdom = rnout
+
+#add variance as field
+  #standard error = square root of the estimated error variance
+
+names(stable)[names(stable)=="Estimate"]="Value"
+names(stable)[names(stable)=="Std..Error"]="Std.Error"
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$Pr...t.., digits =4)
+names(stable)[names(stable)=="Value"]="Effect size"
+
+stable = stable[,c("Pathogen.kingdom", 
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                   # "DF",
+                   "t",
+                   "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+
+
+
+stable.m = merge(cld.table, stable, by = "Pathogen.kingdom")
+stable.m= merge(stable.m, dat_sum, by = "Pathogen.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Pathogen.kingdom", 
+                   # "DF",
+                   "t",
+                   "P",
+                  "Effect size",
+                  "CI.upper",
+                  "CI.lower",
+                  ".group",
+                  "order",
+                  "count_records",
+                  "count_studies"
+)]
+
+star = rep("", dim(stable.m)[1])
+inds.P.05 = which(stable.m$P<0.05)
+star[inds.P.05]= "*"
+inds.P.01 = which(stable.m$P<0.01)
+star[inds.P.01]= "**"
+inds.P.001 = which(stable.m$P<0.001)
+star[inds.P.01]= "***"
+stable.m$star = star
+names(stable.m)[names(stable.m)=="count_records"]= "N records"
+
+stable.m$text = paste0("", stable.m$star, "", stable.m$.group, " ", stable.m$`N records`)
+
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="Pathogen.kingdom"]= "Pathogen.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+names(stable.m)[names(stable.m)=="count_studies"]= "N studies"
+stable.m$Pathogen.kingdom=as.character(stable.m$Pathogen.kingdom)
+# stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
+# stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
+# stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+
+
+namesok = setdiff(names(stable.m), c("order", "star", "text"))
+stable.m$`CI upper` = round(stable.m$`CI upper`, digits = 3)
+stable.m$`CI lower` = round(stable.m$`CI lower`, digits = 3)
+stable.table = stable.m[,namesok]
+
+# write.csv(stable.table, "Table.pathway.csv", row.names = FALSE)
+
+offset.h = -1  # offsets for mean letters
+offset.v = 0.5
+stable.m = subset(stable.m, Pathogen.kingdom != "eukaryote" & Pathogen.kingdom != "bacteria")
+# xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Pathogen.kingdom, order), x = `Effect size`))+
+  geom_point()+
+    geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`))+
+   geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
+                 hjust="left", vjust=offset.v)) +
+   # xlim(0,0.6)+
+  ylab("Pathogen")
+  # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+  # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+  # scale_x_continuous(breaks = pretty_breaks())
+plot
+ggsave(plot = plot, filename = paste0("Figure.",variable, ".jpg"))
+
+
+
 ```
+
+#run fixed model with one obs per study
+```{r}
+
+```
+
+
 
 ##for interest, compare results with and without including variance as weights (i.e., with and without doing a meta-analysis)
 ```{r}
@@ -2176,6 +2409,152 @@ ggsave(plot = plot, filename = paste0("Figure.",variable_label,".jpg"))
 ```
 
 
+##check eukaryote and bacteria
+```{r}
+load("M.Rdata")
+euk_bact = subset(M, Pathogen.kingdom == "bacteria" | Pathogen.kingdom == "eukaryote" | Pathogen.kingdom == "virus")
+euk_bact$Pathogen.kingdom="other microbes"
+# euk_bact = subset(M, Pathogen.kingdom == "bacteria" | Pathogen.kingdom == "eukaryote")
+# M = euk_bact
+M_non = subset(M, Pathogen.kingdom != "bacteria" & Pathogen.kingdom != "eukaryote" & Pathogen.kingdom != "virus")
+ M = rbind(M_non, euk_bact)
+# M = M_non
+M = subset(M, !is.na(d))
+
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+
+##get the number of observations of each System.general
+dat_sum <- dat %>% 
+  group_by(Pathogen.kingdom) %>%
+  summarize(count_records = n(),
+            count_studies = length(unique(paper.ID)) )
+
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+# res.lme.Pathogen.kingdom <- lme(log(d) ~ Pathogen.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# res.lm.Pathogen.kingdom <- lm(log(d) ~ Pathogen.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Pathogen.kingdom)
+# 
+# res.lm.Pathogen.kingdom.nolog <- lm(d ~ Pathogen.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Pathogen.kingdom.nolog)
+
+
+# xtabs(~Pathogen.kingdom, data = M)
+dat = M
+dat$d = dat$d+0.000001
+
+res.lme.Pathogen.kingdom <- lme(log(d) ~ Pathogen.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.Pathogen.kingdom)
+
+# res.lm.Pathogen.kingdom.lm <- lm(log(d) ~ Pathogen.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Pathogen.kingdom)
+
+marginal = emmeans(res.lme.Pathogen.kingdom, 
+                   ~ Pathogen.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Pathogen.kingdom", ".group")]
+###summary table
+s = summary(res.lme.Pathogen.kingdom)
+anova(res.lme.Pathogen.kingdom)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Pathogen.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$Pathogen.kingdom = rnout
+
+#add variance as field
+#standard error = square root of the estimated error variance
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Pathogen.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+
+
+
+stable.m = merge(cld.table, stable, by = "Pathogen.kingdom")
+stable.m= merge(stable.m, dat_sum, by = "Pathogen.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Pathogen.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order",
+                       "count_records",
+                       "count_studies"
+)]
+
+star = rep("", dim(stable.m)[1])
+inds.P.05 = which(stable.m$P<0.05)
+star[inds.P.05]= "*"
+inds.P.01 = which(stable.m$P<0.01)
+star[inds.P.01]= "**"
+inds.P.001 = which(stable.m$P<0.001)
+star[inds.P.01]= "***"
+stable.m$star = star
+names(stable.m)[names(stable.m)=="count_records"]= "N records"
+
+stable.m$text = paste0("", stable.m$star, "", stable.m$.group, " ", stable.m$`N records`)
+
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="Pathogen.kingdom"]= "Pathogen.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+names(stable.m)[names(stable.m)=="count_studies"]= "N studies"
+stable.m$Pathogen.kingdom=as.character(stable.m$Pathogen.kingdom)
+
+namesok = setdiff(names(stable.m), c("order", "star", "text"))
+stable.m$`CI upper` = round(stable.m$`CI upper`, digits = 3)
+stable.m$`CI lower` = round(stable.m$`CI lower`, digits = 3)
+stable.table = stable.m[,namesok]
+
+write.csv(stable.table, "Table.Pathogen.kingdom.noeuk_no_bact.csv", row.names = FALSE)
+
+offset.h = -1  # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Pathogen.kingdom, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
+                hjust="left", vjust=offset.v)) +
+  xlim(0,0.6)+
+  ylab(variable_label)+
+  scale_x_log10()
+# scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+# scale_x_continuous(breaks = pretty_breaks())
+plot
+ggsave(plot = plot, filename = paste0("Figure.",variable_label,"noeuk_nobact", ".jpg"))
+
+```
+
+
 
 ##Pathogen kingdom -- graph without CIs
 #nlme
@@ -2322,6 +2701,7 @@ ggsave(plot = plot, filename = paste0("Figure.",variable_label,".jpg"))
 
 ##Host kingdom -- graph with (some) CIs
 ```{r}
+
 
 ##use nlme and log of absolute value of d -- Host.kingdom
 ##http://www.metafor-project.org/doku.php/tips:rma_vs_lm_lme_lmer
@@ -2829,9 +3209,11 @@ assocplot(tbl,
           xlab = "Host")
 dev.off()#need to do this to finish the plot
 
-
 #chisq.test(tbl) 
 (X <- chisq.test(tbl, simulate.p.value = TRUE))
+
+# obs.df = data.frame(X$observed)
+
 #(X <- chisq.test(tbl))
 #barplot(X$observed, X$expected, beside = TRUE)
 #
@@ -2853,7 +3235,7 @@ tbl.p$frac = round(tbl.p$Freq/sum(tbl.p$Freq), digits = 3)
 ##read in studies data and make graph of pathogen frequency for each kingdom of hosts
 ```{r}
 load("PH.Rdata")
-
+PH$Host.kingdom=paste("host:", PH$Host.kingdom)
 plot<- ggplot(data = PH, mapping = aes(x = Pathogen.kingdom))+
   geom_bar()+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
@@ -2874,6 +3256,8 @@ load("PH.Rdata")
 #pathogen vs. system
 PH$Pathogen.kingdom = as.character(PH$Pathogen.kingdom)
 PH$System = as.character(PH$System)
+tbl.system = xtabs(~System, data = PH)
+
 PH$Pathogen.kingdom[PH$Pathogen.kingdom=="eukaryote"]="euk."
 tbl <- xtabs(~Pathogen.kingdom+ System, data=PH)
 
@@ -2959,8 +3343,8 @@ save_plot( "Figure.A.2.jpg", p, nrow = 2, dpi = 600)
 
 ```
 
-
 ###chi squared test and plots for pathogen and host taxa vs. pathway to ecosystem function
+##get counts by pathway
 ```{r}
 load("M.Rdata")
 require(cowplot)
@@ -2976,6 +3360,17 @@ PHP = subset(PHP, pathway %in% c("unknown to ecosystem fxn",
              "morbidity to ecosystem fxn", 
              "PP to ecosystem fxn"))
 df = PHP
+
+df_sum <- df %>%
+  group_by(paper.ID, pathway) %>%
+  summarize(count_pathway = n())
+
+df_sum_pathway <- df_sum %>%
+  group_by(pathway) %>%
+  summarize(count_pathway = length(count_pathway>0))
+
+df_sum_pathway = data.frame(df_sum_pathway)
+df_sum_pathway$pathway_percent = df_sum_pathway$count_pathway / length(unique(df$paper.ID))
 df$pathway = as.character(df$pathway)
 df$Pathogen.kingdom = as.character(df$Pathogen.kingdom)
 df$pathway[df$pathway == "unknown to ecosystem fxn"]="ukn.->eco."
@@ -3106,6 +3501,17 @@ PHP = subset(PHP, measure.general %in% c("primary production",
              "biogeochemical cycles"))
 df = PHP
 
+df_sum <- df %>%
+  group_by(paper.ID, measure.general) %>%
+  summarize(count_measure = n())
+
+df_sum_measure <- df_sum %>%
+  group_by(measure.general) %>%
+  summarize(count_measure = length(count_measure>0))
+
+df_sum_measure = data.frame(df_sum_measure)
+df_sum_measure$measure_percent = df_sum_measure$count_measure / length(unique(df$paper.ID))
+
 df$measure.general <- factor(df$measure.general, levels = c("primary production", 
              "secondary production", 
              "biogeochemical cycles"))
@@ -3207,6 +3613,78 @@ plot<- ggplot(data = df, mapping = aes(x = Host.kingdom))+
 plot
 
 save_plot( "Figure.A.6.pathogen.measure.jpg", plot, nrow = 1, dpi = 600, base_height = 6)
+
+
+```
+
+###make figure with one panel for each pathway (facet_wrap) and counts by ecosystem process as bars within each panel. 
+```{r}
+load("M.Rdata")
+unique(M$pathway)
+M$pathway = as.character(M$pathway)
+M$pathway[M$pathway == "abund biomass to ecosystem fxn"]="abundance"
+M$pathway[M$pathway == "morbidity to ecosystem fxn"]="phenotype"
+M$pathway[M$pathway == "unknown to ecosystem fxn"]="undetermined"
+M$pathway[M$pathway == "PP to ecosystem fxn"]="direct"
+
+M = subset(M, Pathogen.kingdom != "not reported" & Pathogen.kingdom != "multiple")
+M = subset(M, pathway %in% c("abundance", 
+                             "phenotype",
+                             "undetermined", 
+                             "direct"))
+M$measure.general = as.character(M$measure.general)
+unique(M$measure.general)
+p <- ggplot(data = M, aes(x = measure.general)) +
+  geom_bar(aes(fill = Pathogen.kingdom))+
+  # facet_wrap(~pathway, nrow = 4, ncol = 1)+
+    facet_wrap(~pathway, nrow = 2, ncol = 2)+
+    xlab("Ecosystem process")+
+  ylab("Count of studies")+
+
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p
+
+
+#M$pathway[M$pathway
+```
+
+#build from example gvisSankey to make graph with our data
+```{r}
+#source: https://stackoverflow.com/questions/45510421/how-to-make-a-googlevis-multiple-sankey-from-a-data-frame
+#source on what's possible (but no R here): https://developers.google.com/chart/interactive/docs/gallery/sankey
+# source <- sample(c("NorthSrc", "SouthSrc", "EastSrc", "WestSrc"), 100, replace=T)
+# mid <- sample(c("NorthMid", "SouthMid", "EastMid", "WestMid"), 100, replace=T)
+# destination <- sample(c("NorthDes", "SouthDes", "EastDes", "WestDes"), 100, replace=T) 
+# dummy <- rep(1,100) # For aggregation
+# dat <- data.frame(source,mid,destination,dummy)
+
+source <- M$Pathogen.kingdom
+mid <- M$pathway
+destination <- M$measure.general
+dummy <- rep(1,length(source)) # For aggregation
+dat <- data.frame(source,mid,destination,dummy)
+
+#reshape original data
+#Data frame datSM summarises number of units from Source to Mid.
+datSM <- dat %>%
+  group_by(source, mid) %>%
+  summarise(toMid = sum(dummy) ) %>%
+  ungroup()
+
+#Data frame datMD summarises number of units from Mid to Destination.
+datMD <- dat %>%
+   group_by(mid, destination) %>%
+   summarise(toDes = sum(dummy) ) %>%
+   ungroup()
+
+colnames(datSM) <- colnames(datMD) <- c("From", "To", "Dummy")
+
+#As the datMD is appended as the last one, gvisSankey will recognise the middle step automatically.
+datVis <- rbind(datSM, datMD)
+p <- gvisSankey(datVis, from="From", to="To", weight="dummy")
+plot(p)
+
+
 
 
 ```
