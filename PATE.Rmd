@@ -4,6 +4,7 @@ author: "Ilya"
 date: "8/17/2018"
 output: github_document
 ---
+##to do: update PATE_data.csv
 #####To do: check whether to use variance or transform to log?
 #####To do: change to absolute value of d throughout, prior to averaging across records within a variable-- DONE
 
@@ -2409,8 +2410,10 @@ ggsave(plot = plot, filename = paste0("Figure.",variable_label,".jpg"))
 ```
 
 
-##check eukaryote and bacteria
+##pathogen kingdom -- lump eukaryote and bacteria in with virus in "other microbes"
 ```{r}
+load("log_back_transform.Rdata")
+variable_label="pathogen"
 load("M.Rdata")
 euk_bact = subset(M, Pathogen.kingdom == "bacteria" | Pathogen.kingdom == "eukaryote" | Pathogen.kingdom == "virus")
 euk_bact$Pathogen.kingdom="other microbes"
@@ -2543,9 +2546,9 @@ plot <- ggplot(data = stable.m, aes(y = reorder(Pathogen.kingdom, order), x = `E
   geom_point()+
   geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
                 hjust="left", vjust=offset.v)) +
-  xlim(0,0.6)+
-  ylab(variable_label)+
-  scale_x_log10()
+  xlim(-1,2)+
+  ylab(variable_label)
+  # scale_x_log10()
 # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
 # scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
 # scale_x_continuous(breaks = pretty_breaks())
@@ -2553,7 +2556,6 @@ plot
 ggsave(plot = plot, filename = paste0("Figure.",variable_label,"noeuk_nobact", ".jpg"))
 
 ```
-
 
 
 ##Pathogen kingdom -- graph without CIs
@@ -2695,6 +2697,155 @@ plot <- ggplot(data = stable.m, aes(y = reorder(Pathogen.kingdom, order), x = `E
 plot
 ggsave(plot = plot, filename = paste0("Figure.",variable_label,".jpg"))
 
+
+```
+
+
+##Host kingdom -- lump eukaryote and bacteria and prok. in "other microbes"
+##pathogen kingdom -- lump eukaryote and bacteria in with virus in "other microbes"
+```{r}
+load("log_back_transform.Rdata")
+variable_label="host"
+load("M.Rdata")
+euk_bact = subset(M, Host.kingdom == "bacteria" | Host.kingdom == "eukaryote" | Host.kingdom == "prokaryote")
+euk_bact$Host.kingdom="microbes"
+# euk_bact = subset(M, Host.kingdom == "bacteria" | Host.kingdom == "eukaryote")
+# M = euk_bact
+M_non = subset(M, Host.kingdom != "bacteria" & Host.kingdom != "eukaryote" & Host.kingdom != "prokaryote")
+M = rbind(M_non, euk_bact)
+# M = M_non
+M = subset(M, !is.na(d))
+
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+
+##get the number of observations of each System.general
+dat_sum <- dat %>% 
+  group_by(Host.kingdom) %>%
+  summarize(count_records = n(),
+            count_studies = length(unique(paper.ID)) )
+
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+# res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# res.lm.Host.kingdom <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom)
+# 
+# res.lm.Host.kingdom.nolog <- lm(d ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom.nolog)
+
+
+# xtabs(~Host.kingdom, data = M)
+dat = M
+dat$d = dat$d+0.000001
+
+res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.Host.kingdom)
+
+# res.lm.Host.kingdom.lm <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom)
+
+marginal = emmeans(res.lme.Host.kingdom, 
+                   ~ Host.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Host.kingdom", ".group")]
+###summary table
+s = summary(res.lme.Host.kingdom)
+anova(res.lme.Host.kingdom)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Host.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$Host.kingdom = rnout
+
+#add variance as field
+#standard error = square root of the estimated error variance
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Host.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+
+
+
+stable.m = merge(cld.table, stable, by = "Host.kingdom")
+stable.m= merge(stable.m, dat_sum, by = "Host.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Host.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order",
+                       "count_records",
+                       "count_studies"
+)]
+
+star = rep("", dim(stable.m)[1])
+inds.P.05 = which(stable.m$P<0.05)
+star[inds.P.05]= "*"
+inds.P.01 = which(stable.m$P<0.01)
+star[inds.P.01]= "**"
+inds.P.001 = which(stable.m$P<0.001)
+star[inds.P.01]= "***"
+stable.m$star = star
+names(stable.m)[names(stable.m)=="count_records"]= "N records"
+
+stable.m$text = paste0("", stable.m$star, "", stable.m$.group, " ", stable.m$`N records`)
+
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="Host.kingdom"]= "Host.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+names(stable.m)[names(stable.m)=="count_studies"]= "N studies"
+stable.m$Host.kingdom=as.character(stable.m$Host.kingdom)
+
+namesok = setdiff(names(stable.m), c("order", "star", "text"))
+stable.m$`CI upper` = round(stable.m$`CI upper`, digits = 3)
+stable.m$`CI lower` = round(stable.m$`CI lower`, digits = 3)
+stable.table = stable.m[,namesok]
+
+write.csv(stable.table, "Table.Host.kingdom.microbe_lump.csv", row.names = FALSE)
+
+offset.h = -1  # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Host.kingdom, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
+                hjust="left", vjust=offset.v)) +
+  xlim(-1.5,3)+
+  ylab(variable_label)
+# scale_x_log10()
+# scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+# scale_x_continuous(breaks = pretty_breaks())
+plot
+ggsave(plot = plot, filename = paste0("Figure.",variable_label,"microbe_lump", ".jpg"))
 
 ```
 
