@@ -4,6 +4,7 @@ author: "Ilya"
 date: "8/17/2018"
 output: github_document
 ---
+#316 one.per.var remove abs
 ##to do: update PATE_data.csv
 #####To do: check whether to use variance or transform to log?
 #####To do: change to absolute value of d throughout, prior to averaging across records within a variable-- DONE
@@ -119,6 +120,8 @@ test = subset(out, include_article_review=="yes" & exclude_reason !="")
 test
 
 table(out$include_article_review)
+yes = subset(out, include_article_review == "yes")
+save(yes, file = "yes.Rdata")
 ```
 
 ####read in studies spreadsheet and remove ones that were excluded
@@ -197,12 +200,15 @@ save(P, file = "P.Rdata")
 ###effects.on.host; effects.on.community: was the PP --> X effect on the host or not, on the community or not; note this has not been filled in for all rows but could be based (have checked this for part) on the measure.general and measure.specific
 ###ecosystem_process_mediate: did an ecosystem process mediate the relationship between PP and other components of the conceptual diagram. ###Note this has not been filled in throughout, but could be based on other data (have checked this for part) 
 ```{r}
-load("S.Rdata")
-load("P.Rdata")
+load("yes.Rdata")
+load("S.Rdata")#qualitative
+load("P.Rdata")#quantitative
 
+setdiff(yes$id, S$ID)
 names(S)[names(S)=="ID"]="paper.ID"
 setdiff(S$paper.ID, P$paper.ID)
 ids = setdiff(P$paper.ID, S$paper.ID)#this has two that determined later needed to be excluded
+ids
 ids.common = intersect(P$paper.ID, S$paper.ID)#
 dim(P)
 P = subset(P, paper.ID %in% ids.common)
@@ -269,6 +275,8 @@ dim(M)[1]==dim(out)[1]
 dim(M)
 
 M <- out
+dim(M)[1]
+length(unique(M$paper.ID))
 save(M, file = "M.Rdata")
 write.csv(M, file ="PATE_data.csv")
 ```
@@ -313,7 +321,7 @@ one.per.var = function(M.y){
           if (dim(v.tmp)[1]>1){
             #if more than one record for a variable, find pooled estimate across all records     
             # print("pooled estimate")
-            m = rma(yi = abs(v.tmp$d),
+            m = rma(yi = v.tmp$d,
                        vi = v.tmp$d.sampling.variance,
                        measure = "MN")  
             #print(m)
@@ -498,8 +506,8 @@ for (a in 1:dim(M.y)[1]){
 }
 
 #change d to absolute value of d
-M.y$d = abs(M.y$d)
-M.y$d.absolute=1
+# M.y$d = abs(M.y$d)
+# M.y$d.absolute=1
 ustudy = unique(M.y$paper.ID)
 #for each study
 out = one.per.var(M.y)
@@ -558,8 +566,8 @@ if (dimM==unique_vars){
   }
 }
 #change d to absolute value
-M.y$d = abs(M.y$d)
-M.y$d.absolute=1
+# M.y$d = abs(M.y$d)
+# M.y$d.absolute=1
 
 M.y.2 = one.per.var(M.y)
 M.y.2$d
@@ -593,8 +601,8 @@ for (c in 1:lev){
       M.y[c,]=r_to_d(M.y[c,])
 }
 #change d to absolute value
-M.y$d = abs(M.y$d)
-M.y$d.absolute=1
+# M.y$d = abs(M.y$d)
+# M.y$d.absolute=1
 
 # print("d")
 # M.y$d
@@ -634,8 +642,8 @@ for (c in 1:lev){
 }
 
 #change d to absolute value
-M.y$d = abs(M.y$d)
-M.y$d.absolute=1
+# M.y$d = abs(M.y$d)
+# M.y$d.absolute=1
 
 #for each study
 out = one.per.var(M.y)
@@ -788,8 +796,8 @@ for (c in 1:lev){
 
 }
 #change d to absolute value
-M.y$d = abs(M.y$d)
-M.y$d.absolute=1
+# M.y$d = abs(M.y$d)
+# M.y$d.absolute=1
 
 # print("d")
 # print("variance")
@@ -817,8 +825,8 @@ for (a in 1:dim(M.y)[1]){
 }
 
 #change d to absolute value
-M.y$d = abs(M.y$d)
-M.y$d.absolute=1
+# M.y$d = abs(M.y$d)
+# M.y$d.absolute=1
 
 M.y = one.per.var(M.y)#in case there are duplicates
 print(M.y$d)
@@ -848,8 +856,8 @@ for (a in 1:dim(M.y)[1]){
 }
 
 #change d to absolute value
-M.y$d = abs(M.y$d)
-M.y$d.absolute=1
+# M.y$d = abs(M.y$d)
+# M.y$d.absolute=1
 
 M.y = one.per.var(M.y)#in case there are duplicates
 print(M.y$d)
@@ -880,6 +888,29 @@ load("M.Rdata")
 euk = subset(M, Pathogen.kingdom == "eukaryote")
 euk$d
 euk$d.sampling.variance
+```
+
+##do funnel plot analysis
+```{r}
+load("M.Rdata")
+M = subset(M, !is.na(d))
+x = M$d
+vi = M$d.sampling.variance
+funnel(x, vi, yaxis = "vi", main="Sampling Variance")
+M_nonabs = M
+save(M_nonabs, file = "M_nonabs.Rdata")
+
+# ranktest(x, vi)
+res2 <- cor.test(x, vi,  method="kendall")
+res2
+## Default S3 method:
+```
+
+###change d to absolute d
+```{r}
+load("M.Rdata")
+M$d = abs(M$d)
+save(M, file = "M.Rdata")
 ```
 
 ##meta-analysis
@@ -1285,6 +1316,7 @@ load("log_back_transform.Rdata")
 load("M.Rdata")
 variable = "Pathway"
 M = subset(M, !is.na(d))
+# M$pathway[M$pathway == "unknown"] = 
 M.tmp = subset(M, is.na(d.sampling.variance))
 M = subset(M, pathway != "PP to ecosystem fxn")
 dat = M
@@ -1388,7 +1420,7 @@ names(stable.m)[names(stable.m)=="count_studies"]= "N studies"
 stable.m$Pathway=as.character(stable.m$Pathway)
 stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
 stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
-stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="undetermined"
 
 
 namesok = setdiff(names(stable.m), c("order", "star", "text"))
@@ -1527,7 +1559,7 @@ names(stable.m)[names(stable.m)=="count_studies"]= "N studies"
 stable.m$Pathway=as.character(stable.m$Pathway)
 stable.m$Pathway[stable.m$Pathway=="abund biomass to ecosystem fxn"]="abundance"
 stable.m$Pathway[stable.m$Pathway=="morbidity to ecosystem fxn"]="phenotype"
-stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="unknown"
+stable.m$Pathway[stable.m$Pathway=="unknown to ecosystem fxn"]="undetermined"
 
 
 namesok = setdiff(names(stable.m), c("order", "star", "text"))
@@ -2701,8 +2733,8 @@ ggsave(plot = plot, filename = paste0("Figure.",variable_label,".jpg"))
 ```
 
 
-##Host kingdom -- lump eukaryote and bacteria and prok. in "other microbes"
-##pathogen kingdom -- lump eukaryote and bacteria in with virus in "other microbes"
+##Host kingdom -- lump eukaryote and bacteria and prok. in "microbes". animal blows up, so don't use this version, remove microbes
+#https://stats.stackexchange.com/questions/44733/problems-with-mixed-model-simulation
 ```{r}
 load("log_back_transform.Rdata")
 variable_label="host"
@@ -2736,11 +2768,14 @@ dat_sum <- dat %>%
 
 
 # xtabs(~Host.kingdom, data = M)
-dat = M
+# dat = M
 dat$d = dat$d+0.000001
 
-res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
-summary(res.lme.Host.kingdom)
+res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1, opt = "optim"), data=dat)
+
+
+# res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+# summary(res.lme.Host.kingdom)
 
 # res.lm.Host.kingdom.lm <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
 # summary(res.lm.Host.kingdom)
@@ -2771,6 +2806,18 @@ stable$Host.kingdom = rnout
 
 #add variance as field
 #standard error = square root of the estimated error variance
+
+  stable$log_var_d = stable$Std.Error^2
+  names(stable)[names(stable)=="Std.Error"]= "log.se"
+  # stable$log_var_d_2 = stable$log_var_d^2
+  stable$`Effect size` = exp(stable$Value+0.5*stable$log_var_d^2)
+  stable$`Effect size` = round(stable$`Effect size`, digits = 3)
+  stable$var_d = exp(2*stable$log_var_d^2 + 2*stable$Value) - 
+    exp(stable$log_var_d^2 + 2*stable$Value)
+  stable$se = sqrt(stable$var_d)
+  stable$CI.upper = stable$`Effect size`+1.96*stable$se
+  stable$CI.lower = stable$`Effect size`-1.96*stable$se
+
 
 stable = log_back_transform(stable)
 stable$t = round(stable$t.value, digits = 3)
@@ -2830,7 +2877,7 @@ write.csv(stable.table, "Table.Host.kingdom.microbe_lump.csv", row.names = FALSE
 
 offset.h = -1  # offsets for mean letters
 offset.v = 0.5
-xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+# xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
 #sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
 plot <- ggplot(data = stable.m, aes(y = reorder(Host.kingdom, order), x = `Effect size`))+
   geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
@@ -2838,7 +2885,7 @@ plot <- ggplot(data = stable.m, aes(y = reorder(Host.kingdom, order), x = `Effec
   geom_point()+
   geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
                 hjust="left", vjust=offset.v)) +
-  xlim(-1.5,3)+
+  # xlim(-1.5,3)+
   ylab(variable_label)
 # scale_x_log10()
 # scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
@@ -2848,6 +2895,171 @@ plot
 ggsave(plot = plot, filename = paste0("Figure.",variable_label,"microbe_lump", ".jpg"))
 
 ```
+
+##Host kingdom -- lump eukaryote and bacteria and prok. in "microbes". animal blows up, so don't use this version, remove microbes
+#https://stats.stackexchange.com/questions/44733/problems-with-mixed-model-simulation
+```{r}
+load("log_back_transform.Rdata")
+variable_label="host"
+load("M.Rdata")
+euk_bact = subset(M, Host.kingdom == "bacteria" | Host.kingdom == "eukaryote" | Host.kingdom == "prokaryote")
+euk_bact$Host.kingdom="microbes"
+# euk_bact = subset(M, Host.kingdom == "bacteria" | Host.kingdom == "eukaryote")
+# M = euk_bact
+M_non = subset(M, Host.kingdom != "bacteria" & Host.kingdom != "eukaryote" & Host.kingdom != "prokaryote")
+M = M_non#rbind(M_non, euk_bact)
+# M = M_non
+M = subset(M, !is.na(d))
+
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+
+##get the number of observations of each System.general
+dat_sum <- dat %>% 
+  group_by(Host.kingdom) %>%
+  summarize(count_records = n(),
+            count_studies = length(unique(paper.ID)) )
+
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+# res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# res.lm.Host.kingdom <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom)
+# 
+# res.lm.Host.kingdom.nolog <- lm(d ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom.nolog)
+
+
+# xtabs(~Host.kingdom, data = M)
+# dat = M
+dat$d = dat$d+0.000001
+
+res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+
+# res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+# summary(res.lme.Host.kingdom)
+
+# res.lm.Host.kingdom.lm <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom)
+
+marginal = emmeans(res.lme.Host.kingdom, 
+                   ~ Host.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Host.kingdom", ".group")]
+###summary table
+s = summary(res.lme.Host.kingdom)
+anova(res.lme.Host.kingdom)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Host.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$Host.kingdom = rnout
+
+#add variance as field
+#standard error = square root of the estimated error variance
+# 
+#   stable$log_var_d = stable$Std.Error^2
+#   names(stable)[names(stable)=="Std.Error"]= "log.se"
+#   # stable$log_var_d_2 = stable$log_var_d^2
+#   stable$`Effect size` = exp(stable$Value+0.5*stable$log_var_d^2)
+#   stable$`Effect size` = round(stable$`Effect size`, digits = 3)
+#   stable$var_d = exp(2*stable$log_var_d^2 + 2*stable$Value) - 
+#     exp(stable$log_var_d^2 + 2*stable$Value)
+#   stable$se = sqrt(stable$var_d)
+#   stable$CI.upper = stable$`Effect size`+1.96*stable$se
+#   stable$CI.lower = stable$`Effect size`-1.96*stable$se
+# 
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Host.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+
+
+
+stable.m = merge(cld.table, stable, by = "Host.kingdom")
+stable.m= merge(stable.m, dat_sum, by = "Host.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Host.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order",
+                       "count_records",
+                       "count_studies"
+)]
+
+star = rep("", dim(stable.m)[1])
+inds.P.05 = which(stable.m$P<0.05)
+star[inds.P.05]= "*"
+inds.P.01 = which(stable.m$P<0.01)
+star[inds.P.01]= "**"
+inds.P.001 = which(stable.m$P<0.001)
+star[inds.P.01]= "***"
+stable.m$star = star
+names(stable.m)[names(stable.m)=="count_records"]= "N records"
+
+stable.m$text = paste0("", stable.m$star, "", stable.m$.group, " ", stable.m$`N records`)
+
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="Host.kingdom"]= "Host.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+names(stable.m)[names(stable.m)=="count_studies"]= "N studies"
+stable.m$Host.kingdom=as.character(stable.m$Host.kingdom)
+
+namesok = setdiff(names(stable.m), c("order", "star", "text"))
+stable.m$`CI upper` = round(stable.m$`CI upper`, digits = 3)
+stable.m$`CI lower` = round(stable.m$`CI lower`, digits = 3)
+stable.table = stable.m[,namesok]
+
+write.csv(stable.table, "Table.Host.kingdom.microbe_lump.csv", row.names = FALSE)
+
+offset.h = -1  # offsets for mean letters
+offset.v = 0.5
+# xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Host.kingdom, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
+                hjust="left", vjust=offset.v)) +
+  xlim(-0,1)+
+  ylab(variable_label)
+# scale_x_log10()
+# scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+# scale_x_continuous(breaks = pretty_breaks())
+plot
+ggsave(plot = plot, filename = paste0("Figure.",variable_label,"microbe_lump", ".jpg"))
+
+```
+
+
 
 
 ##Host kingdom -- graph with (some) CIs
@@ -2995,6 +3207,328 @@ ggsave(plot = plot, filename = paste0("Figure.",variable_label,".jpg"))
 
 #combinations of pathogens and hosts as one factor
 #nlme
+##Host kingdom -- lump eukaryote and bacteria and prok. in "microbes"
+```{r}
+load("log_back_transform.Rdata")
+variable_label="pathogen-host"
+load("M.Rdata")
+i_path = which(M$Pathogen.kingdom=="fungus" | 
+                 M$Pathogen.kingdom=="animal" |
+                 M$Pathogen.kingdom == "plant")
+i_host = which(M$Host.kingdom=="animal" | 
+                 M$Host.kingdom=="plant")
+i_int = intersect(i_path, i_host)
+M = M[i_int,]
+M$Host.kingdom=paste(M$Pathogen.kingdom, M$Host.kingdom)
+M = subset(M, Host.kingdom !="animal plant")
+# euk_bact = subset(M, Host.kingdom == "bacteria" | Host.kingdom == "eukaryote" | Host.kingdom == "prokaryote")
+# euk_bact$Host.kingdom="microbes"
+# euk_bact = subset(M, Host.kingdom == "bacteria" | Host.kingdom == "eukaryote")
+# M = euk_bact
+# M_non = subset(M, Host.kingdom != "bacteria" & Host.kingdom != "eukaryote" & Host.kingdom != "prokaryote")
+# M = rbind(M_non, euk_bact)
+# M = M_non
+M = subset(M, !is.na(d))
+
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+
+##get the number of observations of each System.general
+dat_sum <- dat %>% 
+  group_by(Host.kingdom) %>%
+  summarize(count_records = n(),
+            count_studies = length(unique(paper.ID)) )
+
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+# res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# res.lm.Host.kingdom <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom)
+# 
+# res.lm.Host.kingdom.nolog <- lm(d ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom.nolog)
+
+
+# xtabs(~Host.kingdom, data = M)
+dat = M
+dat$d = dat$d+0.000001
+
+res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.Host.kingdom)
+
+# res.lm.Host.kingdom.lm <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom)
+
+marginal = emmeans(res.lme.Host.kingdom, 
+                   ~ Host.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Host.kingdom", ".group")]
+###summary table
+s = summary(res.lme.Host.kingdom)
+anova(res.lme.Host.kingdom)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Host.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$Host.kingdom = rnout
+
+#add variance as field
+#standard error = square root of the estimated error variance
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Host.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+
+
+
+stable.m = merge(cld.table, stable, by = "Host.kingdom")
+stable.m= merge(stable.m, dat_sum, by = "Host.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Host.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order",
+                       "count_records",
+                       "count_studies"
+)]
+
+star = rep("", dim(stable.m)[1])
+inds.P.05 = which(stable.m$P<0.05)
+star[inds.P.05]= "*"
+inds.P.01 = which(stable.m$P<0.01)
+star[inds.P.01]= "**"
+inds.P.001 = which(stable.m$P<0.001)
+star[inds.P.01]= "***"
+stable.m$star = star
+names(stable.m)[names(stable.m)=="count_records"]= "N records"
+
+stable.m$text = paste0("", stable.m$star, "", stable.m$.group, " ", stable.m$`N records`)
+
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="Host.kingdom"]= "Host.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+names(stable.m)[names(stable.m)=="count_studies"]= "N studies"
+stable.m$Host.kingdom=as.character(stable.m$Host.kingdom)
+
+namesok = setdiff(names(stable.m), c("order", "star", "text"))
+stable.m$`CI upper` = round(stable.m$`CI upper`, digits = 3)
+stable.m$`CI lower` = round(stable.m$`CI lower`, digits = 3)
+stable.table = stable.m[,namesok]
+
+write.csv(stable.table, "Table.Host.kingdom.microbe_lump.csv", row.names = FALSE)
+
+offset.h = -1  # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Host.kingdom, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
+                hjust="left", vjust=offset.v)) +
+   xlim(-0.5,2)+
+  ylab(variable_label)
+# scale_x_log10()
+# scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+# scale_x_continuous(breaks = pretty_breaks())
+plot
+ggsave(plot = plot, filename = paste0("Figure.",variable_label,"microbe_lump", ".jpg"))
+
+```
+
+#combinations of pathway and measure as one factor
+#nlme
+```{r}
+load("log_back_transform.Rdata")
+variable_label="pathway-measure"
+load("M.Rdata")
+M$pathway[M$pathway=="morbidity to ecosystem fxn"]  ="phenotype"
+M$pathway[M$pathway=="unknown to ecosystem fxn"]  ="undetermined"
+M$pathway[M$pathway=="abund biomass to ecosystem fxn"]  ="abundance"
+M$measure.general[M$measure.general=="primary production"]  ="primary"
+M$measure.general[M$measure.general=="secondary production"]  ="secondary"
+M$measure.general[M$measure.general=="biogeochemical cycles"]  ="biogeochemical"
+# M$
+# i_path = which(M$Pathogen.kingdom=="fungus" | 
+#                  M$Pathogen.kingdom=="animal" |
+#                  M$Pathogen.kingdom == "plant")
+# i_host = which(M$Host.kingdom=="animal" | 
+#                  M$Host.kingdom=="plant")
+# i_int = intersect(i_path, i_host)
+# M = M[i_int,]
+M$Host.kingdom=paste(M$pathway, M$measure.general)
+# M = subset(M, Host.kingdom !="animal plant")
+# euk_bact = subset(M, Host.kingdom == "bacteria" | Host.kingdom == "eukaryote" | Host.kingdom == "prokaryote")
+# euk_bact$Host.kingdom="microbes"
+# euk_bact = subset(M, Host.kingdom == "bacteria" | Host.kingdom == "eukaryote")
+# M = euk_bact
+# M_non = subset(M, Host.kingdom != "bacteria" & Host.kingdom != "eukaryote" & Host.kingdom != "prokaryote")
+# M = rbind(M_non, euk_bact)
+# M = M_non
+M = subset(M, !is.na(d))
+
+M = subset(M, pathway != "PP to ecosystem fxn")
+dat = M
+
+##get the number of observations of each System.general
+dat_sum <- dat %>% 
+  group_by(Host.kingdom) %>%
+  summarize(count_records = n(),
+            count_studies = length(unique(paper.ID)) )
+
+#construct model so that it goes through origin; use lmeControl so that exact weights are used
+# res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+
+# res.lm.Host.kingdom <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom)
+# 
+# res.lm.Host.kingdom.nolog <- lm(d ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom.nolog)
+
+
+# xtabs(~Host.kingdom, data = M)
+dat = M
+dat$d = dat$d+0.000001
+
+res.lme.Host.kingdom <- lme(log(d) ~ Host.kingdom-1, random = ~ 1 | paper.ID, weights = varFixed(~ d.sampling.variance), control=lmeControl(sigma = 1), data=dat)
+summary(res.lme.Host.kingdom)
+
+# res.lm.Host.kingdom.lm <- lm(log(d) ~ Host.kingdom-1, weights = 1/d.sampling.variance, data=dat)
+# summary(res.lm.Host.kingdom)
+
+marginal = emmeans(res.lme.Host.kingdom, 
+                   ~ Host.kingdom)
+
+cld.table = CLD(marginal,
+                alpha = 0.05, Letters = letters)
+cld.table = data.frame(cld.table)
+cld.table$order = seq(1,dim(cld.table)[1])
+cld.table = cld.table[,c("order", "Host.kingdom", ".group")]
+###summary table
+s = summary(res.lme.Host.kingdom)
+anova(res.lme.Host.kingdom)
+
+stable = s$tTable
+stable = data.frame(stable)
+
+rn = row.names(stable)
+rnout = NULL
+for (a in 1:length(rn)){
+  tmp = strsplit(rn[a], "Host.kingdom")[[1]][2]
+  rnout = c(rnout, tmp)
+}
+rnout
+stable$Host.kingdom = rnout
+
+#add variance as field
+#standard error = square root of the estimated error variance
+
+stable = log_back_transform(stable)
+stable$t = round(stable$t.value, digits = 3)
+stable$P = round(stable$p.value, digits =4)
+stable = stable[,c("Host.kingdom", 
+                   "Effect size",
+                   "CI.upper",
+                   "CI.lower",
+                   "DF",
+                   "t",
+                   "P")]
+# stable$P[stable$P == 0]= "<0.0001"
+
+
+
+stable.m = merge(cld.table, stable, by = "Host.kingdom")
+stable.m= merge(stable.m, dat_sum, by = "Host.kingdom")
+stable.m = stable.m[order(stable.m$order),]
+stable.m = stable.m[,c("Host.kingdom", 
+                       "DF",
+                       "t",
+                       "P",
+                       "Effect size",
+                       "CI.upper",
+                       "CI.lower",
+                       ".group",
+                       "order",
+                       "count_records",
+                       "count_studies"
+)]
+
+star = rep("", dim(stable.m)[1])
+inds.P.05 = which(stable.m$P<0.05)
+star[inds.P.05]= "*"
+inds.P.01 = which(stable.m$P<0.01)
+star[inds.P.01]= "**"
+inds.P.001 = which(stable.m$P<0.001)
+star[inds.P.01]= "***"
+stable.m$star = star
+names(stable.m)[names(stable.m)=="count_records"]= "N records"
+
+stable.m$text = paste0("", stable.m$star, "", stable.m$.group, " ", stable.m$`N records`)
+
+names(stable.m)[names(stable.m)==".group"]= "Pairwise comparison"
+names(stable.m)[names(stable.m)=="Host.kingdom"]= "Host.kingdom"
+names(stable.m)[names(stable.m)=="CI.upper"]= "CI upper"
+names(stable.m)[names(stable.m)=="CI.lower"]= "CI lower"
+names(stable.m)[names(stable.m)=="count_studies"]= "N studies"
+stable.m$Host.kingdom=as.character(stable.m$Host.kingdom)
+
+namesok = setdiff(names(stable.m), c("order", "star", "text"))
+stable.m$`CI upper` = round(stable.m$`CI upper`, digits = 3)
+stable.m$`CI lower` = round(stable.m$`CI lower`, digits = 3)
+
+stable.table = stable.m[,namesok]
+
+write.csv(stable.table, "Table.Host.kingdom.microbe_lump.csv", row.names = FALSE)
+
+offset.h = -1  # offsets for mean letters
+offset.v = 0.5
+xbreaks = seq(min(floor(stable.m$`CI lower`))-1,max(floor(stable.m$`CI upper`))+1)
+#sort in order by increasing OR: borrow reorder code from https://sebastiansauer.github.io/ordering-bars/ 
+plot <- ggplot(data = stable.m, aes(y = reorder(Host.kingdom, order), x = `Effect size`))+
+  geom_errorbarh(aes(xmax = `CI upper`, xmin = `CI lower`),
+                 height = 0)+
+  geom_point()+
+  geom_text(aes(label=stable.m$text, x = `CI upper`+0.1,
+                hjust="left", vjust=offset.v)) +
+   # xlim(-0.5,2)+
+  ylab(variable_label)
+# scale_x_log10()
+# scale_x_continuous(breaks = xbreaks, limits = c(0,max(xbreaks)))
+# scale_x_discrete(breaks = xbreaks, labels = xbreaks, limits = c(0,7))
+# scale_x_continuous(breaks = pretty_breaks())
+plot
+ggsave(plot = plot, filename = paste0("Figure.",variable_label,"microbe_lump", ".jpg"))
+
+```
+
+
 
 ##Host kingdom -- graph with (some) CIs
 ```{r}
@@ -3329,15 +3863,18 @@ p1
 load("M.Rdata")
 #get one row per study
 PH = M[,c("paper.ID", "Pathogen.kingdom", "Host.kingdom", "System")]
+dim(PH)
 PH = PH[!duplicated(PH), ]
-dim(PH)
+dim_all = dim(PH)
+dim_all
 PH = subset(PH, Pathogen.kingdom !="multiple")
-dim(PH)[1]
-PH = subset(PH, Host.kingdom !="multiple")
-dim(PH)
-
+print("multiple pathogens")
+dim_all - dim(PH)[1]
 PH = subset(PH, Pathogen.kingdom !="not reported")
-dim(PH)[1]
+dim_all - dim(PH)[1]
+PH = subset(PH, Host.kingdom !="multiple")
+print("multiple hosts")
+dim_all - dim(PH)[1]
 
 #make table of counts of each combination of two variables
 # tbl =table(as.character(PH$Pathogen.kingdom), as.character(PH$Host.kingdom))
@@ -3364,7 +3901,7 @@ dev.off()#need to do this to finish the plot
 (X <- chisq.test(tbl, simulate.p.value = TRUE))
 
 # obs.df = data.frame(X$observed)
-
+# write.table(rbind(X$observed, X$expected), "test.txt")
 #(X <- chisq.test(tbl))
 #barplot(X$observed, X$expected, beside = TRUE)
 #
@@ -3801,7 +4338,7 @@ p
 
 #build from example gvisSankey to make graph with our data
 ```{r}
-#source: https://stackoverflow.com/questions/45510421/how-to-make-a-googlevis-multiple-sankey-from-a-data-frame
+load("M.Rdata")#source: https://stackoverflow.com/questions/45510421/how-to-make-a-googlevis-multiple-sankey-from-a-data-frame
 #source on what's possible (but no R here): https://developers.google.com/chart/interactive/docs/gallery/sankey
 # source <- sample(c("NorthSrc", "SouthSrc", "EastSrc", "WestSrc"), 100, replace=T)
 # mid <- sample(c("NorthMid", "SouthMid", "EastMid", "WestMid"), 100, replace=T)
@@ -3836,9 +4373,241 @@ p <- gvisSankey(datVis, from="From", to="To", weight="dummy")
 plot(p)
 
 
+```
+
+
+
+#gvisSankey for plant parasite, with host taxa as beginning
+```{r}
+load("M.Rdata")
+M = subset(M, Pathogen.kingdom=="plant")
+#source: https://stackoverflow.com/questions/45510421/how-to-make-a-googlevis-multiple-sankey-from-a-data-frame
+#source on what's possible (but no R here): https://developers.google.com/chart/interactive/docs/gallery/sankey
+# source <- sample(c("NorthSrc", "SouthSrc", "EastSrc", "WestSrc"), 100, replace=T)
+# mid <- sample(c("NorthMid", "SouthMid", "EastMid", "WestMid"), 100, replace=T)
+# destination <- sample(c("NorthDes", "SouthDes", "EastDes", "WestDes"), 100, replace=T) 
+# dummy <- rep(1,100) # For aggregation
+# dat <- data.frame(source,mid,destination,dummy)
+
+source <- M$Host.kingdom
+mid <- M$pathway
+destination <- M$measure.general
+dummy <- rep(1,length(source)) # For aggregation
+dat <- data.frame(source,mid,destination,dummy)
+
+#reshape original data
+#Data frame datSM summarises number of units from Source to Mid.
+datSM <- dat %>%
+  group_by(source, mid) %>%
+  summarise(toMid = sum(dummy) ) %>%
+  ungroup()
+
+#Data frame datMD summarises number of units from Mid to Destination.
+datMD <- dat %>%
+   group_by(mid, destination) %>%
+   summarise(toDes = sum(dummy) ) %>%
+   ungroup()
+
+colnames(datSM) <- colnames(datMD) <- c("From", "To", "Dummy")
+
+#As the datMD is appended as the last one, gvisSankey will recognise the middle step automatically.
+datVis <- rbind(datSM, datMD)
+p <- gvisSankey(datVis, from="From", to="To", weight="dummy")
+plot(p)
 
 
 ```
+
+#gvisSankey for animal parasite, with host taxa as beginning
+```{r}
+load("M.Rdata")
+M = subset(M, Pathogen.kingdom=="animal")
+#source: https://stackoverflow.com/questions/45510421/how-to-make-a-googlevis-multiple-sankey-from-a-data-frame
+#source on what's possible (but no R here): https://developers.google.com/chart/interactive/docs/gallery/sankey
+# source <- sample(c("NorthSrc", "SouthSrc", "EastSrc", "WestSrc"), 100, replace=T)
+# mid <- sample(c("NorthMid", "SouthMid", "EastMid", "WestMid"), 100, replace=T)
+# destination <- sample(c("NorthDes", "SouthDes", "EastDes", "WestDes"), 100, replace=T) 
+# dummy <- rep(1,100) # For aggregation
+# dat <- data.frame(source,mid,destination,dummy)
+
+source <- M$Host.kingdom
+mid <- M$pathway
+destination <- M$measure.general
+dummy <- rep(1,length(source)) # For aggregation
+dat <- data.frame(source,mid,destination,dummy)
+
+#reshape original data
+#Data frame datSM summarises number of units from Source to Mid.
+datSM <- dat %>%
+  group_by(source, mid) %>%
+  summarise(toMid = sum(dummy) ) %>%
+  ungroup()
+
+#Data frame datMD summarises number of units from Mid to Destination.
+datMD <- dat %>%
+   group_by(mid, destination) %>%
+   summarise(toDes = sum(dummy) ) %>%
+   ungroup()
+
+colnames(datSM) <- colnames(datMD) <- c("From", "To", "Dummy")
+
+#As the datMD is appended as the last one, gvisSankey will recognise the middle step automatically.
+datVis <- rbind(datSM, datMD)
+p <- gvisSankey(datVis, from="From", to="To", weight="dummy")
+plot(p)
+
+
+```
+
+#gvisSankey for fungal parasite, with host taxa as beginning
+```{r}
+load("M.Rdata")
+M = subset(M, Pathogen.kingdom=="fungus")
+#source: https://stackoverflow.com/questions/45510421/how-to-make-a-googlevis-multiple-sankey-from-a-data-frame
+#source on what's possible (but no R here): https://developers.google.com/chart/interactive/docs/gallery/sankey
+# source <- sample(c("NorthSrc", "SouthSrc", "EastSrc", "WestSrc"), 100, replace=T)
+# mid <- sample(c("NorthMid", "SouthMid", "EastMid", "WestMid"), 100, replace=T)
+# destination <- sample(c("NorthDes", "SouthDes", "EastDes", "WestDes"), 100, replace=T) 
+# dummy <- rep(1,100) # For aggregation
+# dat <- data.frame(source,mid,destination,dummy)
+
+source <- M$Host.kingdom
+mid <- M$pathway
+destination <- M$measure.general
+dummy <- rep(1,length(source)) # For aggregation
+dat <- data.frame(source,mid,destination,dummy)
+
+#reshape original data
+#Data frame datSM summarises number of units from Source to Mid.
+datSM <- dat %>%
+  group_by(source, mid) %>%
+  summarise(toMid = sum(dummy) ) %>%
+  ungroup()
+
+#Data frame datMD summarises number of units from Mid to Destination.
+datMD <- dat %>%
+   group_by(mid, destination) %>%
+   summarise(toDes = sum(dummy) ) %>%
+   ungroup()
+
+colnames(datSM) <- colnames(datMD) <- c("From", "To", "Dummy")
+
+#As the datMD is appended as the last one, gvisSankey will recognise the middle step automatically.
+datVis <- rbind(datSM, datMD)
+p <- gvisSankey(datVis, from="From", to="To", weight="dummy")
+plot(p)
+
+
+```
+
+#gvisSankey for combo of parasiteand host
+```{r}
+load("M.Rdata")
+M = subset(M, Pathogen.kingdom != "not reported")
+M = subset(M, Pathogen.kingdom != "multiple")
+M = subset(M, Host.kingdom !="multiple")
+i = which(M$Pathogen.kingdom == "virus" |
+            M$Pathogen.kingdom == "eukaryote" |
+            M$Pathogen.kingdom == "bacteria")
+M$Pathogen.kingdom[i]="other microbe"
+
+# M$Pathogen.kingdom = subset(M, Pathogen.kingdom != "not reported")
+M$pathogen.host = paste(M$Pathogen.kingdom, M$Host.kingdom)
+
+#source: https://stackoverflow.com/questions/45510421/how-to-make-a-googlevis-multiple-sankey-from-a-data-frame
+#source on what's possible (but no R here): https://developers.google.com/chart/interactive/docs/gallery/sankey
+# source <- sample(c("NorthSrc", "SouthSrc", "EastSrc", "WestSrc"), 100, replace=T)
+# mid <- sample(c("NorthMid", "SouthMid", "EastMid", "WestMid"), 100, replace=T)
+# destination <- sample(c("NorthDes", "SouthDes", "EastDes", "WestDes"), 100, replace=T) 
+# dummy <- rep(1,100) # For aggregation
+# dat <- data.frame(source,mid,destination,dummy)
+
+source <- M$pathogen.host
+mid <- M$pathway
+destination <- M$measure.general
+dummy <- rep(1,length(source)) # For aggregation
+dat <- data.frame(source,mid,destination,dummy)
+
+#reshape original data
+#Data frame datSM summarises number of units from Source to Mid.
+datSM <- dat %>%
+  group_by(source, mid) %>%
+  summarise(toMid = sum(dummy) ) %>%
+  ungroup()
+
+#Data frame datMD summarises number of units from Mid to Destination.
+datMD <- dat %>%
+   group_by(mid, destination) %>%
+   summarise(toDes = sum(dummy) ) %>%
+   ungroup()
+
+colnames(datSM) <- colnames(datMD) <- c("From", "To", "Dummy")
+
+#As the datMD is appended as the last one, gvisSankey will recognise the middle step automatically.
+datVis <- rbind(datSM, datMD)
+p <- gvisSankey(datVis, from="From", to="To", weight="dummy")
+plot(p)
+
+
+```
+
+#gvisSankey for combo of parasiteand host, simplified
+```{r}
+load("M.Rdata")
+M = subset(M, Pathogen.kingdom != "not reported")
+M = subset(M, Pathogen.kingdom != "multiple")
+M = subset(M, Host.kingdom !="multiple")
+i = which(M$Pathogen.kingdom == "virus" |
+            M$Pathogen.kingdom == "eukaryote" |
+            M$Pathogen.kingdom == "bacteria")
+M$Pathogen.kingdom[i]="microbe"
+
+i = which(M$Host.kingdom == "prokaryote" |
+            M$Host.kingdom == "eukaryote" |
+            M$Host.kingdom == "bacteria")
+M$Host.kingdom[i]="microbe"
+
+
+# M$Pathogen.kingdom = subset(M, Pathogen.kingdom != "not reported")
+M$pathogen.host = paste(M$Pathogen.kingdom, M$Host.kingdom)
+
+#source: https://stackoverflow.com/questions/45510421/how-to-make-a-googlevis-multiple-sankey-from-a-data-frame
+#source on what's possible (but no R here): https://developers.google.com/chart/interactive/docs/gallery/sankey
+# source <- sample(c("NorthSrc", "SouthSrc", "EastSrc", "WestSrc"), 100, replace=T)
+# mid <- sample(c("NorthMid", "SouthMid", "EastMid", "WestMid"), 100, replace=T)
+# destination <- sample(c("NorthDes", "SouthDes", "EastDes", "WestDes"), 100, replace=T) 
+# dummy <- rep(1,100) # For aggregation
+# dat <- data.frame(source,mid,destination,dummy)
+
+source <- M$pathogen.host
+mid <- M$pathway
+destination <- M$measure.general
+dummy <- rep(1,length(source)) # For aggregation
+dat <- data.frame(source,mid,destination,dummy)
+
+#reshape original data
+#Data frame datSM summarises number of units from Source to Mid.
+datSM <- dat %>%
+  group_by(source, mid) %>%
+  summarise(toMid = sum(dummy) ) %>%
+  ungroup()
+
+#Data frame datMD summarises number of units from Mid to Destination.
+datMD <- dat %>%
+   group_by(mid, destination) %>%
+   summarise(toDes = sum(dummy) ) %>%
+   ungroup()
+
+colnames(datSM) <- colnames(datMD) <- c("From", "To", "Dummy")
+
+#As the datMD is appended as the last one, gvisSankey will recognise the middle step automatically.
+datVis <- rbind(datSM, datMD)
+p <- gvisSankey(datVis, from="From", to="To", weight="dummy")
+plot(p)
+
+
+```
+
 
 
 
